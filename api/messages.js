@@ -7,7 +7,6 @@ const CHANNELS = {
   trustwall: '1413093253229838406',
 };
 
-// In-memory cache for user display names
 const userCache = {};
 
 async function resolveUser(userId, token) {
@@ -24,6 +23,18 @@ async function resolveUser(userId, token) {
     }
   } catch(e) {}
   return null;
+}
+
+function getAvatarUrl(author) {
+  if (!author.avatar) {
+    // Default Discord avatar
+    return `https://cdn.discordapp.com/embed/avatars/${parseInt(author.discriminator || '0') % 5}.png`;
+  }
+  // Webhooks use a different avatar path vs regular users
+  if (author.webhook_id) {
+    return `https://cdn.discordapp.com/avatars/${author.webhook_id}/${author.avatar}.png?size=64`;
+  }
+  return `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}.png?size=64`;
 }
 
 export default async function handler(req, res) {
@@ -49,7 +60,7 @@ export default async function handler(req, res) {
 
     const messages = await response.json();
 
-    // Build mention map from messages
+    // Build mention map
     const mentionMap = {};
     for (const m of messages) {
       for (const u of (m.mentions || [])) {
@@ -58,7 +69,7 @@ export default async function handler(req, res) {
       mentionMap[m.author.id] = m.author.global_name || m.author.username;
     }
 
-    // Resolve any unresolved IDs found in content
+    // Resolve unresolved IDs in content
     const unresolvedIds = new Set();
     for (const m of messages) {
       const matches = [...(m.content?.matchAll(/<@!?(\d+)>/g) || [])];
@@ -71,54 +82,69 @@ export default async function handler(req, res) {
       if (name) mentionMap[id] = name;
     }));
 
-    const shaped = messages.map(m => ({
-      id:        m.id,
-      content:   m.content || '',
-      timestamp: m.timestamp,
-      author: {
-        id:           m.author.id,
-        username:     m.author.username,
-        display_name: m.author.global_name || m.author.username,
-        avatar:       m.author.avatar
-          ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png?size=64`
-          : `https://cdn.discordapp.com/embed/avatars/${parseInt(m.author.discriminator || '0') % 5}.png`,
-        bot: m.author.bot || false,
-      },
-      mention_map: mentionMap,
-      attachments: (m.attachments || []).map(a => ({
-        url: a.url, filename: a.filename,
-        content_type: a.content_type || '',
-        width: a.width || null, height: a.height || null,
-      })),
-      embeds: (m.embeds || []).map(e => ({
-        title:       e.title       || null,
-        description: e.description || null,
-        url:         e.url         || null,
-        color:       e.color       || null,
-        fields:      (e.fields || []).map(f => ({ name: f.name, value: f.value, inline: f.inline })),
-        image:       e.image?.url     || null,
-        thumbnail:   e.thumbnail?.url || null,
-        footer:      e.footer  ? { text: e.footer.text,   icon: e.footer.icon_url }   : null,
-        author_meta: e.author  ? { name: e.author.name,   icon: e.author.icon_url, url: e.author.url } : null,
-        type:        e.type || 'rich',
-      })),
-      components: (m.components || []).flatMap(row =>
-        (row.components || []).map(c => ({
-          type:     c.type,
-          label:    c.label || '',
-          url:      c.url   || null,
-          style:    c.style || 1,
-          disabled: c.disabled || false,
-          emoji:    c.emoji?.name || null,
-        }))
-      ),
-      reactions: (m.reactions || []).map(r => ({ emoji: r.emoji.name, count: r.count })),
-      referenced_message: m.referenced_message ? {
-        id:      m.referenced_message.id,
-        content: m.referenced_message.content || '',
-        author:  m.referenced_message.author?.global_name || m.referenced_message.author?.username || 'Unknown',
-      } : null,
-    }));
+    const shaped = messages.map(m => {
+      // Detect if this is a webhook message
+      const isWebhook = !!m.webhook_id;
+      const authorWithWebhook = { ...m.author, webhook_id: m.webhook_id };
+
+      return {
+        id:        m.id,
+        content:   m.content || '',
+        timestamp: m.timestamp,
+        author: {
+          id:           m.author.id,
+          username:     m.author.username,
+          display_name: m.author.global_name || m.author.username,
+          avatar:       getAvatarUrl(authorWithWebhook),
+          is_webhook:   isWebhook,
+          bot:          m.author.bot || false,
+        },
+        mention_map: mentionMap,
+        attachments: (m.attachments || []).map(a => ({
+          url: a.url, filename: a.filename,
+          content_type: a.content_type || '',
+          width: a.width || null, height: a.height || null,
+        })),
+        // Sticker support
+        stickers: (m.sticker_items || []).map(s => ({
+          id:     s.id,
+          name:   s.name,
+          format: s.format_type, // 1=PNG, 2=APNG, 3=LOTTIE, 4=GIF
+          url:    s.format_type === 3
+            ? null  // Lottie stickers can't be rendered as img
+            : `https://cdn.discordapp.com/stickers/${s.id}.${s.format_type === 4 ? 'gif' : 'png'}?size=160`,
+        })),
+        embeds: (m.embeds || []).map(e => ({
+          title:       e.title       || null,
+          description: e.description || null,
+          url:         e.url         || null,
+          color:       e.color       || null,
+          fields:      (e.fields || []).map(f => ({ name: f.name, value: f.value, inline: f.inline })),
+          image:       e.image?.url     || null,
+          thumbnail:   e.thumbnail?.url || null,
+          footer:      e.footer  ? { text: e.footer.text,  icon: e.footer.icon_url }              : null,
+          author_meta: e.author  ? { name: e.author.name,  icon: e.author.icon_url, url: e.author.url } : null,
+          type:        e.type || 'rich',
+        })),
+        components: (m.components || []).flatMap(row =>
+          (row.components || []).map(c => ({
+            type:     c.type,
+            label:    c.label || '',
+            url:      c.url   || null,
+            style:    c.style || 1,
+            disabled: c.disabled || false,
+            emoji:    c.emoji?.name || null,
+          }))
+        ),
+        reactions: (m.reactions || []).map(r => ({ emoji: r.emoji.name, count: r.count })),
+        referenced_message: m.referenced_message ? {
+          id:      m.referenced_message.id,
+          content: m.referenced_message.content || '',
+          author:  m.referenced_message.author?.global_name || m.referenced_message.author?.username || 'Unknown',
+          author_id: m.referenced_message.author?.id || null,
+        } : null,
+      };
+    });
 
     return res.status(200).json(shaped);
   } catch(e) {
