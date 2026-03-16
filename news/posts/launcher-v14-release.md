@@ -1,57 +1,44 @@
 ---
-title: Launcher v1.4 — Biggest Update Yet
+title: Launcher v1.4 is here and it's insane
 date: 2025-03-16
 category: Update
 priority: featured
 cover: https://i.ibb.co/C38dqb8W/image-2025-12-31-211529273.png
-brief: New UI built with Tauri, mods tab, Discord RPC, AUnlocker config editor, download pill with live speed graph and a lot more.
+brief: New look, mods tab, AUnlocker built right in, live download speed graph, Discord status and a ton more. This one's big.
 ---
 
-## What's new in v1.4
+Okay so. v1.4 just dropped and it's probably the biggest thing we've done with the launcher so far. The whole thing looks different, works better, and has a bunch of stuff that honestly should've been there from the start.
 
-This is the biggest update since the launcher launched. The entire UI has been rebuilt from the ground up using **Tauri** — which means it's faster, lighter, and looks a lot better.
+Here's what changed.
 
-### New UI
+## The UI actually looks good now
 
-The launcher now has a proper desktop app feel. Custom title bar, dark theme matching the website, smooth tab transitions, and a hero section with floating particles. No more Python tkinter.
+The launcher has a proper dark theme now — deep black background, purple accent, particles floating in the hero section. It matches the website. It feels like a real app instead of something slapped together in an afternoon.
 
-### Mods Tab
+Custom title bar too, so none of that ugly Windows chrome. Close, minimize, maximize buttons that actually match the rest of the design.
 
-You can now install, enable/disable, and configure **AUnlocker** directly from the launcher. No more hunting for files manually.
+## Mods tab
 
-- Install AUnlocker with one click
-- Toggle it on/off without deleting files
-- Full config editor — every setting has a proper toggle, number input or dropdown
-- Config file is watched for external changes and updates automatically
+There's a whole mods section now. Right now it has AUnlocker built in — you can install it, turn it on or off, and configure every single setting without touching any files manually.
 
-### Download Pill
+The config editor reads your `AUnlocker.cfg` and shows you actual toggles, number inputs and dropdowns. Change a setting, it saves instantly. If you edit the file externally the launcher picks up the changes automatically.
 
-When you download or update the game, a pill slides up from the bottom of the screen showing:
+Disabling a mod doesn't delete anything either — it just renames the file so BepInEx ignores it. Re-enable it and it comes straight back.
 
-- **Live progress bar** with percentage
-- **Download speed** in MB/s
-- **ETA** countdown
-- **Speed graph** on hover — exactly like Steam
-- **Cancel button** to stop mid-download
+## Downloading is way better
 
-### Discord RPC
+When you download the game or an update a little pill slides up from the bottom of the screen. It shows you the progress, your download speed in MB/s, and how long's left. Hover over it and a live speed graph expands — same idea as Steam's download screen.
 
-The launcher now shows what you're doing on Discord:
+There's also a cancel button if you change your mind halfway through.
 
-- `In Launcher · v2024.9.4` while browsing
-- `Downloading... 45% · 3.2 MB/s` while downloading
-- `Playing Among Us · v2024.9.4` after launching the game
+## Discord status
 
-### Fix Data
+The launcher now updates your Discord status automatically. It shows what version you're on while you're browsing, updates live with your download speed while you're downloading, and switches to "Playing Among Us" when you launch the game. No setup needed.
 
-Sometimes you set things up manually outside the launcher. Now there's a **Fix Data** button next to the version pills that lets you correct the stored version and path without resetting everything.
+## Fix Data button
+
+If you've been moving game files around manually and the launcher lost track of where things are — there's now a Fix Data button right on the main screen. Set the path, set the version, done. No more breaking everything just because you moved a folder.
 
 ---
 
-## What's coming next
-
-- **Discord chat integration** — read announcements and chat with the community without leaving the launcher
-- **More mods** — the mods tab is built to support more than just AUnlocker
-- **Auto-updater** for the launcher itself
-
-Thanks for using the launcher. If something is broken, hit up the Discord.
+That's v1.4. If something's broken or you have ideas for what to add next, come tell us in the Discord.

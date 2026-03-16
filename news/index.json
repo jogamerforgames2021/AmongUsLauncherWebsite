@@ -1,28 +1,55 @@
 [
   {
     "slug": "launcher-v14-release",
-    "title": "Launcher v1.4 — Biggest Update Yet",
-    "brief": "New UI built with Tauri, mods tab, Discord RPC, AUnlocker config editor, download pill with live speed graph and a lot more.",
+    "title": "Launcher v1.4 is here and it's insane",
+    "brief": "New look, mods tab, AUnlocker built right in, live download speed graph, Discord status and a ton more. This one's big.",
     "date": "2025-03-16",
     "category": "Update",
     "priority": "featured",
     "cover": "https://i.ibb.co/C38dqb8W/image-2025-12-31-211529273.png"
   },
   {
-    "slug": "aunlocker-support",
-    "title": "AUnlocker Now Supported In-Launcher",
-    "brief": "Install, enable/disable and configure AUnlocker without ever touching a file manually.",
-    "date": "2025-03-10",
-    "category": "Announcement",
+    "slug": "game-17-2-1",
+    "title": "Among Us 17.2.1 is out",
+    "brief": "Grabbed and cracked 17.2.1 for you. Download it through the launcher as usual.",
+    "date": "2025-02-20",
+    "category": "Update",
     "priority": "high",
     "cover": ""
   },
   {
-    "slug": "welcome",
-    "title": "Welcome to ShadowSlime",
-    "brief": "The launcher is live. Here's what it is, what it does, and what's coming next.",
-    "date": "2025-01-01",
+    "slug": "website-rewrite",
+    "title": "The website got a full rewrite",
+    "brief": "New design, actually useful help page, and it looks way better now. Go check it out.",
+    "date": "2025-02-01",
     "category": "Announcement",
+    "priority": "normal",
+    "cover": ""
+  },
+  {
+    "slug": "launcher-v13",
+    "title": "Launcher 1.3 — the UI update",
+    "brief": "Long overdue UI overhaul. Cleaner, faster, and the news screen you're reading right now is part of it.",
+    "date": "2025-01-10",
+    "category": "Update",
+    "priority": "normal",
+    "cover": ""
+  },
+  {
+    "slug": "happy-new-year",
+    "title": "Happy New Year!",
+    "brief": "2025 is here. A $5 Steam giftcard giveaway is dropping soon in the Discord — stay tuned.",
+    "date": "2025-01-01",
+    "category": "Event",
+    "priority": "normal",
+    "cover": ""
+  },
+  {
+    "slug": "game-17-1-0",
+    "title": "Among Us 17.1.0 is out",
+    "brief": "Grabbed and cracked 17.1.0 for you. Download it through the launcher as usual.",
+    "date": "2024-12-15",
+    "category": "Update",
     "priority": "normal",
     "cover": ""
   }
