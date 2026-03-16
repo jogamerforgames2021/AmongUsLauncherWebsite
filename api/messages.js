@@ -62,11 +62,36 @@ export default async function handler(req, res) {
 
     // Build mention map
     const mentionMap = {};
+    const roleMap = {};
     for (const m of messages) {
       for (const u of (m.mentions || [])) {
         mentionMap[u.id] = u.global_name || u.username;
       }
       mentionMap[m.author.id] = m.author.global_name || m.author.username;
+      for (const roleId of (m.mention_roles || [])) {
+        if (!roleMap[roleId]) roleMap[roleId] = { name: null, color: null };
+      }
+    }
+
+    // Resolve role names from guild
+    const guildId = process.env.DISCORD_GUILD_ID;
+    if (guildId && Object.keys(roleMap).length > 0) {
+      try {
+        const rolesRes = await fetch(`https://discord.com/api/v10/guilds/${guildId}/roles`, {
+          headers: { Authorization: `Bot ${token}` }
+        });
+        if (rolesRes.ok) {
+          const roles = await rolesRes.json();
+          for (const role of roles) {
+            if (roleMap[role.id] !== undefined) {
+              roleMap[role.id] = {
+                name:  role.name,
+                color: role.color ? `#${role.color.toString(16).padStart(6,'0')}` : null,
+              };
+            }
+          }
+        }
+      } catch(e) {}
     }
 
     // Resolve unresolved IDs in content
@@ -100,6 +125,7 @@ export default async function handler(req, res) {
           bot:          m.author.bot || false,
         },
         mention_map: mentionMap,
+        role_map:    roleMap,
         attachments: (m.attachments || []).map(a => ({
           url: a.url, filename: a.filename,
           content_type: a.content_type || '',
