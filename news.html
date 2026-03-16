@@ -88,8 +88,8 @@
     .news-card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,.12); box-shadow:0 20px 40px rgba(0,0,0,.4); }
 
     /* priority sizing */
-    .news-card.featured { grid-column:1 / -1; min-height:360px; }
-    .news-card.high     { grid-column:span 2; min-height:280px; }
+    .news-card.featured { grid-column:span 2; min-height:360px; }
+    .news-card.high     { grid-column:1 / -1; min-height:280px; }
     .news-card.normal   { grid-column:span 1; min-height:260px; }
 
     /* priority border accents */
@@ -228,7 +228,9 @@
 
 <script>
   // ── CONFIG — update this to your own repo URL ──────────────────────────
-const NEWS_BASE = '/news/';
+  const NEWS_BASE = 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/news/';
+  // ───────────────────────────────────────────────────────────────────────
+
   let allPosts = [];
   let activeFilter = 'all';
 
