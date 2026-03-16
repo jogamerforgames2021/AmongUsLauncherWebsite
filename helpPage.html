@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Help Center for Among Us Launcher. Learn how to install, update, and get the most out of the launcher.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Help Center — Among Us Launcher</title>
+    <style>
+        :root {
+            --bg:      #060608;
+            --surface: #0a0b0d;
+            --surface2:#0e0f12;
+            --border:  rgba(255,255,255,0.055);
+            --accent:  #7b61ff;
+            --text:    #dde0e6;
+            --muted:   rgba(221,224,230,0.38);
+            --warn:    #f5a623;
+            --info:    #4a9eff;
+            --ok:      #3ecf8e;
+            --sidebar-w: 260px;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body::after {
+            content:''; position:fixed; inset:0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events:none; z-index:9999; opacity:.6;
+        }
+
+        body {
+            font-family:'DM Sans',sans-serif;
+            background:var(--bg);
+            color:var(--text);
+            min-height:100vh;
+            overflow-x:hidden;
+        }
+
+        .ambient { position:fixed; pointer-events:none; z-index:0; border-radius:50%; filter:blur(140px); opacity:.10; }
+        .ambient-1 { width:700px; height:700px; background:#4a2dcc; top:-250px; right:-150px; }
+        .ambient-2 { width:500px; height:500px; background:#1a0a3d; bottom:0; left:-150px; }
+
+        /* ── NAV ── */
+        nav {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:1.4rem 2rem;
+            border-bottom:1px solid var(--border);
+            position:sticky; top:0; z-index:200;
+            background:rgba(6,6,8,0.92);
+            backdrop-filter:blur(20px);
+        }
+        .nav-left { display:flex; align-items:center; gap:1.2rem; }
+        .nav-logo {
+            font-family:'Syne',sans-serif; font-weight:800; font-size:1.05rem;
+            letter-spacing:-.5px; text-decoration:none; color:var(--text);
+            display:flex; align-items:center; gap:.5rem;
+        }
+        .nav-logo span { color:var(--accent); }
+
+        .sidebar-toggle {
+            background:transparent; border:1px solid var(--border);
+            border-radius:7px; width:34px; height:34px;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; color:var(--muted); font-size:.85rem;
+            transition:all .2s;
+        }
+        .sidebar-toggle:hover { color:var(--text); border-color:rgba(255,255,255,.12); }
+
+        .nav-links { display:flex; gap:1.8rem; }
+        .nav-links a { color:var(--muted); text-decoration:none; font-size:.9rem; font-weight:500; transition:color .2s; }
+        .nav-links a:hover { color:var(--text); }
+
+        .nav-cta {
+            background:var(--accent); color:#fff;
+            padding:.5rem 1.2rem; border-radius:8px;
+            font-weight:600; font-size:.88rem;
+            text-decoration:none; border:none; cursor:pointer;
+            transition:background .2s, transform .15s;
+        }
+        .nav-cta:hover { background:#9b85ff; transform:translateY(-1px); }
+
+        /* ── LAYOUT ── */
+        .page-layout {
+            display:flex; position:relative; z-index:1;
+            min-height:calc(100vh - 57px);
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width:var(--sidebar-w);
+            flex-shrink:0;
+            background:var(--surface);
+            border-right:1px solid var(--border);
+            position:sticky; top:57px;
+            height:calc(100vh - 57px);
+            overflow-y:auto; overflow-x:hidden;
+            transition:width .3s ease, opacity .3s ease;
+            z-index:50;
+        }
+        .sidebar.collapsed { width:0; opacity:0; pointer-events:none; }
+
+        .sidebar::-webkit-scrollbar { width:4px; }
+        .sidebar::-webkit-scrollbar-thumb { background:rgba(123,97,255,.3); border-radius:2px; }
+
+        .sidebar-inner { width:var(--sidebar-w); padding:1.8rem 0 3rem; }
+
+        .nav-group { margin-bottom:1.8rem; }
+        .nav-group-label {
+            font-family:'JetBrains Mono',monospace;
+            font-size:.68rem; font-weight:600;
+            color:var(--accent); text-transform:uppercase; letter-spacing:.14em;
+            padding:0 1.4rem; margin-bottom:.6rem; display:block;
+        }
+        .nav-item {
+            display:flex; align-items:center; gap:.6rem;
+            padding:.6rem 1.4rem;
+            color:var(--muted); text-decoration:none; font-size:.87rem; font-weight:500;
+            border-left:2px solid transparent;
+            transition:all .18s;
+            cursor:pointer;
+        }
+        .nav-item i { font-size:.78rem; width:14px; text-align:center; flex-shrink:0; }
+        .nav-item:hover { color:var(--text); background:rgba(255,255,255,.03); border-left-color:rgba(123,97,255,.4); }
+        .nav-item.active { color:#a992ff; border-left-color:var(--accent); background:rgba(123,97,255,.07); font-weight:600; }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            flex:1; min-width:0;
+            padding:3rem 3.5rem 6rem;
+            max-width:860px;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header { margin-bottom:3.5rem; }
+        .page-kicker {
+            display:inline-flex; align-items:center; gap:.5rem;
+            font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600;
+            color:var(--accent); letter-spacing:.12em; text-transform:uppercase;
+            border:1px solid rgba(123,97,255,.22); background:rgba(123,97,255,.07);
+            padding:.35rem .9rem; border-radius:100px; margin-bottom:1.2rem;
+        }
+        .page-title {
+            font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem);
+            font-weight:800; letter-spacing:-1.5px; line-height:1.1;
+            margin-bottom:.8rem;
+        }
+        .page-sub { color:var(--muted); font-size:1rem; line-height:1.65; max-width:520px; }
+
+        /* ── SEARCH ── */
+        .search-bar {
+            position:relative; margin-bottom:3rem;
+        }
+        .search-bar input {
+            width:100%; background:var(--surface2);
+            border:1px solid var(--border); border-radius:10px;
+            padding:.85rem 1.2rem .85rem 2.8rem;
+            color:var(--text); font-family:'DM Sans',sans-serif; font-size:.95rem;
+            outline:none; transition:border-color .2s;
+        }
+        .search-bar input::placeholder { color:var(--muted); }
+        .search-bar input:focus { border-color:rgba(123,97,255,.5); }
+        .search-bar i { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.85rem; }
+        .search-results { margin-top:.5rem; }
+        .search-result-item {
+            padding:.7rem 1rem; background:var(--surface2); border:1px solid var(--border);
+            border-radius:8px; margin-bottom:.4rem; cursor:pointer;
+            transition:background .15s; display:flex; align-items:center; gap:.8rem;
+        }
+        .search-result-item:hover { background:rgba(123,97,255,.1); }
+        .search-result-item i { color:var(--accent); font-size:.8rem; }
+        .search-result-title { font-weight:600; font-size:.9rem; }
+        .search-result-section { color:var(--muted); font-size:.78rem; margin-top:.1rem; }
+        #searchResults { display:none; }
+
+        /* ── SECTIONS ── */
+        .doc-section { margin-bottom:2rem; scroll-margin-top:80px; }
+
+        .section-header {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:1.2rem 1.4rem;
+            background:var(--surface2); border:1px solid var(--border);
+            border-radius:12px; cursor:pointer;
+            transition:background .2s, border-color .2s;
+            user-select:none;
+        }
+        .section-header:hover { background:rgba(123,97,255,.07); border-color:rgba(123,97,255,.2); }
+        .section-header.open { border-radius:12px 12px 0 0; border-color:rgba(123,97,255,.25); background:rgba(123,97,255,.08); }
+
+        .section-header-left { display:flex; align-items:center; gap:.9rem; }
+        .section-icon-wrap {
+            width:36px; height:36px; border-radius:9px; flex-shrink:0;
+            background:rgba(123,97,255,.1); border:1px solid rgba(123,97,255,.18);
+            display:flex; align-items:center; justify-content:center;
+            font-size:.95rem; color:#a992ff;
+        }
+        .section-title {
+            font-family:'Syne',sans-serif; font-weight:700; font-size:1rem;
+            letter-spacing:-.2px;
+        }
+        .section-chevron { color:var(--muted); font-size:.75rem; transition:transform .25s ease; }
+        .section-header.open .section-chevron { transform:rotate(180deg); color:var(--accent); }
+
+        .section-body {
+            background:var(--surface); border:1px solid rgba(123,97,255,.2);
+            border-top:none; border-radius:0 0 12px 12px;
+            padding:0; max-height:0; overflow:hidden;
+            transition:max-height .35s ease, padding .2s ease;
+        }
+        .section-body.open { max-height:4000px; padding:1.8rem 1.8rem 2rem; }
+
+        /* ── CONTENT ELEMENTS ── */
+        .prose { font-size:.95rem; line-height:1.72; color:rgba(221,224,230,.78); margin-bottom:1.2rem; }
+        .prose strong { color:var(--text); font-weight:600; }
+
+        .steps { list-style:none; counter-reset:step; margin:1.2rem 0; }
+        .steps li {
+            counter-increment:step;
+            display:flex; gap:1rem; align-items:flex-start;
+            padding:1rem 1.2rem; margin-bottom:.6rem;
+            background:rgba(255,255,255,.02); border:1px solid var(--border);
+            border-radius:9px; font-size:.9rem; line-height:1.6;
+            transition:background .15s;
+        }
+        .steps li:hover { background:rgba(123,97,255,.05); }
+        .steps li::before {
+            content:counter(step);
+            min-width:24px; height:24px; border-radius:6px;
+            background:rgba(123,97,255,.2); border:1px solid rgba(123,97,255,.3);
+            display:flex; align-items:center; justify-content:center;
+            font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:600;
+            color:#a992ff; flex-shrink:0; margin-top:.1rem;
+        }
+
+        .bullets { list-style:none; margin:1rem 0; }
+        .bullets li {
+            display:flex; gap:.8rem; align-items:flex-start;
+            padding:.65rem 1rem; margin-bottom:.4rem;
+            font-size:.9rem; line-height:1.6; color:rgba(221,224,230,.78);
+            border-radius:7px;
+            transition:background .15s;
+        }
+        .bullets li:hover { background:rgba(255,255,255,.02); }
+        .bullets li::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); opacity:.7; flex-shrink:0; margin-top:.55rem; }
+
+        code {
+            font-family:'JetBrains Mono',monospace; font-size:.82rem;
+            background:rgba(0,0,0,.35); border:1px solid var(--border);
+            padding:.15rem .5rem; border-radius:5px; color:#a992ff;
+        }
+
+        .callout {
+            display:flex; gap:.9rem; padding:1rem 1.2rem; border-radius:9px;
+            margin:1.2rem 0; font-size:.88rem; line-height:1.65;
+        }
+        .callout i { font-size:1rem; margin-top:.1rem; flex-shrink:0; }
+        .callout.info { background:rgba(74,158,255,.08); border:1px solid rgba(74,158,255,.2); color:rgba(221,224,230,.8); }
+        .callout.info i { color:var(--info); }
+        .callout.warn { background:rgba(245,166,35,.08); border:1px solid rgba(245,166,35,.2); color:rgba(221,224,230,.8); }
+        .callout.warn i { color:var(--warn); }
+        .callout.ok { background:rgba(62,207,142,.08); border:1px solid rgba(62,207,142,.2); color:rgba(221,224,230,.8); }
+        .callout.ok i { color:var(--ok); }
+
+        .callout-content strong { display:block; font-weight:600; color:var(--text); margin-bottom:.3rem; font-size:.9rem; }
+
+        .mini-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:.8rem; margin:1.2rem 0; }
+        .mini-card {
+            background:rgba(255,255,255,.02); border:1px solid var(--border);
+            border-radius:9px; padding:1.1rem 1.2rem;
+            transition:background .15s;
+        }
+        .mini-card:hover { background:rgba(123,97,255,.06); }
+        .mini-card h4 { font-size:.88rem; font-weight:700; margin-bottom:.35rem; color:var(--text); }
+        .mini-card p { font-size:.82rem; color:var(--muted); line-height:1.5; }
+
+        .btn-row { display:flex; gap:.7rem; flex-wrap:wrap; margin-top:1.4rem; }
+        .btn {
+            display:inline-flex; align-items:center; gap:.55rem;
+            padding:.65rem 1.2rem; border-radius:8px;
+            font-size:.85rem; font-weight:600; text-decoration:none; cursor:pointer; border:none;
+            transition:all .2s;
+        }
+        .btn-primary { background:var(--accent); color:#fff; }
+        .btn-primary:hover { background:#9b85ff; transform:translateY(-1px); }
+        .btn-ghost { background:transparent; color:#a992ff; border:1px solid rgba(123,97,255,.28); }
+        .btn-ghost:hover { background:rgba(123,97,255,.1); }
+
+        .dl-list { display:flex; flex-direction:column; gap:.5rem; margin:1.2rem 0; }
+        .dl-item {
+            display:flex; align-items:center; justify-content:space-between; gap:1rem;
+            padding:.85rem 1.1rem; background:rgba(255,255,255,.02);
+            border:1px solid var(--border); border-radius:9px;
+            font-size:.88rem; flex-wrap:wrap;
+        }
+        .dl-item-name { font-weight:600; display:flex; align-items:center; gap:.6rem; }
+        .dl-item-name i { color:var(--accent); font-size:.85rem; }
+        .dl-item a {
+            display:inline-flex; align-items:center; gap:.45rem;
+            font-size:.8rem; font-weight:600; color:#a992ff; text-decoration:none;
+            padding:.35rem .85rem; border-radius:6px; border:1px solid rgba(123,97,255,.25);
+            background:rgba(123,97,255,.08); white-space:nowrap;
+            transition:background .15s;
+        }
+        .dl-item a:hover { background:rgba(123,97,255,.18); }
+
+        .divider { height:1px; background:var(--border); margin:1.6rem 0; }
+
+        /* ── MOBILE OVERLAY ── */
+        .sidebar-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,.6); z-index:49;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width:860px) {
+            .sidebar {
+                position:fixed; top:57px; left:0;
+                height:calc(100vh - 57px);
+                transform:translateX(-100%);
+                transition:transform .3s ease, opacity .2s ease;
+                opacity:1; width:var(--sidebar-w) !important;
+            }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .sidebar.collapsed { transform:translateX(-100%); opacity:1; pointer-events:auto; width:var(--sidebar-w) !important; }
+            .sidebar-overlay.active { display:block; }
+            .main { padding:2rem 1.4rem 5rem; }
+            .nav-links { display:none; }
+        }
+        @media (max-width:500px) {
+            .page-title { font-size:1.8rem; }
+            .mini-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+<div class="sidebar-overlay" id="overlay"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-left">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a href="index.html" class="nav-logo">AU <span>Launcher</span></a>
+    </div>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+    </div>
+    <a href="index.html" class="nav-cta"><i class="fas fa-arrow-down"></i> Download</a>
+</nav>
+
+<div class="page-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+
+            <div class="nav-group">
+                <span class="nav-group-label">Website</span>
+                <a class="nav-item" data-target="download-launcher"><i class="fas fa-arrow-down"></i> Download the Launcher</a>
+                <a class="nav-item" data-target="download-direct"><i class="fas fa-file-zipper"></i> Download Game Directly</a>
+                <a class="nav-item" data-target="submit-feedback"><i class="fas fa-message"></i> Submit Feedback</a>
+                <a class="nav-item" data-target="discord"><i class="fab fa-discord"></i> Join Discord</a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-group-label">Launcher</span>
+                <a class="nav-item" data-target="getting-started"><i class="fas fa-rocket"></i> Getting Started</a>
+                <a class="nav-item" data-target="install-game"><i class="fas fa-gamepad"></i> Installing the Game</a>
+                <a class="nav-item" data-target="auto-updates"><i class="fas fa-sync-alt"></i> Auto Updates</a>
+                <a class="nav-item" data-target="version-management"><i class="fas fa-code-branch"></i> Version Management</a>
+                <a class="nav-item" data-target="discord-rpc"><i class="fas fa-circle-dot"></i> Discord Rich Presence</a>
+                <a class="nav-item" data-target="aunlocker"><i class="fas fa-unlock"></i> Installing AUnlocker</a>
+                <a class="nav-item" data-target="shortcuts"><i class="fas fa-link"></i> Desktop Shortcuts</a>
+                <a class="nav-item" data-target="settings"><i class="fas fa-gear"></i> Launcher Settings</a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-group-label">Help</span>
+                <a class="nav-item" data-target="troubleshooting"><i class="fas fa-wrench"></i> Troubleshooting</a>
+                <a class="nav-item" data-target="redistributables"><i class="fas fa-box"></i> Required Software</a>
+                <a class="nav-item" data-target="support"><i class="fas fa-life-ring"></i> Support</a>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="mainContent">
+
+        <div class="page-header">
+            <div class="page-kicker">Help Center</div>
+            <h1 class="page-title">How can we help?</h1>
+            <p class="page-sub">Everything you need to get up and running with the Among Us Launcher. Click any section below to expand it.</p>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search the docs...">
+            <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <!-- ═══════════ WEBSITE SECTIONS ═══════════ -->
+
+        <div class="doc-section" id="download-launcher">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-arrow-down"></i></div>
+                    <span class="section-title">How to Download the Launcher</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">The launcher is a small Windows app that handles everything for you. You download it once, and from that point on it manages game installs, updates, and more.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Head to the homepage</strong><br>Go back to the main page and find the big download button.</div></li>
+                    <li><div><strong>Click "Download free"</strong><br>This grabs the file <code>AmongUsLauncher.exe</code> straight from GitHub.</div></li>
+                    <li><div><strong>Save it somewhere you'll find it</strong><br>Desktop or Downloads folder works fine.</div></li>
+                    <li><div><strong>Run it</strong><br>Double-click the file and the launcher will open up.</div></li>
+                </ol>
+
+                <div class="callout warn">
+                    <i class="fas fa-shield-halved"></i>
+                    <div class="callout-content">
+                        <strong>Windows SmartScreen warning</strong>
+                        Windows might warn you because it doesn't recognise the app yet. Just click "More info" then "Run anyway." The launcher is open source and safe to run.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="download-direct">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-file-zipper"></i></div>
+                    <span class="section-title">Download the Game Directly</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">Prefer to skip the launcher? You can grab any version of the game as a zip file directly from the homepage.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Find the version picker</strong><br>On the homepage, below the main download button, there's a small panel that says "Just want the game files?"</div></li>
+                    <li><div><strong>Pick a version</strong><br>Click the dropdown to see all available versions. The latest one is marked at the top.</div></li>
+                    <li><div><strong>Download and unzip</strong><br>Click "Download game zip", extract the folder wherever you like, and run <code>Among Us.exe</code> inside it.</div></li>
+                </ol>
+
+                <div class="callout info">
+                    <i class="fas fa-lightbulb"></i>
+                    <div class="callout-content">
+                        <strong>Heads up</strong>
+                        The launcher is easier to use long-term since it handles updates for you. Direct downloads are great if you just need a specific version quickly.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="submit-feedback">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-message"></i></div>
+                    <span class="section-title">Submit Feedback</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">Found a bug? Have a suggestion? We actually read everything. The more detail you include, the more useful it is.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Scroll to the footer on the homepage</strong><br>Look for the speech bubble icon, or use the button below.</div></li>
+                    <li><div><strong>Fill in the form</strong><br>It's a Google Form. Describe what happened or what you'd like to see.</div></li>
+                    <li><div><strong>Include context</strong><br>Version numbers, what OS you're on, screenshots if you have them. It really helps.</div></li>
+                </ol>
+
+                <div class="btn-row">
+                    <a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Open Feedback Form</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="discord">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fab fa-discord"></i></div>
+                    <span class="section-title">Join the Discord</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">The Discord is the fastest way to get help or stay in the loop. Most issues get sorted in minutes.</p>
+
+                <div class="mini-grid">
+                    <div class="mini-card"><h4>Live support</h4><p>Ask a question and usually someone will jump in to help pretty quickly.</p></div>
+                    <div class="mini-card"><h4>Update pings</h4><p>Get notified as soon as a new launcher or game version drops.</p></div>
+                    <div class="mini-card"><h4>Community</h4><p>Chat with other players, share mods, and hang out.</p></div>
+                </div>
+
+                <div class="btn-row">
+                    <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="btn btn-primary"><i class="fab fa-discord"></i> Join the Server</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ LAUNCHER SECTIONS ═══════════ -->
+
+        <div class="doc-section" id="getting-started">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-rocket"></i></div>
+                    <span class="section-title">Getting Started</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">Once you've downloaded the launcher, setup takes less than two minutes. Here's what to expect the first time you open it.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Open the launcher</strong><br>Double-click <code>AmongUsLauncher.exe</code>. A window will open with a clean interface.</div></li>
+                    <li><div><strong>Internet check</strong><br>The launcher checks your connection and looks for any updates to itself. This takes a second or two.</div></li>
+                    <li><div><strong>You're in</strong><br>You'll see the main screen with a big install button, your version info, and a sidebar for settings and tools.</div></li>
+                </ol>
+
+                <div class="callout ok">
+                    <i class="fas fa-circle-check"></i>
+                    <div class="callout-content">
+                        <strong>Worth knowing</strong>
+                        Your settings and game path are saved between sessions. You only have to set things up once.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="install-game">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-gamepad"></i></div>
+                    <span class="section-title">Installing the Game</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">The launcher downloads and sets up Among Us for you. Here's how the first install goes.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Click "Install Game"</strong><br>It's the big button in the middle of the launcher window.</div></li>
+                    <li><div><strong>Choose an install folder</strong><br>Pick somewhere sensible like <code>C:\Games\Among Us</code>. You can change this later in settings.</div></li>
+                    <li><div><strong>Wait for the download</strong><br>You'll see a progress bar with a real-time speed indicator. Shouldn't take long on a decent connection.</div></li>
+                    <li><div><strong>Automatic setup</strong><br>The launcher extracts everything into place on its own. Nothing else to do.</div></li>
+                    <li><div><strong>Launch button appears</strong><br>Once it's done, the button flips to "Launch Game." You're good to play.</div></li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="doc-section" id="auto-updates">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-sync-alt"></i></div>
+                    <span class="section-title">Auto Updates</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">Keeping the game up to date is completely automatic. You don't have to check anything or visit the website again.</p>
+
+                <ul class="bullets">
+                    <li>Every time you open the launcher, it checks for a newer version in the background.</li>
+                    <li>If something new is available, the main button turns into "Update Available."</li>
+                    <li>Click it once and it downloads and installs the update by itself.</li>
+                    <li>Every download includes a checksum check so corrupted files are caught automatically.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="doc-section" id="version-management">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-code-branch"></i></div>
+                    <span class="section-title">Version Management</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">Need to play on an older version? Maybe your friends are still on a build from a few months back. The launcher makes it easy to switch.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Click "Install Specific"</strong><br>You'll find this next to the main action button in the Game tab.</div></li>
+                    <li><div><strong>Browse the list</strong><br>A window opens showing every available version, newest first.</div></li>
+                    <li><div><strong>Pick one and install</strong><br>Click the version you want and hit "Install Selected." That's it.</div></li>
+                </ol>
+
+                <div class="callout warn">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="callout-content">
+                        <strong>This replaces your current install</strong>
+                        Switching versions overwrites what's currently installed. If you've got any save data you care about, back it up before switching.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="discord-rpc">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-circle-dot"></i></div>
+                    <span class="section-title">Discord Rich Presence</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">When you're in-game, your Discord status can show that you're playing Among Us along with which version you're on. Friends can see it at a glance.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Turn it on in Settings</strong><br>Open the sidebar menu, go to Settings, and enable "Discord Rich Presence."</div></li>
+                    <li><div><strong>Make sure Discord is running</strong><br>Discord needs to be open before you launch the game or it won't pick up the status.</div></li>
+                    <li><div><strong>It just works from there</strong><br>Your status will automatically show "Playing Among Us" with the version info.</div></li>
+                </ol>
+
+                <div class="callout info">
+                    <i class="fas fa-eye"></i>
+                    <div class="callout-content">
+                        <strong>What shows up</strong>
+                        Your status shows "Playing Among Us Shadow Slime" with your current version and whether you're in the launcher or actually in-game.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="aunlocker">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-unlock"></i></div>
+                    <span class="section-title">Installing AUnlocker</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">AUnlocker is an optional mod that unlocks all cosmetics and lets you use characters like Russian letters in your player name. It only touches visual stuff and doesn't affect gameplay or multiplayer.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Open the launcher</strong><br>Go to the Tools or Mods section from the sidebar.</div></li>
+                    <li><div><strong>Hit "Install AUnlocker"</strong><br>It downloads and installs automatically. No files to move around yourself.</div></li>
+                    <li><div><strong>Launch the game normally</strong><br>Everything will be unlocked the next time you start.</div></li>
+                </ol>
+
+                <div class="callout ok">
+                    <i class="fas fa-shield-halved"></i>
+                    <div class="callout-content">
+                        <strong>It's safe</strong>
+                        AUnlocker is cosmetics only. It doesn't touch personal data, doesn't contain malware, and is verified when installed through the launcher.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="shortcuts">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-link"></i></div>
+                    <span class="section-title">Desktop Shortcuts</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">You can create a desktop shortcut to launch a specific version of the game directly, without opening the full launcher UI first.</p>
+
+                <ol class="steps">
+                    <li><div><strong>Select the version you want a shortcut for</strong></div></li>
+                    <li><div><strong>Click "Create Desktop Shortcut"</strong><br>The button is in the version management view.</div></li>
+                    <li><div><strong>Done</strong><br>A shortcut appears on your desktop. Double-click it to go straight in.</div></li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="doc-section" id="settings">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-gear"></i></div>
+                    <span class="section-title">Launcher Settings</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">The Settings panel lets you adjust how the launcher behaves. Here's a quick overview of what each option does.</p>
+
+                <div class="mini-grid">
+                    <div class="mini-card"><h4>Auto Updates</h4><p>Automatically install new game versions when they come out.</p></div>
+                    <div class="mini-card"><h4>Discord RPC</h4><p>Show your game status on Discord while you're playing.</p></div>
+                    <div class="mini-card"><h4>Install Path</h4><p>Change where the game files get saved on your computer.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ HELP SECTIONS ═══════════ -->
+
+        <div class="doc-section" id="troubleshooting">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-wrench"></i></div>
+                    <span class="section-title">Troubleshooting</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">Most issues have a pretty simple fix. Try these first before heading to Discord.</p>
+
+                <ul class="bullets">
+                    <li><strong>Launcher won't open</strong> — Right-click the .exe and choose "Run as administrator."</li>
+                    <li><strong>Game won't launch</strong> — Use the launcher to reinstall the game. This usually fixes any missing or corrupted files.</li>
+                    <li><strong>Antivirus deleting files</strong> — Add the launcher folder and game folder to your antivirus exclusions, then reinstall the game.</li>
+                    <li><strong>Stuck on infinite loading screen</strong> — Check you have all the required redistributables installed (see the section below).</li>
+                    <li><strong>Discord status not showing</strong> — Close Discord and reopen it, then relaunch the game.</li>
+                    <li><strong>Download keeps failing</strong> — Try pausing your antivirus during the download, then add the folder to exclusions afterwards.</li>
+                </ul>
+
+                <div class="callout info">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="callout-content">
+                        <strong>Still stuck?</strong>
+                        Jump into the Discord and describe what's happening. Include your Windows version and what error you're seeing if there is one.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="redistributables">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-box"></i></div>
+                    <span class="section-title">Required Software</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">If Among Us crashes on startup, won't open at all, or gets stuck loading forever, the most common cause is missing system components. These are small packages that the game needs in order to run.</p>
+                <p class="prose">Think of them like drivers. Even on a clean Windows install, some of these might not be there yet. Installing them takes a few minutes total and often fixes the problem immediately.</p>
+
+                <div class="divider"></div>
+
+                <p class="prose" style="font-weight:600; color:var(--text);">Install everything in this list:</p>
+
+                <div class="dl-list">
+                    <div class="dl-item">
+                        <div class="dl-item-name"><i class="fas fa-cube"></i> Microsoft Visual C++ 2010 (x86 and x64)</div>
+                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=26999" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
+                    </div>
+                    <div class="dl-item">
+                        <div class="dl-item-name"><i class="fas fa-cube"></i> Microsoft Visual C++ 2015–2019 (x86 and x64)</div>
+                        <a href="https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
+                    </div>
+                    <div class="dl-item">
+                        <div class="dl-item-name"><i class="fas fa-volume-high"></i> OpenAL (by Creative Labs)</div>
+                        <a href="https://www.openal.org/downloads/" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
+                    </div>
+                    <div class="dl-item">
+                        <div class="dl-item-name"><i class="fas fa-display"></i> DirectX Runtime (10 or newer)</div>
+                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=35" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
+                    </div>
+                    <div class="dl-item">
+                        <div class="dl-item-name"><i class="fab fa-microsoft"></i> .NET Framework 4.0</div>
+                        <a href="https://dotnet.microsoft.com/en-us/download/dotnet-framework/net40" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
+                    </div>
+                    <div class="dl-item">
+                        <div class="dl-item-name"><i class="fas fa-gamepad"></i> Microsoft XNA Framework 4.0</div>
+                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=20914" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
+                    </div>
+                </div>
+
+                <div class="callout warn">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="callout-content">
+                        <strong>Install both x86 and x64 where available</strong>
+                        Even if your system is 64-bit, some games need the 32-bit versions too. Install both to be safe.
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+                <p class="prose" style="font-weight:600; color:var(--text);">A few extra things to check:</p>
+
+                <ul class="bullets">
+                    <li><strong>Set a default browser</strong> — Some launcher features use it. If you don't have one set, go to Windows Settings and pick one.</li>
+                    <li><strong>Run as administrator</strong> — Right-click <code>Among Us.exe</code> and choose "Run as administrator" if it keeps failing to start.</li>
+                    <li><strong>Disable antivirus during extraction</strong> — Real-time protection can silently delete files mid-extraction. Pause it, extract, then add the folder to exclusions.</li>
+                </ul>
+
+                <div class="callout ok">
+                    <i class="fas fa-circle-check"></i>
+                    <div class="callout-content">
+                        <strong>That should do it</strong>
+                        If you've gone through everything here and the game still won't run, pop into the Discord and someone will help you figure it out.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-section" id="support">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-header-left">
+                    <div class="section-icon-wrap"><i class="fas fa-life-ring"></i></div>
+                    <span class="section-title">Support</span>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="prose">There are a couple of ways to get help depending on what you're dealing with.</p>
+
+                <div class="divider"></div>
+                <p class="prose" style="font-weight:600; color:var(--text);">Discord — best for launcher issues</p>
+                <p class="prose">The Discord is the main place for support. It's primarily for launcher stuff, but people are generally helpful about game issues too. No guarantees on that second part though.</p>
+
+                <p class="prose">Things we can definitely help with:</p>
+                <ul class="bullets">
+                    <li>Launcher not opening or crashing</li>
+                    <li>Download or installation problems</li>
+                    <li>AUnlocker issues</li>
+                    <li>Discord Rich Presence not working</li>
+                    <li>Version switching problems</li>
+                </ul>
+
+                <div class="divider"></div>
+                <p class="prose" style="font-weight:600; color:var(--text);">Before asking about game issues</p>
+                <p class="prose">If Among Us itself is crashing or stuck loading, please check the Required Software section above and make sure everything is installed. It fixes the issue the vast majority of the time and saves everyone time.</p>
+
+                <div class="callout warn">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="callout-content">
+                        <strong>Check this first</strong>
+                        Missing Visual C++ redistributables and antivirus interference are the cause of probably 80% of game startup issues. Sort those out before asking.
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+                <p class="prose" style="font-weight:600; color:var(--text);">Feedback form — bugs and suggestions</p>
+                <p class="prose">For things that aren't urgent, use the feedback form. It's better for detailed bug reports, reproducible issues, and feature requests where we can look into it properly.</p>
+
+                <div class="btn-row">
+                    <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="btn btn-primary"><i class="fab fa-discord"></i> Join Discord</a>
+                    <a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank" class="btn btn-ghost"><i class="fas fa-paper-plane"></i> Feedback Form</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    /* ── Accordion ── */
+    function toggleSection(header) {
+        const body = header.nextElementSibling;
+        const isOpen = header.classList.contains('open');
+        header.classList.toggle('open', !isOpen);
+        body.classList.toggle('open', !isOpen);
+        // update active nav item
+        const id = header.closest('.doc-section').id;
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.target === id && !isOpen));
+    }
+
+    /* ── Sidebar toggle ── */
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('overlay');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const isMobile  = () => window.innerWidth <= 860;
+
+    function openSidebar() {
+        if (isMobile()) { sidebar.classList.add('mobile-open'); overlay.classList.add('active'); }
+        else            { sidebar.classList.remove('collapsed'); }
+    }
+    function closeSidebar() {
+        if (isMobile()) { sidebar.classList.remove('mobile-open'); overlay.classList.remove('active'); }
+        else            { sidebar.classList.add('collapsed'); }
+    }
+    function sidebarOpen() {
+        return isMobile() ? sidebar.classList.contains('mobile-open') : !sidebar.classList.contains('collapsed');
+    }
+
+    toggleBtn.addEventListener('click', () => sidebarOpen() ? closeSidebar() : openSidebar());
+    overlay.addEventListener('click', closeSidebar);
+
+    /* ── Nav item clicks ── */
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const id = item.dataset.target;
+            const section = document.getElementById(id);
+            if (!section) return;
+            const header = section.querySelector('.section-header');
+            const body   = section.querySelector('.section-body');
+            if (!header.classList.contains('open')) { header.classList.add('open'); body.classList.add('open'); }
+            section.scrollIntoView({ behavior:'smooth', block:'start' });
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+            if (isMobile()) closeSidebar();
+        });
+    });
+
+    /* ── Search ── */
+    const searchData = [
+        { title:'Download the Launcher', section:'Website', target:'download-launcher', icon:'fa-arrow-down' },
+        { title:'Download Game Directly', section:'Website', target:'download-direct', icon:'fa-file-zipper' },
+        { title:'Submit Feedback', section:'Website', target:'submit-feedback', icon:'fa-message' },
+        { title:'Join Discord', section:'Website', target:'discord', icon:'fa-discord fab' },
+        { title:'Getting Started', section:'Launcher', target:'getting-started', icon:'fa-rocket' },
+        { title:'Installing the Game', section:'Launcher', target:'install-game', icon:'fa-gamepad' },
+        { title:'Auto Updates', section:'Launcher', target:'auto-updates', icon:'fa-sync-alt' },
+        { title:'Version Management', section:'Launcher', target:'version-management', icon:'fa-code-branch' },
+        { title:'Discord Rich Presence', section:'Launcher', target:'discord-rpc', icon:'fa-circle-dot' },
+        { title:'Installing AUnlocker', section:'Launcher', target:'aunlocker', icon:'fa-unlock' },
+        { title:'Desktop Shortcuts', section:'Launcher', target:'shortcuts', icon:'fa-link' },
+        { title:'Launcher Settings', section:'Launcher', target:'settings', icon:'fa-gear' },
+        { title:'Troubleshooting', section:'Help', target:'troubleshooting', icon:'fa-wrench' },
+        { title:'Required Software / Redistributables', section:'Help', target:'redistributables', icon:'fa-box' },
+        { title:'Support', section:'Help', target:'support', icon:'fa-life-ring' },
+    ];
+
+    const searchInput   = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) { searchResults.style.display = 'none'; searchResults.innerHTML = ''; return; }
+        const hits = searchData.filter(d => d.title.toLowerCase().includes(q) || d.section.toLowerCase().includes(q));
+        if (!hits.length) { searchResults.style.display = 'none'; return; }
+        searchResults.innerHTML = hits.map(h => `
+            <div class="search-result-item" onclick="jumpTo('${h.target}')">
+                <i class="fas ${h.icon}" style="color:var(--accent);font-size:.8rem;width:14px;text-align:center;flex-shrink:0"></i>
+                <div>
+                    <div class="search-result-title">${h.title}</div>
+                    <div class="search-result-section">${h.section}</div>
+                </div>
+            </div>`).join('');
+        searchResults.style.display = 'block';
+    });
+
+    document.addEventListener('click', e => {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+
+    function jumpTo(id) {
+        const section = document.getElementById(id);
+        if (!section) return;
+        const header = section.querySelector('.section-header');
+        const body   = section.querySelector('.section-body');
+        if (!header.classList.contains('open')) { header.classList.add('open'); body.classList.add('open'); }
+        section.scrollIntoView({ behavior:'smooth', block:'start' });
+        searchResults.style.display = 'none';
+        searchInput.value = '';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.target === id));
+    }
+
+    /* ── Scroll spy ── */
+    const sections = document.querySelectorAll('.doc-section');
+    const navItems = document.querySelectorAll('.nav-item');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+        navItems.forEach(n => n.classList.toggle('active', n.dataset.target === current));
+    }, { passive:true });
+</script>
+</body>
+</html>

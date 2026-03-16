@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="News, updates and announcements for the ShadowSlime Among Us Launcher.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>News — ShadowSlime Launcher</title>
+  <style>
+    :root {
+      --bg:      #060608;
+      --surface: #0a0b0d;
+      --border:  rgba(255,255,255,0.055);
+      --accent:  #7b61ff;
+      --accent2: #5e48d4;
+      --text:    #dde0e6;
+      --muted:   rgba(221,224,230,0.38);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body::after {
+      content:''; position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:9999; opacity:.6;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+    .ambient { position:fixed; pointer-events:none; z-index:0; border-radius:50%; filter:blur(140px); opacity:.1; }
+    .ambient-1 { width:600px; height:600px; background:#4a2dcc; top:-200px; right:-100px; }
+    .ambient-2 { width:400px; height:400px; background:#1a0a3d; bottom:0; left:-100px; }
+
+    .wrap { max-width:1180px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
+
+    /* NAV */
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.6rem 2rem; border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:100;
+      background:rgba(6,6,8,0.88); backdrop-filter:blur(20px);
+    }
+    .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; letter-spacing:-.5px; display:flex; align-items:center; gap:.6rem; text-decoration:none; color:var(--text); }
+    .nav-logo span { color:var(--accent); }
+    .nav-links { display:flex; gap:2rem; }
+    .nav-links a { color:var(--muted); text-decoration:none; font-size:.9rem; font-weight:500; transition:color .2s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--text); }
+    .nav-cta { background:var(--accent); color:#000; padding:.55rem 1.3rem; border-radius:8px; font-weight:600; font-size:.9rem; text-decoration:none; transition:background .2s, transform .15s; border:none; cursor:pointer; }
+    .nav-cta:hover { background:#9b85ff; transform:translateY(-1px); }
+
+    /* PAGE HEADER */
+    .page-header { padding:4rem 0 2.5rem; }
+    .page-header-kicker {
+      display:inline-flex; align-items:center; gap:.5rem;
+      font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:600;
+      color:var(--accent); letter-spacing:.12em; text-transform:uppercase;
+      border:1px solid rgba(123,97,255,.22); background:rgba(123,97,255,.07);
+      padding:.4rem .9rem; border-radius:100px; margin-bottom:1.2rem;
+    }
+    .page-header h1 { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem); font-weight:800; letter-spacing:-1.5px; margin-bottom:.6rem; }
+    .page-header p { color:var(--muted); font-size:.95rem; }
+
+    /* FILTER TABS */
+    .filter-bar { display:flex; align-items:center; gap:.5rem; margin-bottom:2.5rem; flex-wrap:wrap; }
+    .filter-tab {
+      padding:.45rem 1rem; border-radius:8px; border:1px solid var(--border);
+      font-size:.85rem; font-weight:600; color:var(--muted);
+      background:transparent; cursor:pointer; transition:all .15s;
+    }
+    .filter-tab:hover { color:var(--text); border-color:rgba(255,255,255,.12); }
+    .filter-tab.active { color:var(--accent); border-color:rgba(123,97,255,.35); background:rgba(123,97,255,.08); }
+
+    /* NEWS GRID */
+    .news-grid {
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:1rem;
+      margin-bottom:5rem;
+    }
+
+    .news-card {
+      position:relative; display:flex; flex-direction:column; justify-content:flex-end;
+      border-radius:16px; overflow:hidden;
+      border:1px solid var(--border); background:var(--surface);
+      cursor:pointer; text-decoration:none; color:inherit;
+      transition:transform .25s ease, border-color .25s, box-shadow .25s;
+    }
+    .news-card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,.12); box-shadow:0 20px 40px rgba(0,0,0,.4); }
+
+    /* priority sizing */
+    .news-card.featured { grid-column:1 / -1; min-height:360px; }
+    .news-card.high     { grid-column:span 2; min-height:280px; }
+    .news-card.normal   { grid-column:span 1; min-height:260px; }
+
+    /* priority border accents */
+    .news-card.featured { border-color:rgba(123,97,255,.2); }
+    .news-card.high     { border-color:rgba(34,197,94,.15); }
+
+    .card-img {
+      position:absolute; inset:0;
+      background-size:cover; background-position:center;
+    }
+    .card-img::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(to bottom, rgba(6,6,8,.05) 0%, rgba(6,6,8,.88) 100%);
+    }
+    .card-no-cover { background:linear-gradient(135deg, #0d0b1a 0%, #130f2a 100%); }
+
+    .card-body { position:relative; z-index:1; padding:1.4rem 1.6rem; }
+
+    .card-meta { display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem; }
+    .cat-badge {
+      font-size:.68rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; padding:.25rem .7rem; border-radius:4px;
+    }
+    .cat-badge.Update       { background:rgba(123,97,255,.2); color:#a992ff; }
+    .cat-badge.Announcement { background:rgba(34,197,94,.15); color:#4ade80; }
+    .cat-badge.Event        { background:rgba(245,158,11,.15); color:#fbbf24; }
+
+    .card-date { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:rgba(221,224,230,.4); }
+
+    .card-title {
+      font-family:'Syne',sans-serif; font-weight:700;
+      line-height:1.2; letter-spacing:-.3px; margin-bottom:.5rem;
+    }
+    .news-card.featured .card-title { font-size:1.6rem; }
+    .news-card.high     .card-title { font-size:1.2rem; }
+    .news-card.normal   .card-title { font-size:1rem; }
+
+    .card-brief {
+      font-size:.85rem; color:rgba(221,224,230,.6); line-height:1.55;
+      display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden;
+    }
+    .news-card.featured .card-brief { -webkit-line-clamp:3; }
+    .news-card.high     .card-brief { -webkit-line-clamp:2; }
+    .news-card.normal   .card-brief { -webkit-line-clamp:2; }
+
+    .card-read-more {
+      display:inline-flex; align-items:center; gap:.4rem;
+      margin-top:.8rem; font-size:.82rem; font-weight:600; color:var(--accent);
+    }
+
+    /* SKELETON */
+    .card-skeleton {
+      border-radius:16px; border:1px solid var(--border); background:var(--surface);
+      animation:skPulse 1.6s ease infinite;
+    }
+    .card-skeleton.featured { grid-column:1 / -1; height:360px; }
+    .card-skeleton.high     { grid-column:span 2; height:280px; }
+    .card-skeleton.normal   { grid-column:span 1; height:260px; }
+    @keyframes skPulse { 0%,100%{opacity:.3} 50%{opacity:.65} }
+
+    /* EMPTY / ERROR */
+    .news-empty {
+      grid-column:1/-1; text-align:center;
+      padding:4rem 2rem; color:var(--muted); font-size:.95rem;
+    }
+    .news-empty i { font-size:2rem; display:block; margin-bottom:1rem; color:rgba(123,97,255,.3); }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:3rem 0; display:flex; align-items:center; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
+    .footer-brand { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; }
+    .footer-brand span { color:var(--accent); }
+    .footer-copy { color:var(--muted); font-size:.85rem; margin-top:.3rem; }
+    .footer-socials { display:flex; gap:.8rem; }
+    .footer-socials a { width:40px; height:40px; border:1px solid var(--border); border-radius:9px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.9rem; text-decoration:none; transition:all .2s; }
+    .footer-socials a:hover { color:var(--text); border-color:rgba(255,255,255,.15); background:rgba(255,255,255,.04); }
+
+    @media (max-width:900px) {
+      .news-grid { grid-template-columns:1fr; }
+      .news-card.featured, .news-card.high, .news-card.normal { grid-column:1/-1; }
+      .card-skeleton.featured, .card-skeleton.high, .card-skeleton.normal { grid-column:1/-1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">AU <span>Launcher</span></a>
+  <div class="nav-links">
+    <a href="helpPage.html">Docs</a>
+    <a href="news.html" class="active">News</a>
+    <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+    <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank">YouTube</a>
+  </div>
+  <a class="nav-cta" href="https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe">Download</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="page-header">
+    <div class="page-header-kicker"><i class="fas fa-newspaper"></i> ShadowSlime</div>
+    <h1>News &amp; Updates</h1>
+    <p>Everything happening with the launcher — updates, announcements and more.</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-tab active" data-filter="all">All</button>
+    <button class="filter-tab" data-filter="Update">Updates</button>
+    <button class="filter-tab" data-filter="Announcement">Announcements</button>
+    <button class="filter-tab" data-filter="Event">Events</button>
+  </div>
+
+  <div class="news-grid" id="news-grid">
+    <div class="card-skeleton featured"></div>
+    <div class="card-skeleton high"></div>
+    <div class="card-skeleton normal"></div>
+    <div class="card-skeleton normal"></div>
+    <div class="card-skeleton normal"></div>
+  </div>
+
+  <footer>
+    <div>
+      <div class="footer-brand">AU <span>Launcher</span></div>
+      <div class="footer-copy">© 2025 ShadowSlimeDEV · Not affiliated with Innersloth</div>
+    </div>
+    <div class="footer-socials">
+      <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank"><i class="fab fa-youtube"></i></a>
+      <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank"><i class="fab fa-discord"></i></a>
+      <a href="helpPage.html"><i class="fas fa-circle-question"></i></a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ── CONFIG — update this to your own repo URL ──────────────────────────
+    const NEWS_BASE  = 'https://raw.githubusercontent.com/AmongUsShadowSlime/news';
+  // ───────────────────────────────────────────────────────────────────────
+
+  let allPosts = [];
+  let activeFilter = 'all';
+
+  function formatDate(d) {
+    return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  function getPriority(post) {
+    return post.priority || 'normal';
+  }
+
+  function buildCard(post) {
+    const priority = getPriority(post);
+    const href = `post.html?slug=${post.slug}`;
+    const coverStyle = post.cover
+      ? `style="background-image:url('${post.cover}')"` : '';
+    const coverClass = post.cover ? '' : 'card-no-cover';
+    const cat = post.category || 'Update';
+
+    return `
+      <a class="news-card ${priority}" href="${href}">
+        <div class="card-img ${coverClass}" ${coverStyle}></div>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="cat-badge ${cat}">${cat}</span>
+            <span class="card-date">${formatDate(post.date)}</span>
+          </div>
+          <div class="card-title">${post.title}</div>
+          <div class="card-brief">${post.brief}</div>
+          <span class="card-read-more">Read more <i class="fas fa-arrow-right" style="font-size:.7rem"></i></span>
+        </div>
+      </a>`;
+  }
+
+  function renderGrid(posts) {
+    const grid = document.getElementById('news-grid');
+    if (!posts.length) {
+      grid.innerHTML = `<div class="news-empty"><i class="fas fa-newspaper"></i>No posts yet in this category.</div>`;
+      return;
+    }
+
+    // Sort: featured first, then high, then normal — within each group by date desc
+    const order = { featured:0, high:1, normal:2 };
+    const sorted = [...posts].sort((a,b) => {
+      const po = (order[a.priority]||2) - (order[b.priority]||2);
+      if (po !== 0) return po;
+      return new Date(b.date) - new Date(a.date);
+    });
+
+    grid.innerHTML = sorted.map(buildCard).join('');
+  }
+
+  function applyFilter(filter) {
+    activeFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.filter === filter);
+    });
+    const filtered = filter === 'all' ? allPosts : allPosts.filter(p => p.category === filter);
+    renderGrid(filtered);
+  }
+
+  document.querySelectorAll('.filter-tab').forEach(t => {
+    t.addEventListener('click', () => applyFilter(t.dataset.filter));
+  });
+
+  async function loadNews() {
+    const grid = document.getElementById('news-grid');
+    try {
+      const res   = await fetch(NEWS_BASE + 'index.json');
+      allPosts    = await res.json();
+      applyFilter('all');
+    } catch(e) {
+      grid.innerHTML = `<div class="news-empty"><i class="fas fa-satellite-dish"></i>Could not load news. Check back soon.</div>`;
+    }
+  }
+
+  loadNews();
+</script>
+</body>
+</html>

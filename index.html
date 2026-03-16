@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Download and install Among Us with our modern, feature-rich launcher. Auto-updates, Discord RPC, version management and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Among Us Launcher — ShadowSlime</title>
+
+    <!-- TrustBox script -->
+    <script type="text/javascript" src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
+
+    <style>
+        :root {
+            --bg:       #060608;
+            --surface:  #0a0b0d;
+            --border:   rgba(255,255,255,0.055);
+            --accent:   #7b61ff;
+            --accent2:  #5e48d4;
+            --text:     #dde0e6;
+            --muted:    rgba(221,224,230,0.38);
+            --red:      #ff4d6a;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ─── Grain overlay ─── */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 9999; opacity: .6;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Ambient light blobs ─── */
+        .ambient {
+            position: fixed; pointer-events: none; z-index: 0;
+            border-radius: 50%; filter: blur(140px); opacity: .12;
+        }
+        .ambient-1 { width: 700px; height: 700px; background: #4a2dcc; top: -250px; right: -150px; }
+        .ambient-2 { width: 500px; height: 500px; background: #1a0a3d; bottom: 0; left: -150px; }
+
+        /* ─── Layout ─── */
+        .wrap { max-width: 1180px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+        /* ─── Nav ─── */
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.6rem 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(6, 6, 8, 0.88);
+            backdrop-filter: blur(20px);
+        }
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800; font-size: 1.1rem;
+            letter-spacing: -.5px;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .nav-logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a {
+            color: var(--muted); text-decoration: none;
+            font-size: .9rem; font-weight: 500;
+            transition: color .2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta {
+            background: var(--accent); color: #000;
+            padding: .55rem 1.3rem; border-radius: 8px;
+            font-weight: 600; font-size: .9rem;
+            text-decoration: none;
+            transition: background .2s, transform .15s;
+            cursor: pointer; border: none;
+        }
+        .nav-cta:hover { background: #9b85ff; transform: translateY(-1px); }
+
+        /* ─── Hero ─── */
+        .hero {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 5rem; align-items: center;
+            padding: 7rem 0 5rem;
+        }
+
+        .hero-kicker {
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem; font-weight: 600;
+            color: var(--accent); letter-spacing: .12em;
+            text-transform: uppercase;
+            border: 1px solid rgba(123,97,255,.22);
+            background: rgba(123,97,255,.07);
+            padding: .4rem .9rem; border-radius: 100px;
+            margin-bottom: 1.6rem;
+        }
+        .hero-kicker::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 2s ease infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.8rem, 5vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin-bottom: 1.4rem;
+        }
+        .hero h1 em { font-style: normal; color: var(--accent); }
+
+        .hero-sub {
+            font-size: 1.05rem; color: var(--muted);
+            line-height: 1.7; max-width: 420px;
+            margin-bottom: 2.5rem; font-weight: 400;
+        }
+
+        .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: .7rem;
+            background: var(--accent); color: #000;
+            padding: .85rem 1.8rem; border-radius: 10px;
+            font-weight: 700; font-size: 1rem;
+            text-decoration: none; border: none; cursor: pointer;
+            transition: background .2s, transform .2s, box-shadow .2s;
+            box-shadow: 0 0 0 rgba(0,229,176,0);
+        }
+        .btn-primary:hover {
+            background: #9b85ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(123,97,255,.35);
+        }
+
+        .btn-ghost {
+            display: inline-flex; align-items: center; gap: .7rem;
+            color: var(--muted); padding: .85rem 1.6rem;
+            border-radius: 10px; font-weight: 500; font-size: 1rem;
+            text-decoration: none; cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            transition: all .2s;
+        }
+        .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.04); }
+
+        /* ─── Preview panel ─── */
+        .hero-preview {
+            position: relative;
+        }
+        .preview-frame {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0,0,0,.5);
+            transition: transform .4s ease;
+        }
+        .preview-frame:hover { transform: translateY(-6px) rotate(-0.5deg); }
+        .preview-bar {
+            background: #1a1c20; padding: .85rem 1.2rem;
+            display: flex; align-items: center; gap: .5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .preview-dot { width: 11px; height: 11px; border-radius: 50%; }
+        .preview-dot:nth-child(1) { background: #ff5f57; }
+        .preview-dot:nth-child(2) { background: #febc2e; }
+        .preview-dot:nth-child(3) { background: #28c840; }
+        .preview-frame img { width: 100%; display: block; }
+
+        .trustpilot-wrap {
+            margin-top: 2.5rem;
+            display: flex; justify-content: flex-start;
+        }
+
+        /* ─── Version Card ─── */
+        .version-strip {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 4rem 0 5rem;
+            background: var(--surface);
+        }
+        .vstrip-cell {
+            padding: 1.5rem 2rem;
+            border-right: 1px solid var(--border);
+        }
+        .vstrip-cell:last-child { border-right: none; }
+        .vstrip-label {
+            font-size: .75rem; font-weight: 600;
+            color: var(--muted); text-transform: uppercase;
+            letter-spacing: .1em; margin-bottom: .5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .vstrip-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem; font-weight: 600; color: var(--text);
+        }
+        .status-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem; font-weight: 600;
+            padding: .4rem .9rem; border-radius: 6px;
+        }
+        .status-badge.ok { background: rgba(123,97,255,.12); color: #a992ff; border: 1px solid rgba(123,97,255,.25); }
+        .status-badge.bad { background: rgba(255,77,106,.1); color: var(--red); border: 1px solid rgba(255,77,106,.2); }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .status-badge.ok .status-dot { background: #a992ff; animation: blink 2s ease infinite; }
+        .status-badge.bad .status-dot { background: var(--red); animation: blink 1s ease infinite; }
+
+        /* ─── Download panel ─── */
+        .download-panel {
+            display: grid; grid-template-columns: 1.6fr 1fr;
+            gap: 1.5rem; margin: 2rem 0 5rem;
+        }
+
+        .dl-main {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            position: relative; overflow: hidden;
+        }
+        .dl-main::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at top left, rgba(123,97,255,.07), transparent 60%);
+            pointer-events: none;
+        }
+        .dl-main-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem; font-weight: 700;
+            margin-bottom: .5rem;
+        }
+        .dl-main-sub { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+        .dl-tags { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .dl-tag {
+            font-size: .75rem; font-family: 'JetBrains Mono', monospace;
+            padding: .3rem .8rem; border-radius: 5px;
+            border: 1px solid var(--border); color: var(--muted);
+        }
+
+        .dl-version {
+            background: rgba(17,19,22,1);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem;
+        }
+        .dl-version-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem; font-weight: 700;
+            margin-bottom: 1.2rem; color: var(--muted);
+        }
+
+        /* version selector */
+        .version-selector { position: relative; }
+        .vs-trigger {
+            width: 100%;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 9px; padding: .85rem 1.2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: border-color .2s;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .9rem; color: var(--text);
+        }
+        .vs-trigger:hover { border-color: rgba(255,255,255,.18); }
+        .vs-trigger i { color: var(--muted); font-size: .7rem; transition: transform .2s; }
+        .vs-trigger.open i { transform: rotate(180deg); }
+
+        .vs-dropdown {
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+            background: #1a1c20; border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden;
+            max-height: 240px; overflow-y: auto;
+            display: none; z-index: 200;
+            box-shadow: 0 16px 48px rgba(0,0,0,.6);
+        }
+        .vs-dropdown.active { display: block; animation: dropIn .18s ease; }
+        @keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+        .vs-option {
+            padding: .85rem 1.2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem; color: var(--text);
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+        .vs-option:last-child { border-bottom: none; }
+        .vs-option:hover { background: rgba(255,255,255,.04); }
+        .vs-option .latest-tag {
+            font-size: .7rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: .08em; color: #a992ff;
+            background: rgba(123,97,255,.1); border: 1px solid rgba(123,97,255,.2);
+            padding: .2rem .6rem; border-radius: 4px;
+        }
+
+        .vs-dropdown::-webkit-scrollbar { width: 6px; }
+        .vs-dropdown::-webkit-scrollbar-track { background: transparent; }
+        .vs-dropdown::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+
+        .dl-version-btn {
+            width: 100%; margin-top: 1rem;
+            background: rgba(123,97,255,.1); color: #a992ff;
+            border: 1px solid rgba(123,97,255,.25);
+            padding: .85rem; border-radius: 9px;
+            font-weight: 600; font-size: .9rem; cursor: pointer;
+            transition: all .2s; display: flex; align-items: center; justify-content: center; gap: .6rem;
+        }
+        .dl-version-btn:hover { background: rgba(123,97,255,.18); transform: translateY(-1px); }
+
+        /* ─── Features ─── */
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem; color: var(--accent);
+            text-transform: uppercase; letter-spacing: .15em;
+            margin-bottom: 1.2rem;
+        }
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 800; letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+        .section-sub { color: var(--muted); max-width: 480px; line-height: 1.65; margin-bottom: 3.5rem; }
+
+        .features-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1px; background: var(--border);
+            border: 1px solid var(--border); border-radius: 18px;
+            overflow: hidden; margin-bottom: 6rem;
+        }
+
+        .feat {
+            background: var(--surface);
+            padding: 2.5rem; transition: background .25s;
+        }
+        .feat:hover { background: #101118; }
+
+        .feat-icon {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            background: rgba(123,97,255,.08);
+            border: 1px solid rgba(123,97,255,.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: #a992ff;
+            margin-bottom: 1.4rem;
+        }
+        .feat h3 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 1.05rem;
+            margin-bottom: .6rem; letter-spacing: -.3px;
+        }
+        .feat p { color: var(--muted); font-size: .9rem; line-height: 1.6; }
+
+        /* ─── Support ─── */
+        .support-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 2rem; margin-bottom: 5rem;
+        }
+        .support-bar h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem; font-weight: 700; margin-bottom: .4rem;
+        }
+        .support-bar p { color: var(--muted); font-size: .9rem; }
+        .support-actions { display: flex; gap: .8rem; flex-shrink: 0; }
+
+        /* ─── Footer ─── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3.5rem 0;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .footer-brand {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 1rem;
+        }
+        .footer-brand span { color: var(--accent); }
+        .footer-copy { color: var(--muted); font-size: .85rem; margin-top: .3rem; }
+
+        .footer-socials { display: flex; gap: .8rem; }
+        .footer-socials a {
+            width: 40px; height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--muted); font-size: .9rem;
+            text-decoration: none;
+            transition: all .2s;
+        }
+        .footer-socials a:hover { color: var(--text); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.04); }
+
+        /* ─── Loader ─── */
+        .spin {
+            display: inline-block; width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,.15);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Scroll reveal ─── */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+        .reveal.in { opacity: 1; transform: translateY(0); }
+
+
+        /* ─── News preview section ─── */
+        .news-preview { margin-bottom: 5rem; }
+        .news-preview-header {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;
+        }
+        .news-more-btn {
+            display: inline-flex; align-items: center; gap: .5rem;
+            color: var(--accent); text-decoration: none;
+            font-size: .9rem; font-weight: 600;
+            border: 1px solid rgba(123,97,255,.25);
+            padding: .6rem 1.2rem; border-radius: 8px;
+            background: rgba(123,97,255,.07);
+            transition: background .2s, transform .15s;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .news-more-btn:hover { background: rgba(123,97,255,.14); transform: translateY(-1px); }
+
+        .homepage-news-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* skeleton loaders */
+        .hn-skeleton {
+            height: 280px; border-radius: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            animation: shimmer 1.6s ease infinite;
+        }
+        .hn-skeleton.small { height: 280px; }
+        @keyframes shimmer {
+            0%,100% { opacity: .4; }
+            50%      { opacity: .8; }
+        }
+
+        /* news cards — homepage */
+        .hn-card {
+            position: relative; display: flex; flex-direction: column;
+            justify-content: flex-end;
+            border-radius: 16px; overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            cursor: pointer; text-decoration: none; color: inherit;
+            min-height: 280px;
+            transition: transform .25s ease, border-color .25s;
+        }
+        .hn-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.12); }
+
+        .hn-card-img {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+        }
+        .hn-card-img::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(6,6,8,.05) 0%, rgba(6,6,8,.85) 100%);
+        }
+
+        .hn-card-body {
+            position: relative; z-index: 1;
+            padding: 1.2rem 1.4rem;
+        }
+        .hn-card-meta {
+            display: flex; align-items: center; gap: .5rem;
+            margin-bottom: .5rem;
+        }
+        .hn-cat-badge {
+            font-size: .68rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .08em; padding: .25rem .65rem; border-radius: 4px;
+        }
+        .hn-cat-badge.Update       { background: rgba(123,97,255,.2); color: #a992ff; }
+        .hn-cat-badge.Announcement { background: rgba(34,197,94,.15); color: #4ade80; }
+        .hn-cat-badge.Event        { background: rgba(245,158,11,.15); color: #fbbf24; }
+
+        .hn-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem; color: rgba(221,224,230,.4);
+        }
+        .hn-card-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; line-height: 1.2; letter-spacing: -.3px;
+            margin-bottom: .4rem;
+        }
+        .hn-card-title.featured { font-size: 1.3rem; }
+        .hn-card-title.normal   { font-size: 1rem; }
+        .hn-card-brief {
+            font-size: .83rem; color: rgba(221,224,230,.65);
+            line-height: 1.5; display: -webkit-box;
+            -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .hn-card-brief.featured { -webkit-line-clamp: 3; }
+        .hn-card-brief.normal   { -webkit-line-clamp: 2; }
+
+        .hn-no-cover { background: linear-gradient(135deg, #0d0b1a 0%, #130f2a 100%); }
+
+        @media (max-width: 900px) {
+            .homepage-news-grid { grid-template-columns: 1fr; }
+        }
+        /* ─── Responsive ─── */
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 0 3rem; }
+            .hero-sub { max-width: 100%; }
+            .download-panel { grid-template-columns: 1fr; }
+            .version-strip { grid-template-columns: 1fr; }
+            .vstrip-cell { border-right: none; border-bottom: 1px solid var(--border); }
+            .vstrip-cell:last-child { border-bottom: none; }
+            .features-grid { grid-template-columns: 1fr; }
+            .support-bar { flex-direction: column; align-items: flex-start; }
+            footer { flex-direction: column; gap: 1.5rem; }
+        }
+        /* ─── Defender warning ─── */
+        .defender-warning {
+            display: flex; align-items: flex-start; gap: 1.2rem;
+            background: rgba(255, 160, 50, 0.05);
+            border: 1px solid rgba(255, 160, 50, 0.2);
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 2rem;
+        }
+        .dw-icon { font-size: 1.4rem; color: #f59e0b; margin-top: .1rem; flex-shrink: 0; }
+        .dw-title { font-weight: 700; font-size: .95rem; color: #fbbf24; margin-bottom: .4rem; }
+        .dw-text { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+        .dw-text a { color: #a992ff; text-decoration: none; }
+        .dw-text a:hover { text-decoration: underline; }
+        .dw-body { flex: 1; }
+        .dw-btn {
+            display: inline-flex; align-items: center; gap: .5rem;
+            background: rgba(88,101,242,.15); color: #7289da;
+            border: 1px solid rgba(88,101,242,.25);
+            padding: .6rem 1.1rem; border-radius: 8px;
+            font-size: .82rem; font-weight: 600;
+            text-decoration: none; white-space: nowrap; flex-shrink: 0;
+            transition: background .2s;
+        }
+        .dw-btn:hover { background: rgba(88,101,242,.25); }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,.7);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity .25s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: #0f1013;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 520px; width: 100%;
+            transform: translateY(20px);
+            transition: transform .25s ease;
+            box-shadow: 0 40px 80px rgba(0,0,0,.6);
+        }
+        .modal-overlay.active .modal-box { transform: translateY(0); }
+        .modal-win-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            background: rgba(91,155,213,.1); color: #5b9bd5;
+            border: 1px solid rgba(91,155,213,.2);
+            padding: .35rem .85rem; border-radius: 6px;
+            font-size: .78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .08em;
+            margin-bottom: 1.2rem;
+        }
+        .modal-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.45rem; font-weight: 800;
+            margin-bottom: .6rem; letter-spacing: -.5px;
+        }
+        .modal-body { color: var(--muted); font-size: .92rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .modal-body strong { color: var(--text); }
+        .modal-defender {
+            display: flex; gap: 1rem; align-items: flex-start;
+            background: rgba(245,158,11,.05);
+            border: 1px solid rgba(245,158,11,.18);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            margin-bottom: 1.8rem;
+        }
+        .modal-def-icon { font-size: 1.2rem; color: #f59e0b; margin-top: .1rem; flex-shrink: 0; }
+        .modal-def-title { font-weight: 700; font-size: .9rem; color: #fbbf24; margin-bottom: .4rem; }
+        .modal-def-body { font-size: .83rem; color: var(--muted); line-height: 1.6; margin-bottom: .7rem; }
+        .modal-def-link {
+            display: inline-flex; align-items: center; gap: .4rem;
+            font-size: .82rem; font-weight: 600; color: #7289da;
+            text-decoration: none;
+        }
+        .modal-def-link:hover { text-decoration: underline; }
+        .modal-actions { display: flex; gap: .8rem; align-items: center; }
+
+        .win-notice {
+            display: flex; align-items: center; gap: .6rem;
+            margin-top: 1rem;
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 9px;
+            padding: .75rem 1rem;
+            font-size: .85rem; color: var(--muted);
+        }
+        .win-notice i { color: #5b9bd5; font-size: 1rem; flex-shrink: 0; }
+        .win-notice span { line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">AU <span>Launcher</span></div>
+    <div class="nav-links">
+        <a href="helpPage.html">Docs</a>
+        <a href="news.html">News</a>
+        <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+        <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank">YouTube</a>
+    </div>
+    <button class="nav-cta" onclick="window.location.href='https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe'">
+        Download
+    </button>
+</nav>
+
+<div class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-left">
+            <div class="hero-kicker">Launcher v<span id="heroVersion">…</span> · Windows only</div>
+            <h1>Getting into<br>Among Us has<br>never been <em>this easy.</em></h1>
+            <p class="hero-sub">
+                Download it, open it, play. The launcher takes care of updates, versions and Discord status so you honestly never have to think about any of that stuff.
+            </p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="openWinModal()">
+                    <i class="fab fa-windows"></i> Download free
+                </button>
+                <a class="btn-ghost" href="helpPage.html">
+                    How does it work? <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="trustpilot-wrap">
+                <div class="trustpilot-widget" data-locale="en-US" data-template-id="56278e9abfbbba0bdcd568bc" data-businessunit-id="6954fced74cf034e3abd0db3" data-style-height="52px" data-style-width="200px" data-token="9b269b6d-83ad-4d7b-851b-6243ed497843">
+                    <a href="https://www.trustpilot.com/review/jogamerforgames2021.github.io" target="_blank" rel="noopener">Trustpilot</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-preview">
+            <div class="preview-frame">
+                <div class="preview-bar">
+                    <div class="preview-dot"></div>
+                    <div class="preview-dot"></div>
+                    <div class="preview-dot"></div>
+                </div>
+                <img src="https://i.ibb.co/C38dqb8W/image-2025-12-31-211529273.png" alt="Among Us Launcher Preview">
+            </div>
+        </div>
+    </section>
+
+    <!-- VERSION STRIP -->
+    <div class="version-strip reveal">
+        <div class="vstrip-cell">
+            <div class="vstrip-label">Launcher Version</div>
+            <div class="vstrip-value" id="launcherVersion"><span class="spin"></span></div>
+        </div>
+        <div class="vstrip-cell">
+            <div class="vstrip-label">Latest Game Version</div>
+            <div class="vstrip-value" id="uploadedVersion"><span class="spin"></span></div>
+        </div>
+        <div class="vstrip-cell">
+            <div class="vstrip-label">Game Status</div>
+            <div id="statusBadge"><span class="spin"></span></div>
+        </div>
+    </div>
+
+    <!-- DEFENDER WARNING -->
+    <div class="defender-warning reveal">
+        <div class="dw-icon"><i class="fas fa-shield-halved"></i></div>
+        <div class="dw-body">
+            <div class="dw-title">Windows Defender might flag this as a threat. It's a false positive.</div>
+            <p class="dw-text">Because this is an unofficial launcher, Windows Defender sometimes gets a bit jumpy and flags it. It's not malware. The source code is fully open on GitHub so you can check it yourself. If you're unsure, come check out the <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord server</a> where you'll find a trust wall with genuine reviews from real users.</p>
+        </div>
+        <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="dw-btn">
+            <i class="fab fa-discord"></i> See reviews
+        </a>
+    </div>
+
+    <!-- DOWNLOAD PANEL -->
+    <div class="download-panel reveal">
+        <div class="dl-main">
+            <div class="dl-main-title">Grab the Launcher</div>
+            <p class="dl-main-sub">One file, one click. Updates, Discord status and version switching all come included. Just run it and you're good to go.</p>
+            <div class="dl-tags">
+                <span class="dl-tag">auto-update</span>
+                <span class="dl-tag">discord rpc</span>
+                <span class="dl-tag">version manager</span>
+                <span class="dl-tag">aunlocker</span>
+                <span class="dl-tag">windows</span>
+            </div>
+            <button class="btn-primary" onclick="window.location.href='https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe'">
+                <i class="fas fa-arrow-down"></i> AmongUsLauncher.exe
+            </button>
+            <div class="win-notice">
+                <i class="fab fa-windows"></i>
+                <span>Windows only. Mac and Linux are not supported right now.</span>
+            </div>
+        </div>
+
+        <div class="dl-version">
+            <div class="dl-version-title">Just want the game files?</div>
+            <div class="version-selector">
+                <div class="vs-trigger" id="vsTrigger">
+                    <span id="selectedVersion"><span class="spin"></span></span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="vs-dropdown" id="vsDropdown"></div>
+            </div>
+            <button class="dl-version-btn" id="dlVersionBtn">
+                <i class="fas fa-arrow-down"></i> Download game zip
+            </button>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section class="reveal">
+        <div class="section-label">What's inside</div>
+        <h2 class="section-title">You'll wonder how you<br>played without it.</h2>
+        <p class="section-sub">Downloading Among Us couldn't have been easier. Everything just works and keeps working.</p>
+
+        <div class="features-grid">
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Fast Downloads</h3>
+                <p>Files land fast, every time. No mirrors to pick from, no broken links, no waiting around.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-sync-alt"></i></div>
+                <h3>Stays Up to Date</h3>
+                <p>Open the launcher and you're already on the latest version. It updates itself quietly in the background.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fab fa-discord"></i></div>
+                <h3>Shows Up on Discord</h3>
+                <p>Your friends can see what version you're on and what you're up to. Automatic, no setup needed.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-code-branch"></i></div>
+                <h3>Switch Versions Easily</h3>
+                <p>Playing an older version with friends? Just pick it from the list. Keep as many versions as you want.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-unlock"></i></div>
+                <h3>AUnlocker, One Click</h3>
+                <p>Install AUnlocker straight from the launcher. It auto-configures for your current version and you're done.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-shield-halved"></i></div>
+                <h3>Nothing to Hide</h3>
+                <p>The whole thing is open source on GitHub. Check the code, fork it, whatever. Full transparency.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- LATEST NEWS SECTION -->
+    <section class="news-preview reveal">
+        <div class="news-preview-header">
+            <div>
+                <div class="section-label">Latest News</div>
+                <h2 class="section-title" style="margin-bottom:.5rem">What's going on</h2>
+                <p style="color:var(--muted);font-size:.9rem;line-height:1.6">Updates, announcements and everything happening with the launcher.</p>
+            </div>
+            <a href="news.html" class="news-more-btn">All news <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="homepage-news-grid" class="homepage-news-grid">
+            <!-- Filled by JS -->
+            <div class="hn-skeleton"></div>
+            <div class="hn-skeleton small"></div>
+            <div class="hn-skeleton small"></div>
+        </div>
+    </section>
+
+    <!-- SUPPORT -->
+    <div class="support-bar reveal">
+        <div>
+            <h2>Something not working?</h2>
+            <p>Pop into the Discord and someone will sort you out. Or check the Help Center if you prefer reading.</p>
+        </div>
+        <div class="support-actions">
+            <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="btn-primary" style="font-size:.9rem; padding:.75rem 1.4rem;">
+                <i class="fab fa-discord"></i> Discord
+            </a>
+            <a href="helpPage.html" class="btn-ghost" style="font-size:.9rem; padding:.75rem 1.4rem;">
+                Help Center
+            </a>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div>
+            <div class="footer-brand">AU <span>Launcher</span></div>
+            <div class="footer-copy">© 2025 ShadowSlimeDEV · Not affiliated with Innersloth</div>
+        </div>
+        <div class="footer-socials">
+            <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>
+            <a href="https://store.steampowered.com/app/945360/Among_Us/" target="_blank" title="Steam"><i class="fab fa-steam"></i></a>
+            <a href="helpPage.html" title="Help"><i class="fas fa-circle-question"></i></a>
+            <a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank" title="Feedback"><i class="fas fa-message"></i></a>
+        </div>
+    </footer>
+
+</div><!-- /wrap -->
+
+<!-- WINDOWS MODAL -->
+<div class="modal-overlay" id="winModal" onclick="closeWinModal(event)">
+    <div class="modal-box">
+        <div class="modal-win-badge"><i class="fab fa-windows"></i> Windows only</div>
+        <h3 class="modal-title">Before you download</h3>
+        <p class="modal-body">This launcher runs on <strong>Windows 10 and 11</strong> only. Mac and Linux are not supported right now.</p>
+
+        <div class="modal-defender">
+            <div class="modal-def-icon"><i class="fas fa-shield-halved"></i></div>
+            <div>
+                <div class="modal-def-title">Windows Defender might flag it</div>
+                <p class="modal-def-body">That's a false positive. It happens because this is an unofficial launcher and isn't signed by a big publisher. The full source code is public on GitHub. If you're still not sure, head to the Discord server and check out the trust wall where real users have left reviews.</p>
+                <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="modal-def-link"><i class="fab fa-discord"></i> Check the Discord trust wall</a>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-primary" style="flex:1" onclick="proceedDownload()">
+                <i class="fas fa-arrow-down"></i> Got it, download anyway
+            </button>
+            <button class="btn-ghost" onclick="closeWinModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const GITHUB_REPO = "jogamerforgames2021/AmongUsLauncherNew";
+    let allVersions = [];
+    let selectedVersionData = null;
+
+    /* ─── Windows modal ─── */
+    function openWinModal() {
+        document.getElementById('winModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeWinModal(e) {
+        if (!e || e.target === document.getElementById('winModal')) {
+            document.getElementById('winModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    function proceedDownload() {
+        document.getElementById('winModal').classList.remove('active');
+        document.body.style.overflow = '';
+        window.location.href = 'https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe';
+    }
+
+    /* ─── Fetch launcher version ─── */
+    fetch("https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/LauncherVersion.txt")
+        .then(r => r.text())
+        .then(txt => {
+            const v = txt.trim();
+            document.getElementById('launcherVersion').textContent = v;
+            document.getElementById('heroVersion').textContent = v;
+        })
+        .catch(() => {
+            document.getElementById('launcherVersion').textContent = 'unavailable';
+        });
+
+    /* ─── Fetch game version info from AppDetail.json ─── */
+    fetch("https://raw.githubusercontent.com/jogamerforgames2021/BootstrapperTEST/refs/heads/main/AppDetail.json")
+        .then(r => r.json())
+        .then(data => {
+            const { repository_version, uploaded_version } = data;
+            document.getElementById('uploadedVersion').textContent = uploaded_version;
+            const badge = document.getElementById('statusBadge');
+            if (repository_version !== uploaded_version) {
+                badge.innerHTML = '<span class="status-badge bad"><span class="status-dot"></span> Outdated</span>';
+            } else {
+                badge.innerHTML = '<span class="status-badge ok"><span class="status-dot"></span> Up to date</span>';
+            }
+        })
+        .catch(() => {
+            document.getElementById('uploadedVersion').textContent = 'unavailable';
+        });
+
+    /* ─── Fetch all game releases ─── */
+    async function fetchAllReleases() {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases`);
+            const releases = await res.json();
+            allVersions = [];
+            for (const r of releases) {
+                for (const a of r.assets) {
+                    if (a.name === "app.zip") {
+                        allVersions.push({ version: r.tag_name, url: a.browser_download_url });
+                        break;
+                    }
+                }
+            }
+            if (allVersions.length) {
+                selectedVersionData = allVersions[0];
+                document.getElementById('selectedVersion').textContent = allVersions[0].version;
+                populateDropdown();
+            }
+        } catch(e) {
+            document.getElementById('selectedVersion').textContent = 'error';
+        }
+    }
+
+    function populateDropdown() {
+        const dd = document.getElementById('vsDropdown');
+        dd.innerHTML = '';
+        allVersions.forEach((v, i) => {
+            const el = document.createElement('div');
+            el.className = 'vs-option';
+            el.innerHTML = `<span>${v.version}</span>${i === 0 ? '<span class="latest-tag">latest</span>' : ''}`;
+            el.onclick = () => {
+                selectedVersionData = v;
+                document.getElementById('selectedVersion').textContent = v.version;
+                dd.classList.remove('active');
+                document.getElementById('vsTrigger').classList.remove('open');
+            };
+            dd.appendChild(el);
+        });
+    }
+
+    /* ─── Version dropdown toggle ─── */
+    document.getElementById('vsTrigger').addEventListener('click', e => {
+        e.stopPropagation();
+        document.getElementById('vsDropdown').classList.toggle('active');
+        document.getElementById('vsTrigger').classList.toggle('open');
+    });
+    document.addEventListener('click', () => {
+        document.getElementById('vsDropdown').classList.remove('active');
+        document.getElementById('vsTrigger').classList.remove('open');
+    });
+    document.getElementById('vsDropdown').addEventListener('click', e => e.stopPropagation());
+
+    document.getElementById('dlVersionBtn').addEventListener('click', () => {
+        if (selectedVersionData) window.location.href = selectedVersionData.url;
+    });
+
+    /* ─── Scroll reveal ─── */
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    fetchAllReleases();
+
+    /* ─── Homepage news ─── */
+    const NEWS_INDEX = 'https://raw.githubusercontent.com/AmongUsShadowSlime/news/index.json';
+    const NEWS_BASE  = 'https://raw.githubusercontent.com/AmongUsShadowSlime/news';
+
+    function formatDate(d) {
+        return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    }
+
+    function buildHNCard(post, size) {
+        const href = `post.html?slug=${post.slug}`;
+        const cover = post.cover
+            ? `style="background-image:url('${post.cover}')"` : 'class="hn-no-cover"';
+        const catClass = post.category || 'Update';
+        return `
+        <a class="hn-card" href="${href}">
+            <div class="hn-card-img" ${cover}></div>
+            <div class="hn-card-body">
+                <div class="hn-card-meta">
+                    <span class="hn-cat-badge ${catClass}">${catClass}</span>
+                    <span class="hn-date">${formatDate(post.date)}</span>
+                </div>
+                <div class="hn-card-title ${size}">${post.title}</div>
+                <div class="hn-card-brief ${size}">${post.brief}</div>
+            </div>
+        </a>`;
+    }
+
+    async function loadHomepageNews() {
+        const grid = document.getElementById('homepage-news-grid');
+        if (!grid) return;
+        try {
+            const res  = await fetch(NEWS_INDEX);
+            const posts = await res.json();
+            const sorted = posts.sort((a,b) => new Date(b.date) - new Date(a.date));
+            const featured = sorted.find(p => p.priority === 'featured') || sorted[0];
+            const rest = sorted.filter(p => p !== featured).slice(0, 2);
+            grid.innerHTML = buildHNCard(featured, 'featured') + rest.map(p => buildHNCard(p, 'normal')).join('');
+        } catch(e) {
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--muted);font-size:.9rem">News unavailable right now.</div>`;
+        }
+    }
+    loadHomepageNews();
+
+</script>
+</body>
+</html>
