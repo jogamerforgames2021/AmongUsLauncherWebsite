@@ -1,3 +1,7 @@
+// api/send.js
+// Posts a message to Discord general chat via webhook
+// Rate limited to prevent spam
+
 const MESSAGE_COOLDOWN_MS = 2000;
 const lastSend = {};
 
@@ -48,9 +52,9 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        username: `${displayName} · Launcher`,
-        content:  content.trim(),
-        avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+        username:   `${displayName} · Launcher`,
+        content:    content.trim(),
+        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=7b61ff&color=fff&size=64&bold=true&rounded=true`,
       }),
     });
 
