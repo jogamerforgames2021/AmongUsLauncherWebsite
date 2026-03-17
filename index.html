@@ -123,7 +123,7 @@
             margin-bottom: 2.5rem; font-weight: 400;
         }
 
-        .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: nowrap; }
 
         .btn-primary {
             display: inline-flex; align-items: center; gap: .7rem;
@@ -133,6 +133,7 @@
             text-decoration: none; border: none; cursor: pointer;
             transition: background .2s, transform .2s, box-shadow .2s;
             box-shadow: 0 0 0 rgba(0,229,176,0);
+            white-space: nowrap;
         }
         .btn-primary:hover {
             background: #9b85ff;
@@ -148,36 +149,131 @@
             border: 1px solid var(--border);
             background: transparent;
             transition: all .2s;
+            white-space: nowrap;
         }
         .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.04); }
 
-        /* ─── Preview panel ─── */
         .hero-preview {
             position: relative;
+            perspective: 1000px;
         }
+
+        /* Accent glow blob behind the frame */
+        .preview-glow {
+            position: absolute;
+            inset: -30px;
+            background: radial-gradient(ellipse at center, rgba(123,97,255,0.35) 0%, transparent 70%);
+            filter: blur(40px);
+            z-index: 0;
+            animation: float-glow 4s ease-in-out infinite;
+            pointer-events: none;
+            transition: opacity .4s ease, transform .4s ease;
+        }
+        .hero-preview:hover .preview-glow {
+            opacity: 1.4;
+            transform: scale(1.15);
+            background: radial-gradient(ellipse at center, rgba(123,97,255,0.55) 0%, transparent 70%);
+        }
+        @keyframes float-glow {
+            0%, 100% { transform: translateY(0) scale(1);       opacity: .7; }
+            50%       { transform: translateY(-10px) scale(1.05); opacity: 1; }
+        }
+
         .preview-frame {
+            position: relative; z-index: 1;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 40px 80px rgba(0,0,0,.5);
-            transition: transform .4s ease;
+            box-shadow:
+                0 40px 80px rgba(0,0,0,.6),
+                0 0 0 1px rgba(123,97,255,.15),
+                inset 0 1px 0 rgba(255,255,255,.05);
+            transform: perspective(1000px) rotateY(-12deg) rotateX(4deg);
+            animation: float-frame 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transition: box-shadow .4s ease, border-color .4s ease;
         }
-        .preview-frame:hover { transform: translateY(-6px) rotate(-0.5deg); }
+        .hero-preview:hover .preview-frame {
+            animation-play-state: paused;
+            box-shadow:
+                0 60px 120px rgba(0,0,0,.7),
+                0 0 0 1px rgba(123,97,255,.4),
+                0 0 60px rgba(123,97,255,.2),
+                inset 0 1px 0 rgba(255,255,255,.08);
+            border-color: rgba(123,97,255,.35);
+            transition: transform .08s ease-out, box-shadow .4s ease, border-color .4s ease;
+        }
+
+        .trustpilot-wrap { margin-top: 2.5rem; display: flex; justify-content: flex-start; }
+
+        /* holographic shimmer — brand purple only, no rainbow */
+        .preview-frame::after {
+            content: '';
+            position: absolute; inset: 0; z-index: 2;
+            border-radius: 18px;
+            background: radial-gradient(
+                ellipse at calc(var(--mx,50) * 1%) calc(var(--my,50) * 1%),
+                rgba(123,97,255,0.22) 0%,
+                rgba(94,72,212,0.10) 40%,
+                transparent 70%
+            );
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity .3s ease;
+            pointer-events: none;
+        }
+        .hero-preview:hover .preview-frame::after { opacity: 1; }
+
+        .preview-frame::before {
+            content: '';
+            position: absolute; inset: 0; z-index: 3;
+            border-radius: 18px;
+            background: radial-gradient(
+                circle at calc(var(--mx,50) * 1%) calc(var(--my,50) * 1%),
+                rgba(255,255,255,0.12) 0%,
+                transparent 50%
+            );
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity .3s ease;
+            pointer-events: none;
+        }
+        .hero-preview:hover .preview-frame::before { opacity: 1; }
+
+        @media (max-width: 900px) {
+            .preview-frame {
+                transform: perspective(800px) rotateX(-6deg) rotateY(0deg);
+                animation: float-frame-mobile 4s ease-in-out infinite;
+            }
+            .hero-preview:hover .preview-frame {
+                transform: perspective(800px) rotateX(-2deg) rotateY(0deg) translateY(-8px) scale(1.02) !important;
+            }
+        }
+
+        @keyframes float-frame {
+            0%, 100% { transform: perspective(1000px) rotateY(-12deg) rotateX(4deg)  translateY(0);     }
+            50%       { transform: perspective(1000px) rotateY(-10deg) rotateX(3deg)  translateY(-12px); }
+        }
+        @keyframes float-frame-mobile {
+            0%, 100% { transform: perspective(800px) rotateX(-6deg) rotateY(0deg) translateY(0);     }
+            50%       { transform: perspective(800px) rotateX(-4deg) rotateY(0deg) translateY(-10px); }
+        }
+
+
         .preview-bar {
             background: #1a1c20; padding: .85rem 1.2rem;
             display: flex; align-items: center; gap: .5rem;
             border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
         }
-        .preview-dot { width: 11px; height: 11px; border-radius: 50%; }
+        .preview-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
         .preview-dot:nth-child(1) { background: #ff5f57; }
         .preview-dot:nth-child(2) { background: #febc2e; }
         .preview-dot:nth-child(3) { background: #28c840; }
-        .preview-frame img { width: 100%; display: block; }
-
-        .trustpilot-wrap {
-            margin-top: 2.5rem;
-            display: flex; justify-content: flex-start;
+        .preview-frame img {
+            width: 100%; height: auto; display: block;
+            object-fit: contain; object-position: center;
         }
 
         /* ─── Version Card ─── */
@@ -668,14 +764,21 @@
         .win-notice i { color: #5b9bd5; font-size: 1rem; flex-shrink: 0; }
         .win-notice span { line-height: 1.4; }
     </style>
+
+    <script>
+        // Anti-flicker: hide body instantly if splash hasn't been seen yet
+        if (!sessionStorage.getItem('splash_seen')) {
+            document.documentElement.style.visibility = 'hidden';
+        }
+    </script>
 </head>
 <body>
 
 <div id="splash-overlay-bg" style="position:fixed;inset:0;z-index:9998;background:#060608;pointer-events:none;transition:opacity .55s ease"></div>
 <div id="site-splash">
   <div id="splash-logo">
-    <span class="splash-au" id="splash-au">Among Us</span>
-    <span class="splash-accent" id="splash-accent">&nbsp;Launcher</span>
+    <span class="splash-au" id="splash-au" style="font-size:72px;letter-spacing:-3px;opacity:0">Among Us</span>
+    <span class="splash-accent" id="splash-accent" style="font-size:72px;letter-spacing:-3px;opacity:0">&nbsp;Launcher</span>
   </div>
 </div>
 <div class="ambient ambient-1"></div>
@@ -683,7 +786,7 @@
 
 <!-- NAV -->
 <nav>
-    <div class="nav-logo" id="nav-logo" style="opacity:0;transition:opacity .2s ease">AU <span>Launcher</span></div>
+    <div class="nav-logo" id="nav-logo" style="opacity:0">AU <span>Launcher</span></div>
     <div class="nav-links">
         <a href="helpPage.html">Docs</a>
         <a href="news.html">News</a>
@@ -721,13 +824,9 @@
         </div>
 
         <div class="hero-preview">
+            <div class="preview-glow"></div>
             <div class="preview-frame">
-                <div class="preview-bar">
-                    <div class="preview-dot"></div>
-                    <div class="preview-dot"></div>
-                    <div class="preview-dot"></div>
-                </div>
-                <img src="https://i.ibb.co/C38dqb8W/image-2025-12-31-211529273.png" alt="Among Us Launcher Preview">
+                <img src="https://i.ibb.co/zHPYTKp2/Screenshot-2026-03-17-024143.png" alt="Among Us Launcher Preview">
             </div>
         </div>
     </section>
@@ -769,7 +868,11 @@
                 <span class="dl-tag">auto-update</span>
                 <span class="dl-tag">discord rpc</span>
                 <span class="dl-tag">version manager</span>
+                <span class="dl-tag">mods tab</span>
                 <span class="dl-tag">aunlocker</span>
+                <span class="dl-tag">community chat</span>
+                <span class="dl-tag">news feed</span>
+                <span class="dl-tag">system tray</span>
                 <span class="dl-tag">windows</span>
             </div>
             <button class="btn-primary" onclick="window.location.href='https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe'">
@@ -800,38 +903,38 @@
     <section class="reveal">
         <div class="section-label">What's inside</div>
         <h2 class="section-title">You'll wonder how you<br>played without it.</h2>
-        <p class="section-sub">Downloading Among Us couldn't have been easier. Everything just works and keeps working.</p>
+        <p class="section-sub">Seriously. It's just Among Us but the way it should've been.</p>
 
         <div class="features-grid">
             <div class="feat">
-                <div class="feat-icon"><i class="fas fa-bolt"></i></div>
-                <h3>Fast Downloads</h3>
-                <p>Files land fast, every time. No mirrors to pick from, no broken links, no waiting around.</p>
+                <div class="feat-icon"><i class="fas fa-gamepad"></i></div>
+                <h3>Play Among Us Free</h3>
+                <p>Yeah, free. Download it, open it, play it. No Steam, no purchase, no nonsense. Just click and you're in.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-users"></i></div>
+                <h3>Real Multiplayer</h3>
+                <p>Actual online lobbies with real people. Host games, join randoms, play with friends — nothing is blocked or limited.</p>
             </div>
             <div class="feat">
                 <div class="feat-icon"><i class="fas fa-sync-alt"></i></div>
-                <h3>Stays Up to Date</h3>
-                <p>Open the launcher and you're already on the latest version. It updates itself quietly in the background.</p>
+                <h3>Always Up to Date</h3>
+                <p>New version drops? You'll have it. The launcher just handles it. You don't have to do anything.</p>
             </div>
             <div class="feat">
                 <div class="feat-icon"><i class="fab fa-discord"></i></div>
                 <h3>Shows Up on Discord</h3>
-                <p>Your friends can see what version you're on and what you're up to. Automatic, no setup needed.</p>
+                <p>Your friends see you're playing Among Us. Automatically. It's a small thing but you'll love it.</p>
             </div>
             <div class="feat">
-                <div class="feat-icon"><i class="fas fa-code-branch"></i></div>
-                <h3>Switch Versions Easily</h3>
-                <p>Playing an older version with friends? Just pick it from the list. Keep as many versions as you want.</p>
+                <div class="feat-icon"><i class="fas fa-comments"></i></div>
+                <h3>Chat Without Discord</h3>
+                <p>There's a whole community chat built right into the launcher. Talk to people, read announcements, no Discord app needed.</p>
             </div>
             <div class="feat">
-                <div class="feat-icon"><i class="fas fa-unlock"></i></div>
-                <h3>AUnlocker, One Click</h3>
-                <p>Install AUnlocker straight from the launcher. It auto-configures for your current version and you're done.</p>
-            </div>
-            <div class="feat">
-                <div class="feat-icon"><i class="fas fa-shield-halved"></i></div>
-                <h3>Nothing to Hide</h3>
-                <p>The whole thing is open source on GitHub. Check the code, fork it, whatever. Full transparency.</p>
+                <div class="feat-icon"><i class="fas fa-puzzle-piece"></i></div>
+                <h3>Mod Manager</h3>
+                <p>Install mods straight from the launcher. More mods coming — this is just getting started.</p>
             </div>
         </div>
     </section>
@@ -1052,8 +1155,11 @@
             if (overlayBg) overlayBg.style.display = 'none';
             const nl = document.getElementById('nav-logo');
             if (nl) nl.style.opacity = '1';
+            document.documentElement.style.visibility = '';
             return;
         }
+        // First visit: reveal body now (overlay covers it)
+        document.documentElement.style.visibility = '';
 
         const VW  = window.innerWidth;
         const BIG = Math.min(VW * 0.08, 72);
@@ -1114,12 +1220,19 @@
         }, 900);
 
         function finish() {
-            splash.classList.add('hidden');
-            if (overlayBg) overlayBg.style.display = 'none';
-            sessionStorage.setItem('splash_seen', '1');
-            // Reveal the real nav logo now that the splash has landed there
+            // Show nav logo FIRST with no transition
             const nl = document.getElementById('nav-logo');
-            if (nl) nl.style.opacity = '1';
+            if (nl) { nl.style.transition = 'none'; nl.style.opacity = '1'; }
+            // Then fade out splash logo on top of it simultaneously
+            if (logoEl) {
+                logoEl.style.transition = 'opacity .25s ease';
+                logoEl.style.opacity = '0';
+            }
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                if (overlayBg) overlayBg.style.display = 'none';
+                sessionStorage.setItem('splash_seen', '1');
+            }, 260);
         }
     })();
 
@@ -1197,7 +1310,67 @@
             if (s) s.style.display = 'none';
         }
     }
+    /* ── Holographic preview tilt ── */
+    (function() {
+        const preview = document.querySelector('.hero-preview');
+        const frame   = document.querySelector('.preview-frame');
+        if (!preview || !frame) return;
+        const MAX_TILT = 18;
+        let raf = null;
+        let targetRx = -12, targetRy = 4, targetMx = 50, targetMy = 50;
+        let currentRx = -12, currentRy = 4;
+
+        preview.addEventListener('mousemove', e => {
+            const r  = preview.getBoundingClientRect();
+            const x  = (e.clientX - r.left) / r.width;
+            const y  = (e.clientY - r.top)  / r.height;
+            targetRy = (x - 0.5) * MAX_TILT * 2;
+            targetRx = (0.5 - y) * MAX_TILT;
+            targetMx = x * 100;
+            targetMy = y * 100;
+            if (!raf) loop();
+        });
+
+        preview.addEventListener('mouseleave', () => {
+            targetRx = 4; targetRy = -12;
+            if (!raf) loop();
+        });
+
+        function loop() {
+            const lerp = 0.12;
+            currentRx += (targetRx - currentRx) * lerp;
+            currentRy += (targetRy - currentRy) * lerp;
+            frame.style.setProperty('--mx', targetMx.toFixed(1));
+            frame.style.setProperty('--my', targetMy.toFixed(1));
+            frame.style.transform = `perspective(1000px) rotateY(${currentRy.toFixed(2)}deg) rotateX(${currentRx.toFixed(2)}deg) translateY(-6px) scale(1.02)`;
+
+            // directional border glow: light source follows mouse
+            const ox = ((targetMx / 100) - 0.5) * 24;
+            const oy = ((targetMy / 100) - 0.5) * 24;
+            const glowAlpha = preview.matches(':hover') ? 0.65 : 0;
+            frame.style.boxShadow = `
+                ${ox}px ${oy}px 40px rgba(123,97,255,${glowAlpha}),
+                0 40px 80px rgba(0,0,0,.6),
+                0 0 0 1px rgba(123,97,255,${preview.matches(':hover') ? 0.4 : 0.15}),
+                inset 0 1px 0 rgba(255,255,255,.05)
+            `;
+
+            const dx = Math.abs(currentRx - targetRx);
+            const dy = Math.abs(currentRy - targetRy);
+            if (dx > 0.05 || dy > 0.05) {
+                raf = requestAnimationFrame(loop);
+            } else {
+                if (targetRx === 4 && targetRy === -12) {
+                    frame.style.transform = '';
+                    frame.style.boxShadow = '';
+                }
+                raf = null;
+            }
+        }
+    })();
+
     loadTrustWall();
+
 </script>
 </body>
 </html>
