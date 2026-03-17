@@ -421,7 +421,83 @@
         .reveal.in { opacity: 1; transform: translateY(0); }
 
 
-        /* ─── News preview section ─── */
+        /* ── Splash screen ── */
+        #splash-overlay-bg {
+            position: fixed; inset: 0; z-index: 9998;
+            background: var(--bg);
+            pointer-events: none;
+            transition: opacity .55s ease;
+        }
+        #splash-overlay-bg.fade { opacity: 0; }
+
+        #site-splash {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        #site-splash.hidden { display: none; }
+
+        #splash-logo {
+            display: flex; align-items: baseline;
+            position: fixed;
+        }
+        .splash-au {
+            font-family: 'Syne', sans-serif; font-weight: 800;
+            color: var(--text); white-space: nowrap;
+        }
+        .splash-accent {
+            font-family: 'Syne', sans-serif; font-weight: 800;
+            color: var(--accent); white-space: nowrap;
+        }
+
+        /* ── Trust wall ticker ── */
+        .trustwall-section { margin-bottom: 5rem; }
+        .trustwall-ticker-wrap {
+            overflow: hidden;
+            mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+        }
+        .trustwall-ticker {
+            display: flex; gap: 1rem;
+            width: max-content;
+            animation: ticker-scroll 45s linear infinite;
+        }
+        .trustwall-ticker:hover { animation-play-state: paused; }
+        @keyframes ticker-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .tw-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; padding: 1.2rem 1.4rem;
+            width: 280px; flex-shrink: 0; transition: border-color .2s;
+        }
+        .tw-card:hover { border-color: rgba(255,255,255,.1); }
+        .tw-card-header { display: flex; align-items: center; gap: .7rem; margin-bottom: .8rem; }
+        .tw-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            overflow: hidden; flex-shrink: 0;
+            background: rgba(123,97,255,.12);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: .9rem; color: #a992ff;
+        }
+        .tw-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .tw-name { font-weight: 700; font-size: .88rem; color: var(--text); }
+        .tw-time { font-size: .75rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+        .tw-content {
+            font-size: .85rem; color: var(--muted); line-height: 1.6;
+            display: -webkit-box; -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3; overflow: hidden;
+        }
+        .tw-reactions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .8rem; }
+        .tw-reaction {
+            display: inline-flex; align-items: center; gap: .3rem;
+            padding: .2rem .6rem; border-radius: 20px;
+            background: rgba(255,255,255,.04); border: 1px solid var(--border);
+            font-size: .78rem; color: var(--muted);
+        }
+
+        /* ── News preview (homepage) ── */
         .news-preview { margin-bottom: 5rem; }
         .news-preview-header {
             display: flex; align-items: flex-end; justify-content: space-between;
@@ -438,57 +514,34 @@
             white-space: nowrap; flex-shrink: 0;
         }
         .news-more-btn:hover { background: rgba(123,97,255,.14); transform: translateY(-1px); }
-
         .homepage-news-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
+            display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem;
         }
-
-        /* skeleton loaders */
         .hn-skeleton {
             height: 280px; border-radius: 16px;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: var(--surface); border: 1px solid var(--border);
             animation: shimmer 1.6s ease infinite;
         }
         .hn-skeleton.small { height: 280px; }
-        @keyframes shimmer {
-            0%,100% { opacity: .4; }
-            50%      { opacity: .8; }
-        }
-
-        /* news cards — homepage */
+        @keyframes shimmer { 0%,100%{opacity:.4} 50%{opacity:.8} }
         .hn-card {
             position: relative; display: flex; flex-direction: column;
-            justify-content: flex-end;
-            border-radius: 16px; overflow: hidden;
-            border: 1px solid var(--border);
-            background: var(--surface);
+            justify-content: flex-end; border-radius: 16px; overflow: hidden;
+            border: 1px solid var(--border); background: var(--surface);
             cursor: pointer; text-decoration: none; color: inherit;
-            min-height: 280px;
-            transition: transform .25s ease, border-color .25s;
+            min-height: 280px; transition: transform .25s ease, border-color .25s;
         }
         .hn-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.12); }
-
         .hn-card-img {
             position: absolute; inset: 0;
             background-size: cover; background-position: center;
         }
         .hn-card-img::after {
-            content: '';
-            position: absolute; inset: 0;
+            content: ''; position: absolute; inset: 0;
             background: linear-gradient(to bottom, rgba(6,6,8,.05) 0%, rgba(6,6,8,.85) 100%);
         }
-
-        .hn-card-body {
-            position: relative; z-index: 1;
-            padding: 1.2rem 1.4rem;
-        }
-        .hn-card-meta {
-            display: flex; align-items: center; gap: .5rem;
-            margin-bottom: .5rem;
-        }
+        .hn-card-body { position: relative; z-index: 1; padding: 1.2rem 1.4rem; }
+        .hn-card-meta { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
         .hn-cat-badge {
             font-size: .68rem; font-weight: 700; text-transform: uppercase;
             letter-spacing: .08em; padding: .25rem .65rem; border-radius: 4px;
@@ -496,31 +549,18 @@
         .hn-cat-badge.Update       { background: rgba(123,97,255,.2); color: #a992ff; }
         .hn-cat-badge.Announcement { background: rgba(34,197,94,.15); color: #4ade80; }
         .hn-cat-badge.Event        { background: rgba(245,158,11,.15); color: #fbbf24; }
-
-        .hn-date {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: .68rem; color: rgba(221,224,230,.4);
-        }
-        .hn-card-title {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700; line-height: 1.2; letter-spacing: -.3px;
-            margin-bottom: .4rem;
-        }
+        .hn-date { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: rgba(221,224,230,.4); }
+        .hn-card-title { font-family: 'Syne', sans-serif; font-weight: 700; line-height: 1.2; letter-spacing: -.3px; margin-bottom: .4rem; }
         .hn-card-title.featured { font-size: 1.3rem; }
         .hn-card-title.normal   { font-size: 1rem; }
         .hn-card-brief {
-            font-size: .83rem; color: rgba(221,224,230,.65);
-            line-height: 1.5; display: -webkit-box;
-            -webkit-box-orient: vertical; overflow: hidden;
+            font-size: .83rem; color: rgba(221,224,230,.65); line-height: 1.5;
+            display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
         }
         .hn-card-brief.featured { -webkit-line-clamp: 3; }
         .hn-card-brief.normal   { -webkit-line-clamp: 2; }
-
         .hn-no-cover { background: linear-gradient(135deg, #0d0b1a 0%, #130f2a 100%); }
-
-        @media (max-width: 900px) {
-            .homepage-news-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .homepage-news-grid { grid-template-columns: 1fr; } }
         /* ─── Responsive ─── */
         @media (max-width: 900px) {
             .hero { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 0 3rem; }
@@ -631,12 +671,19 @@
 </head>
 <body>
 
+<div id="splash-overlay-bg" style="position:fixed;inset:0;z-index:9998;background:#060608;pointer-events:none;transition:opacity .55s ease"></div>
+<div id="site-splash">
+  <div id="splash-logo">
+    <span class="splash-au" id="splash-au">Among Us</span>
+    <span class="splash-accent" id="splash-accent">&nbsp;Launcher</span>
+  </div>
+</div>
 <div class="ambient ambient-1"></div>
 <div class="ambient ambient-2"></div>
 
 <!-- NAV -->
 <nav>
-    <div class="nav-logo">AU <span>Launcher</span></div>
+    <div class="nav-logo" id="nav-logo" style="opacity:0;transition:opacity .2s ease">AU <span>Launcher</span></div>
     <div class="nav-links">
         <a href="helpPage.html">Docs</a>
         <a href="news.html">News</a>
@@ -789,8 +836,18 @@
         </div>
     </section>
 
+    <!-- TRUST WALL -->
+    <section class="trustwall-section reveal">
+      <div class="section-label">Community</div>
+      <h2 class="section-title" style="margin-bottom:.6rem">People love it.</h2>
+      <p class="section-sub" style="margin-bottom:2rem">Real messages from our Discord trust wall.</p>
+      <div class="trustwall-ticker-wrap">
+        <div class="trustwall-ticker" id="trustwall-ticker"></div>
+      </div>
+    </section>
 
-    <!-- LATEST NEWS SECTION -->
+
+    <!-- LATEST NEWS -->
     <section class="news-preview reveal">
         <div class="news-preview-header">
             <div>
@@ -801,7 +858,6 @@
             <a href="news.html" class="news-more-btn">All news <i class="fas fa-arrow-right"></i></a>
         </div>
         <div id="homepage-news-grid" class="homepage-news-grid">
-            <!-- Filled by JS -->
             <div class="hn-skeleton"></div>
             <div class="hn-skeleton small"></div>
             <div class="hn-skeleton small"></div>
@@ -982,48 +1038,166 @@
 
     fetchAllReleases();
 
-    /* ─── Homepage news ─── */
-    const NEWS_INDEX = '/news/index.json';
-    const NEWS_BASE  = '/news/';
-    function formatDate(d) {
+    /* ── Splash: tween to nav ── */
+    (function() {
+        const overlayBg = document.getElementById('splash-overlay-bg');
+        const splash    = document.getElementById('site-splash');
+        const auEl      = document.getElementById('splash-au');
+        const accentEl  = document.getElementById('splash-accent');
+        const logoEl    = document.getElementById('splash-logo');
+        if (!splash) return;
+
+        if (sessionStorage.getItem('splash_seen')) {
+            splash.classList.add('hidden');
+            if (overlayBg) overlayBg.style.display = 'none';
+            const nl = document.getElementById('nav-logo');
+            if (nl) nl.style.opacity = '1';
+            return;
+        }
+
+        const VW  = window.innerWidth;
+        const BIG = Math.min(VW * 0.08, 72);
+
+        // Set big centered styles
+        [auEl, accentEl].forEach(el => {
+            el.style.fontSize       = BIG + 'px';
+            el.style.letterSpacing  = '-3px';
+            el.style.opacity        = '0';
+            el.style.transition     = 'none';
+        });
+        logoEl.style.left      = '50%';
+        logoEl.style.top       = '50%';
+        logoEl.style.transform = 'translate(-50%, -50%)';
+
+        // Phase 1: fade in big text
+        setTimeout(() => {
+            auEl.style.transition     = 'opacity .4s ease';
+            accentEl.style.transition = 'opacity .4s ease .15s';
+            auEl.style.opacity        = '1';
+            accentEl.style.opacity    = '1';
+        }, 60);
+
+        // Phase 2: morph & fly after 900ms
+        setTimeout(() => {
+            const navLogo = document.querySelector('.nav-logo');
+            if (!navLogo) { finish(); return; }
+
+            const navRect  = navLogo.getBoundingClientRect();
+            const logoRect = logoEl.getBoundingClientRect();
+            const navPx    = parseFloat(getComputedStyle(navLogo).fontSize);
+
+            // Target translation so logo lands on nav
+            const tx = navRect.left + navRect.width / 2 - (logoRect.left + logoRect.width / 2);
+            const ty = navRect.top  + navRect.height / 2 - (logoRect.top  + logoRect.height / 2);
+
+            // Scale font down
+            const transition = 'font-size .55s cubic-bezier(.4,0,.2,1), letter-spacing .45s ease, opacity .3s ease';
+            auEl.style.transition     = transition;
+            accentEl.style.transition = transition;
+            auEl.style.fontSize       = navPx + 'px';
+            accentEl.style.fontSize   = navPx + 'px';
+            auEl.style.letterSpacing  = '-.5px';
+            accentEl.style.letterSpacing = '-.5px';
+
+            // Morph text mid-flight
+            setTimeout(() => { auEl.textContent = 'AU'; }, 160);
+
+            // Fly container
+            logoEl.style.transition  = 'transform .58s cubic-bezier(.4,0,.2,1)';
+            logoEl.style.transform   = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px))`;
+
+            // Fade out background overlay
+            setTimeout(() => { if (overlayBg) overlayBg.classList.add('fade'); }, 60);
+
+            // Done
+            setTimeout(finish, 640);
+        }, 900);
+
+        function finish() {
+            splash.classList.add('hidden');
+            if (overlayBg) overlayBg.style.display = 'none';
+            sessionStorage.setItem('splash_seen', '1');
+            // Reveal the real nav logo now that the splash has landed there
+            const nl = document.getElementById('nav-logo');
+            if (nl) nl.style.opacity = '1';
+        }
+    })();
+
+    /* ── Homepage news ── */
+    const NEWS_BASE_HP = '/news/';
+    function formatDateHP(d) {
         return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
     }
-
     function buildHNCard(post, size) {
         const href = `post.html?slug=${post.slug}`;
-        const cover = post.cover
-            ? `style="background-image:url('${post.cover}')"` : 'class="hn-no-cover"';
-        const catClass = post.category || 'Update';
-        return `
-        <a class="hn-card" href="${href}">
+        const cover = post.cover ? `style="background-image:url('${post.cover}')"` : 'class="hn-no-cover"';
+        const cat   = post.category || 'Update';
+        return `<a class="hn-card" href="${href}">
             <div class="hn-card-img" ${cover}></div>
             <div class="hn-card-body">
                 <div class="hn-card-meta">
-                    <span class="hn-cat-badge ${catClass}">${catClass}</span>
-                    <span class="hn-date">${formatDate(post.date)}</span>
+                    <span class="hn-cat-badge ${cat}">${cat}</span>
+                    <span class="hn-date">${formatDateHP(post.date)}</span>
                 </div>
                 <div class="hn-card-title ${size}">${post.title}</div>
                 <div class="hn-card-brief ${size}">${post.brief}</div>
             </div>
         </a>`;
     }
-
     async function loadHomepageNews() {
         const grid = document.getElementById('homepage-news-grid');
         if (!grid) return;
         try {
-            const res  = await fetch(NEWS_INDEX);
+            const res   = await fetch(NEWS_BASE_HP + 'index.json');
             const posts = await res.json();
             const sorted = posts.sort((a,b) => new Date(b.date) - new Date(a.date));
             const featured = sorted.find(p => p.priority === 'featured') || sorted[0];
-            const rest = sorted.filter(p => p !== featured).slice(0, 2);
-            grid.innerHTML = buildHNCard(featured, 'featured') + rest.map(p => buildHNCard(p, 'normal')).join('');
+            const rest     = sorted.filter(p => p !== featured).slice(0, 2);
+            grid.innerHTML = buildHNCard(featured,'featured') + rest.map(p=>buildHNCard(p,'normal')).join('');
         } catch(e) {
-            grid.innerHTML = `<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--muted);font-size:.9rem">News unavailable right now.</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--muted);font-size:.9rem">News unavailable.</div>`;
         }
     }
     loadHomepageNews();
 
+    /* ── Trust wall ticker ── */
+    async function loadTrustWall() {
+        const ticker = document.getElementById('trustwall-ticker');
+        if (!ticker) return;
+        try {
+            const res  = await fetch('https://amongus-launcher.vercel.app/api/messages?channel=trustwall&limit=50');
+            const msgs = await res.json();
+            const good = msgs
+                .filter(m => m.content && m.content.trim().length > 10)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 14);
+            if (!good.length) { ticker.closest('.trustwall-section').style.display='none'; return; }
+            const cards = good.map(m => {
+                const name    = m.author.display_name;
+                const initial = name.charAt(0).toUpperCase();
+                const avatar  = m.author.avatar
+                    ? `<img src="${m.author.avatar}" alt="${initial}" onerror="this.style.display='none'">`
+                    : initial;
+                const date = new Date(m.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+                const reactions = m.reactions && m.reactions.length
+                    ? `<div class="tw-reactions">${m.reactions.map(r=>`<span class="tw-reaction">${r.emoji} ${r.count}</span>`).join('')}</div>`
+                    : '';
+                return `<div class="tw-card">
+                    <div class="tw-card-header">
+                        <div class="tw-avatar">${avatar}</div>
+                        <div><div class="tw-name">${name}</div><div class="tw-time">${date}</div></div>
+                    </div>
+                    <div class="tw-content">${m.content.slice(0,180)}</div>
+                    ${reactions}
+                </div>`;
+            }).join('');
+            ticker.innerHTML = cards + cards;
+        } catch(e) {
+            const s = document.querySelector('.trustwall-section');
+            if (s) s.style.display = 'none';
+        }
+    }
+    loadTrustWall();
 </script>
 </body>
 </html>
