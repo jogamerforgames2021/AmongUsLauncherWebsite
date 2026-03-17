@@ -6,7 +6,7 @@
     <meta name="description" content="Download and install Among Us with our modern, feature-rich launcher. Auto-updates, Discord RPC, version management and more.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <title>Among Us Launcher — ShadowSlime</title>
 
     <!-- TrustBox script -->
@@ -763,6 +763,128 @@
         }
         .win-notice i { color: #5b9bd5; font-size: 1rem; flex-shrink: 0; }
         .win-notice span { line-height: 1.4; }
+
+        #glitch-boot {
+            position: fixed; inset: 0; z-index: 19999;
+            background: #000;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        #glitch-boot.out {
+            animation: gb-fadeout .45s ease forwards;
+        }
+        @keyframes gb-fadeout { to { opacity: 0; } }
+
+        #glitch-boot::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 3px,rgba(0,0,0,.28) 3px,rgba(0,0,0,.28) 4px);
+            pointer-events: none; z-index: 1;
+        }
+        #glitch-boot::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.85) 100%);
+            pointer-events: none; z-index: 1;
+        }
+
+        .gb-content { position: relative; z-index: 2; text-align: center; }
+
+        .gb-tag {
+            font-size: .72rem; letter-spacing: 6px;
+            color: rgba(123,97,255,.7); text-transform: uppercase;
+            margin-bottom: 1.6rem; opacity: 0;
+        }
+        .gb-tag.in { animation: gb-el-in .3s ease forwards; }
+
+        .gb-headline {
+            font-size: clamp(2rem, 5vw, 3.8rem);
+            font-weight: 900; color: #fff; line-height: 1.1;
+            margin-bottom: .8rem; opacity: 0; position: relative;
+        }
+        .gb-headline .gac { color: var(--accent); }
+        .gb-headline.in { animation: gb-el-in .4s ease forwards; }
+
+        .gb-headline::before, .gb-headline::after {
+            content: attr(data-text);
+            position: absolute; inset: 0;
+            clip-path: polygon(0 25%, 100% 25%, 100% 55%, 0 55%);
+        }
+        .gb-headline::before { color: #ff0050; animation: gb-ghost-r 2s steps(1) infinite; }
+        .gb-headline::after  { color: #00f5ff; animation: gb-ghost-b 2s steps(1) infinite .25s; }
+        @keyframes gb-ghost-r {
+            0%,88%{opacity:0;transform:translate(0)} 89%{opacity:1;transform:translate(-5px,-1px)} 93%{opacity:1;transform:translate(5px,1px)} 97%{opacity:0}
+        }
+        @keyframes gb-ghost-b {
+            0%,83%{opacity:0;transform:translate(0)} 84%{opacity:1;transform:translate(6px,2px)} 88%{opacity:1;transform:translate(-6px,-2px)} 92%{opacity:0}
+        }
+
+        .gb-sub {
+            font-size: clamp(.65rem, 1.2vw, .82rem);
+            color: rgba(255,255,255,.35); letter-spacing: 4px;
+            text-transform: uppercase; margin-bottom: 2rem; opacity: 0;
+        }
+        .gb-sub.in { animation: gb-el-in .3s ease forwards .15s; }
+
+        .gb-log {
+            background: rgba(0,0,0,.6);
+            border: 1px solid rgba(123,97,255,.18);
+            border-radius: 10px;
+            padding: .8rem 1.2rem;
+            width: min(480px, 88vw);
+            text-align: left;
+            font-size: clamp(.62rem, .9vw, .78rem);
+            color: rgba(255,255,255,.4);
+            opacity: 0;
+        }
+        .gb-log.in { animation: gb-el-in .4s ease forwards; }
+        .gb-log-line { margin: 0; line-height: 1.8; }
+        .gb-ok  { color: #4ade80; }
+        .gb-err { color: #ff0050; }
+        .gb-hl  { color: var(--accent); }
+        .gb-dim { color: rgba(255,255,255,.22); }
+
+        .gb-divider {
+            width: min(360px, 80vw); height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), #ff0050, transparent);
+            margin: 1.4rem auto; opacity: 0;
+        }
+        .gb-divider.in { animation: gb-el-in .3s ease forwards; }
+
+        .gb-progress-wrap {
+            width: min(360px, 80vw); height: 4px;
+            background: rgba(255,255,255,.06);
+            border-radius: 100px; overflow: hidden;
+            margin: 0 auto; opacity: 0;
+        }
+        .gb-progress-wrap.in { animation: gb-el-in .3s ease forwards; }
+        .gb-progress-bar {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--accent), #a992ff);
+            border-radius: 100px;
+            box-shadow: 0 0 10px rgba(123,97,255,.6);
+            transition: width .1s linear;
+        }
+
+        @keyframes gb-el-in {
+            from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+            to   { opacity: 1; transform: translateY(0);    filter: none; }
+        }
+
+        @keyframes gb-shake {
+            0%{transform:translate(0)} 20%{transform:translate(-4px,2px)} 40%{transform:translate(4px,-2px)}
+            60%{transform:translate(-3px,3px)} 80%{transform:translate(3px,-3px)} 100%{transform:translate(0)}
+        }
+        @keyframes gb-rgb {
+            0%,100%{filter:none}
+            20%{filter:drop-shadow(-5px 0 0 rgba(255,0,80,.7)) drop-shadow(5px 0 0 rgba(0,245,255,.7))}
+            50%{filter:none}
+            75%{filter:drop-shadow(-3px 0 0 rgba(255,0,80,.5)) brightness(1.3)}
+        }
+        .gb-shaking { animation: gb-shake .12s steps(1) infinite, gb-rgb .4s ease-in-out infinite; }
     </style>
 
     <script>
@@ -773,6 +895,24 @@
     </script>
 </head>
 <body>
+
+<div id="glitch-boot" style="display:none">
+    <div class="gb-content">
+        <div class="gb-tag" id="gb-tag">⚡ signal acquired ⚡</div>
+        <div class="gb-headline" id="gb-headline" data-text="NEW DOMAIN."><span class="gac">NEW DOMAIN.</span></div>
+        <div class="gb-sub" id="gb-sub">connection re-established</div>
+        <div class="gb-divider" id="gb-divider"></div>
+        <div class="gb-log" id="gb-log">
+            <p class="gb-log-line"><span class="gb-dim">[00:01]</span> <span class="gb-err">ERR</span> old domain routing table offline</p>
+            <p class="gb-log-line"><span class="gb-dim">[00:02]</span> <span class="gb-ok">OK </span> new endpoint → <span class="gb-hl">amongus-launcher.vercel.app</span></p>
+            <p class="gb-log-line"><span class="gb-dim">[00:03]</span> <span class="gb-ok">OK </span> loading interface...</p>
+        </div>
+        <div class="gb-divider" style="margin-top:1.4rem"></div>
+        <div class="gb-progress-wrap" id="gb-progress-wrap">
+            <div class="gb-progress-bar" id="gb-progress-bar"></div>
+        </div>
+    </div>
+</div>
 
 <div id="splash-overlay-bg" style="position:fixed;inset:0;z-index:9998;background:#060608;pointer-events:none;transition:opacity .55s ease"></div>
 <div id="site-splash">
@@ -1140,6 +1280,83 @@
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
     fetchAllReleases();
+
+    /* ── Glitch boot sequence (from ?RedirectedGlitch) ── */
+    (function() {
+        if (!location.search.includes('RedirectedGlitch')) return;
+        history.replaceState(null, '', location.pathname);
+
+        const boot = document.getElementById('glitch-boot');
+        if (!boot) return;
+
+        boot.style.display = 'flex';
+        document.documentElement.style.visibility = '';
+        sessionStorage.removeItem('splash_seen');
+
+        const show = (id, delay) => setTimeout(() => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('in');
+        }, delay);
+
+        // elements fade in staggered
+        show('gb-tag',          100);
+        show('gb-headline',     300);
+        show('gb-sub',          500);
+        show('gb-divider',      650);
+        show('gb-log',          800);
+        show('gb-progress-wrap',1000);
+
+        // typewriter the log lines
+        setTimeout(() => {
+            const lines = boot.querySelectorAll('.gb-log-line');
+            lines.forEach(l => { l.dataset.full = l.innerHTML; l.innerHTML = ''; });
+            let li = 0;
+            function typeLine(line) {
+                const temp = document.createElement('div');
+                temp.innerHTML = line.dataset.full;
+                const txt = [...temp.textContent];
+                let ci = 0;
+                const iv = setInterval(() => {
+                    if (ci < txt.length) { line.textContent += txt[ci++]; }
+                    else { clearInterval(iv); line.innerHTML = line.dataset.full; li++; if (li < lines.length) setTimeout(() => typeLine(lines[li]), 180); }
+                }, 22);
+            }
+            if (lines.length) typeLine(lines[0]);
+        }, 850);
+
+        // progress bar fills over 1.4s
+        setTimeout(() => {
+            const bar = document.getElementById('gb-progress-bar');
+            const t0 = Date.now();
+            const dur = 1400;
+            const tick = () => {
+                const p = Math.min(100, ((Date.now() - t0) / dur) * 100);
+                if (bar) bar.style.width = p + '%';
+                if (p < 100) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        }, 1000);
+
+        // shake the whole thing briefly at 1.6s
+        setTimeout(() => boot.classList.add('gb-shaking'), 1600);
+        setTimeout(() => boot.classList.remove('gb-shaking'), 2000);
+
+        // flash white
+        const flash = () => {
+            const f = document.createElement('div');
+            f.style.cssText = 'position:fixed;inset:0;z-index:20000;background:#fff;pointer-events:none';
+            document.body.appendChild(f);
+            setTimeout(() => { f.style.transition = 'opacity .2s'; f.style.opacity = '0'; }, 60);
+            setTimeout(() => f.remove(), 280);
+        };
+        setTimeout(flash, 2150);
+
+        // fade out boot → hand off to normal splash
+        setTimeout(() => {
+            boot.classList.add('out');
+            setTimeout(() => { boot.style.display = 'none'; }, 480);
+        }, 2200);
+    })();
 
     /* ── Splash: tween to nav ── */
     (function() {
