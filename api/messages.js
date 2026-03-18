@@ -30,9 +30,11 @@ function getAvatarUrl(author) {
     // Default Discord avatar
     return `https://cdn.discordapp.com/embed/avatars/${parseInt(author.discriminator || '0') % 5}.png`;
   }
-  // Webhooks use a different avatar path vs regular users
+  // Webhooks: Discord caches avatar_url forever and the hash CDN path is unreliable.
+  // We always reconstruct from username on the read side — same source as send.js.
   if (author.webhook_id) {
-    return `https://cdn.discordapp.com/avatars/${author.webhook_id}/${author.avatar}.png?size=64`;
+    const name = author.global_name || author.username || 'User';
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7b61ff&color=fff&size=64&bold=true&rounded=true`;
   }
   return `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}.png?size=64`;
 }
@@ -114,6 +116,7 @@ export default async function handler(req, res) {
 
       return {
         id:        m.id,
+        type:      m.type ?? 0,
         content:   m.content || '',
         timestamp: m.timestamp,
         author: {
@@ -162,7 +165,12 @@ export default async function handler(req, res) {
             emoji:    c.emoji?.name || null,
           }))
         ),
-        reactions: (m.reactions || []).map(r => ({ emoji: r.emoji.name, count: r.count })),
+        reactions: (m.reactions || []).map(r => ({
+          emoji:          r.emoji.name,
+          emoji_id:       r.emoji.id   || null,
+          emoji_animated: r.emoji.animated || false,
+          count:          r.count,
+        })),
         referenced_message: m.referenced_message ? {
           id:      m.referenced_message.id,
           content: m.referenced_message.content || '',
