@@ -27,11 +27,9 @@ async function resolveUser(userId, token) {
 
 function getAvatarUrl(author) {
   if (!author.avatar) {
-    // Default Discord avatar
     return `https://cdn.discordapp.com/embed/avatars/${parseInt(author.discriminator || '0') % 5}.png`;
   }
-  // Webhooks: Discord caches avatar_url forever and the hash CDN path is unreliable.
-  // We always reconstruct from username on the read side — same source as send.js.
+  // Webhooks: Discord caches avatar_url aggressively — reconstruct from username like send.js does
   if (author.webhook_id) {
     const name = author.global_name || author.username || 'User';
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7b61ff&color=fff&size=64&bold=true&rounded=true`;
@@ -140,8 +138,10 @@ export default async function handler(req, res) {
           name:   s.name,
           format: s.format_type, // 1=PNG, 2=APNG, 3=LOTTIE, 4=GIF
           url:    s.format_type === 3
-            ? null  // Lottie stickers can't be rendered as img
-            : `https://cdn.discordapp.com/stickers/${s.id}.${s.format_type === 4 ? 'gif' : 'png'}?size=160`,
+            ? null  // Lottie — no img fallback
+            : s.format_type === 4
+              ? `https://media.discordapp.net/stickers/${s.id}.gif`  // GIF stickers use media CDN
+              : `https://cdn.discordapp.com/stickers/${s.id}.png?size=160`,
         })),
         embeds: (m.embeds || []).map(e => ({
           title:       e.title       || null,
@@ -151,6 +151,7 @@ export default async function handler(req, res) {
           fields:      (e.fields || []).map(f => ({ name: f.name, value: f.value, inline: f.inline })),
           image:       e.image?.url     || null,
           thumbnail:   e.thumbnail?.url || null,
+          video:       e.video?.url     || null,
           footer:      e.footer  ? { text: e.footer.text,  icon: e.footer.icon_url }              : null,
           author_meta: e.author  ? { name: e.author.name,  icon: e.author.icon_url, url: e.author.url } : null,
           type:        e.type || 'rich',
@@ -167,7 +168,7 @@ export default async function handler(req, res) {
         ),
         reactions: (m.reactions || []).map(r => ({
           emoji:          r.emoji.name,
-          emoji_id:       r.emoji.id   || null,
+          emoji_id:       r.emoji.id       || null,
           emoji_animated: r.emoji.animated || false,
           count:          r.count,
         })),
