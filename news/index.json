@@ -15,7 +15,7 @@
     "date": "2025-02-20",
     "category": "Update",
     "priority": "featured",
-    "cover": ""
+    "cover": "https://i.ibb.co/Q7HPDw9t/Version17.png"
   },
   {
     "slug": "website-rewrite",
@@ -42,7 +42,7 @@
     "date": "2025-01-01",
     "category": "Event",
     "priority": "normal",
-    "cover": ""
+    "cover": "https://i.ibb.co/QFVcDG5p/New-Year.png"
   },
   {
     "slug": "game-17-1-0",
@@ -51,6 +51,6 @@
     "date": "2024-12-15",
     "category": "Update",
     "priority": "normal",
-    "cover": ""
+    "cover": "https://i.ibb.co/v4hh36Wg/17-0.png"
   }
 ]
