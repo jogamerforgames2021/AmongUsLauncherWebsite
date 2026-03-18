@@ -5,7 +5,7 @@
     "brief": "New look, mods tab, AUnlocker built right in, live download speed graph, Discord status and a ton more. This one's big.",
     "date": "2025-03-16",
     "category": "Update",
-    "priority": "featured",
+    "priority": "high",
     "cover": "https://i.ibb.co/Fb7MpC2N/Verions1-4.png"
   },
   {
@@ -14,7 +14,7 @@
     "brief": "Grabbed and cracked 17.2.1 for you. Download it through the launcher as usual.",
     "date": "2025-02-20",
     "category": "Update",
-    "priority": "high",
+    "priority": "featured",
     "cover": ""
   },
   {
