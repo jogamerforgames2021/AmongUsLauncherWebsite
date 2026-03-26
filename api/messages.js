@@ -26,15 +26,20 @@ async function resolveUser(userId, token) {
 }
 
 function getAvatarUrl(author) {
-  if (!author.avatar) {
-    return `https://cdn.discordapp.com/embed/avatars/${parseInt(author.discriminator || '0') % 5}.png`;
-  }
-  // Webhooks: Discord caches avatar_url aggressively — reconstruct from username like send.js does
-  if (author.webhook_id) {
+  // Launcher webhook messages: always reconstruct from username (we control these)
+  if (author.webhook_id && author.is_launcher) {
     const name = author.global_name || author.username || 'User';
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7b61ff&color=fff&size=64&bold=true&rounded=true`;
   }
-  return `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}.png?size=64`;
+  // Bots and other webhooks: use their real avatar if available
+  if (author.avatar) {
+    if (author.webhook_id) {
+      return `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}.png?size=64`;
+    }
+    return `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}.png?size=64`;
+  }
+  // No avatar: default Discord avatar
+  return `https://cdn.discordapp.com/embed/avatars/${parseInt(author.discriminator || '0') % 5}.png`;
 }
 
 export default async function handler(req, res) {
@@ -110,7 +115,8 @@ export default async function handler(req, res) {
     const shaped = messages.map(m => {
       // Detect if this is a webhook message
       const isWebhook = !!m.webhook_id;
-      const authorWithWebhook = { ...m.author, webhook_id: m.webhook_id };
+      const isLauncherWebhook = isWebhook && (m.author.username?.includes('Launcher') || m.author.global_name?.includes('Launcher'));
+      const authorWithWebhook = { ...m.author, webhook_id: m.webhook_id, is_launcher: isLauncherWebhook };
 
       return {
         id:        m.id,
@@ -132,6 +138,22 @@ export default async function handler(req, res) {
           content_type: a.content_type || '',
           width: a.width || null, height: a.height || null,
         })),
+        // Poll support
+        poll: m.poll ? {
+          question: m.poll.question?.text || '',
+          answers:  (m.poll.answers || []).map(a => ({
+            id:    a.answer_id,
+            text:  a.poll_media?.text || '',
+            emoji: a.poll_media?.emoji?.name || null,
+          })),
+          results: m.poll.results ? (m.poll.results.answer_counts || []).map(r => ({
+            id:    r.id,
+            count: r.count,
+            me_voted: r.me_voted || false,
+          })) : [],
+          expiry:   m.poll.expiry || null,
+          finished: m.poll.results?.is_finalized || false,
+        } : null,
         // Sticker support
         stickers: (m.sticker_items || []).map(s => ({
           id:     s.id,
