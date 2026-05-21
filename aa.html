@@ -85,7 +85,6 @@ body::after{
   position:relative;
 }
 .nb:hover{color:var(--text);}
-.nb.active{color:var(--text);}
 /* intentional offsets — taped on */
 .nb:nth-child(1){transform:translateY(0px);}
 .nb:nth-child(2){transform:translateY(7px);}
@@ -458,59 +457,7 @@ main{position:relative;z-index:1;}
 .dl-warn a{color:rgba(92,158,255,.6);text-decoration:none;}
 .dl-warn a:hover{color:rgba(92,158,255,.9);}
 
-/* ── S5: SUPPORT ─────────────────────────── */
-.support-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:1px;
-  background:var(--dim);
-  max-width:580px;
-  margin-top:1.4rem;
-}
-.sup-card{
-  background:var(--bg);
-  padding:1.4rem 1.6rem;
-  display:flex;flex-direction:column;gap:.65rem;
-  cursor:pointer;text-decoration:none;color:inherit;
-  position:relative;overflow:hidden;
-  transition:background .12s;
-  border:none;text-align:left;font-family:var(--f);
-}
-.sup-card::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-  background:var(--red);transform:scaleX(0);transform-origin:left;
-  transition:transform .22s cubic-bezier(.22,1,.36,1);
-}
-.sup-card:hover{background:rgba(240,240,242,.025);}
-.sup-card:hover::after{transform:scaleX(1);}
-.sup-card:hover .sup-arrow{color:var(--red);transform:translateX(4px);}
-.sup-icon{
-  width:26px;height:26px;border:1px solid rgba(200,21,27,.22);
-  display:flex;align-items:center;justify-content:center;
-}
-.sup-icon svg{width:13px;height:13px;fill:var(--red);}
-.sup-title{font-size:.78rem;font-weight:bold;color:var(--text);letter-spacing:.02em;}
-.sup-desc{font-size:.65rem;color:var(--muted);line-height:1.65;}
-.sup-arrow{font-size:.58rem;color:rgba(240,240,242,.2);letter-spacing:.06em;transition:color .15s,transform .18s;display:inline-block;}
-
-/* status strip */
-.sup-status{
-  display:flex;align-items:center;gap:.7rem;
-  margin-top:1.6rem;
-  max-width:580px;
-  padding:.55rem .9rem;
-  border:1px solid var(--dim);
-  font-size:.6rem;letter-spacing:.08em;
-  color:var(--muted);
-}
-.sup-status-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:#00c896;
-  flex-shrink:0;
-  box-shadow:0 0 6px rgba(0,200,150,.5);
-}
-.sup-status-label{color:rgba(240,240,242,.35);}
-.sup-status-label span{color:#00c896;}
+/* ── S4: TRUST ────────────────────────────── */
 .trust-label{
   font-size:.6rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--red);
@@ -1074,10 +1021,10 @@ main{position:relative;z-index:1;}
 
 <!-- ── NAV ── -->
 <div id="nav">
-  <a class="nb active" href="index.html">Home</a>
   <a class="nb" href="helpPage.html">Docs</a>
   <a class="nb" href="news.html">News</a>
   <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+  <button class="nb" onclick="openModal()">Download</button>
   <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()" title="toggle beans">◉ beans</button>
 </div>
 
@@ -1088,7 +1035,6 @@ main{position:relative;z-index:1;}
     <div class="p-dot"        data-sec="1"><span class="p-tag">FEATURES</span></div>
     <div class="p-dot"        data-sec="2"><span class="p-tag">GET_EXE</span></div>
     <div class="p-dot"        data-sec="3"><span class="p-tag">TRUST</span></div>
-    <div class="p-dot"        data-sec="4"><span class="p-tag">SUPPORT</span></div>
   </div>
   <div class="p-cue">scroll</div>
 </div>
@@ -1298,48 +1244,6 @@ main{position:relative;z-index:1;}
   </div>
 </section>
 
-<!-- ── S5: SUPPORT ── -->
-<section class="s" id="s-support">
-  <div class="feat-label">// Support</div>
-  <p class="h-sub" style="margin-bottom:.4rem;max-width:420px;">Something broken or need a hand?<br>We're in Discord, usually fast.</p>
-
-  <div class="sup-status">
-    <span class="sup-status-dot"></span>
-    <span class="sup-status-label">SYSTEM: <span>STABLE</span></span>
-    <span style="opacity:.2;margin:0 .2rem;">·</span>
-    <span class="sup-status-label">ORIGIN: <span>ALEX_EGY</span></span>
-    <span style="opacity:.2;margin:0 .2rem;">·</span>
-    <span class="sup-status-label">BUILD: <span>2026.05</span></span>
-  </div>
-
-  <div class="support-grid">
-    <a class="sup-card" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">
-      <div class="sup-icon"><svg viewBox="0 0 24 24"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9zM8.2 14.3c-1.1 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.1 1 2.1 2.3-.9 2.3-2.1 2.3zm7.6 0c-1.1 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.1 1 2.1 2.3-.9 2.3-2.1 2.3z"/></svg></div>
-      <div class="sup-title">Discord</div>
-      <div class="sup-desc">Post in #support — someone will sort you out fast, usually under an hour.</div>
-      <span class="sup-arrow">Join &rsaquo;</span>
-    </a>
-    <a class="sup-card" href="helpPage.html">
-      <div class="sup-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div>
-      <div class="sup-title">Help Center</div>
-      <div class="sup-desc">Troubleshooting, install guides, FAQs — most issues are answered there.</div>
-      <span class="sup-arrow">Read &rsaquo;</span>
-    </a>
-    <a class="sup-card" href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank">
-      <div class="sup-icon"><svg viewBox="0 0 24 24"><path d="M12 .3A12 12 0 0 0 0 12.3c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.4 18 4.7 18 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 24 12.3 12 12 0 0 0 12 .3z"/></svg></div>
-      <div class="sup-title">Source Code</div>
-      <div class="sup-desc">Open source. Read the code, open an issue, or contribute a fix.</div>
-      <span class="sup-arrow">GitHub &rsaquo;</span>
-    </a>
-    <a class="sup-card" href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank">
-      <div class="sup-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
-      <div class="sup-title">Feedback</div>
-      <div class="sup-desc">Bug reports, feature requests, or anything else — the form goes straight to me.</div>
-      <span class="sup-arrow">Send &rsaquo;</span>
-    </a>
-  </div>
-</section>
-
 </main>
 
 <!-- ── HUB DRAWER (tab is the handle at top) ── -->
@@ -1479,17 +1383,8 @@ let hubOpen = false;
    SPLASH
 =========================================== */
 (function() {
+  const logo = document.getElementById('splash-logo');
   const splash = document.getElementById('splash');
-  const logo   = document.getElementById('splash-logo');
-
-  // Only show on the very first load of this tab session.
-  // Refresh keeps the flag; new tab gets a fresh sessionStorage.
-  if (sessionStorage.getItem('splashSeen')) {
-    splash.style.display = 'none';
-    return;
-  }
-  sessionStorage.setItem('splashSeen', '1');
-
   setTimeout(() => logo.classList.add('in'), 80);
   setTimeout(() => {
     splash.classList.add('out');
@@ -1501,7 +1396,7 @@ let hubOpen = false;
    SECTION ENTER ANIMATIONS
 =========================================== */
 // Wrap each section's children in a .sec-inner div for animation
-const sectionEls = ['s-home','s-features','s-download','s-trust','s-support'].map(id => document.getElementById(id));
+const sectionEls = ['s-home','s-features','s-download','s-trust'].map(id => document.getElementById(id));
 sectionEls.forEach(sec => {
   const inner = document.createElement('div');
   inner.className = 'sec-inner';
@@ -1531,7 +1426,7 @@ document.querySelectorAll('.nb').forEach((btn, i) => {
    PILLAR — INTERSECTION OBSERVER
 =========================================== */
 const dots     = Array.from(document.querySelectorAll('.p-dot'));
-const sections = ['s-home','s-features','s-download','s-trust','s-support'].map(id => document.getElementById(id));
+const sections = ['s-home','s-features','s-download','s-trust'].map(id => document.getElementById(id));
 
 dots.forEach((dot, i) => {
   dot.addEventListener('click', () => {
@@ -1595,15 +1490,15 @@ window.addEventListener('wheel', e => {
 /* ===========================================
    BEAN TOGGLE
 =========================================== */
-let beansEnabled = localStorage.getItem('beans') !== 'off';
-window.__beansEnabled = beansEnabled;
+let beansEnabled = true;
 function toggleBeans() {
   beansEnabled = !beansEnabled;
-  localStorage.setItem('beans', beansEnabled ? 'on' : 'off');
+  const btn = document.getElementById('bean-toggle-btn');
+  btn.classList.toggle('off', !beansEnabled);
+  // signal to canvas loop via global
   window.__beansEnabled = beansEnabled;
-  document.getElementById('bean-toggle-btn').classList.toggle('off', !beansEnabled);
 }
-if (!beansEnabled) document.getElementById('bean-toggle-btn').classList.add('off');
+window.__beansEnabled = true;
 function openModal() {
   document.getElementById('winModal').classList.add('active');
 }

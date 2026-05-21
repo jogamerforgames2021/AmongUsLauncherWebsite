@@ -1,313 +1,674 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="News, updates and announcements for the ShadowSlime Among Us Launcher.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <title>News — ShadowSlime Launcher</title>
-  <style>
-    :root {
-      --bg:      #060608;
-      --surface: #0a0b0d;
-      --border:  rgba(255,255,255,0.055);
-      --accent:  #7b61ff;
-      --accent2: #5e48d4;
-      --text:    #dde0e6;
-      --muted:   rgba(221,224,230,0.38);
-    }
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="News, updates and announcements for the Among Us Launcher.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>News // Among Us Launcher</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 
-    body::after {
-      content:''; position:fixed; inset:0;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events:none; z-index:9999; opacity:.6;
-    }
-    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.65);
+  --dim:rgba(240,240,242,.09);
+  --f:'Share Tech Mono',monospace;
+}
 
-    .ambient { position:fixed; pointer-events:none; z-index:0; border-radius:50%; filter:blur(140px); opacity:.1; }
-    .ambient-1 { width:600px; height:600px; background:#4a2dcc; top:-200px; right:-100px; }
-    .ambient-2 { width:400px; height:400px; background:#1a0a3d; bottom:0; left:-100px; }
+html{ overflow-y:scroll; height:100%; overscroll-behavior-y:none; }
 
-    .wrap { max-width:1180px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
+body{
+  font-family:var(--f);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100%;
+  overflow-x:hidden;
+  /* bottom padding so hub tab doesn't overlap last card */
+  padding-bottom:5rem;
+}
 
-    /* NAV */
-    nav {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:1.6rem 2rem; border-bottom:1px solid var(--border);
-      position:sticky; top:0; z-index:100;
-      background:rgba(6,6,8,0.88); backdrop-filter:blur(20px);
-    }
-    .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; letter-spacing:-.5px; display:flex; align-items:center; gap:.6rem; text-decoration:none; color:var(--text); }
-    .nav-logo span { color:var(--accent); }
-    .nav-links { display:flex; gap:2rem; }
-    .nav-links a { color:var(--muted); text-decoration:none; font-size:.9rem; font-weight:500; transition:color .2s; }
-    .nav-links a:hover, .nav-links a.active { color:var(--text); }
-    .nav-cta { background:var(--accent); color:#000; padding:.55rem 1.3rem; border-radius:8px; font-weight:600; font-size:.9rem; text-decoration:none; transition:background .2s, transform .15s; border:none; cursor:pointer; }
-    .nav-cta:hover { background:#9b85ff; transform:translateY(-1px); }
+/* grain */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;
+}
 
-    /* PAGE HEADER */
-    .page-header { padding:4rem 0 2.5rem; }
-    .page-header-kicker {
-      display:inline-flex; align-items:center; gap:.5rem;
-      font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:600;
-      color:var(--accent); letter-spacing:.12em; text-transform:uppercase;
-      border:1px solid rgba(123,97,255,.22); background:rgba(123,97,255,.07);
-      padding:.4rem .9rem; border-radius:100px; margin-bottom:1.2rem;
-    }
-    .page-header h1 { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem); font-weight:800; letter-spacing:-1.5px; margin-bottom:.6rem; }
-    .page-header p { color:var(--muted); font-size:.95rem; }
+#bg-canvas{
+  position:fixed;inset:0;
+  width:100%;height:100%;
+  pointer-events:none;z-index:0;
+}
 
-    /* FILTER TABS */
-    .filter-bar { display:flex; align-items:center; gap:.5rem; margin-bottom:2.5rem; flex-wrap:wrap; }
-    .filter-tab {
-      padding:.45rem 1rem; border-radius:8px; border:1px solid var(--border);
-      font-size:.85rem; font-weight:600; color:var(--muted);
-      background:transparent; cursor:pointer; transition:all .15s;
-    }
-    .filter-tab:hover { color:var(--text); border-color:rgba(255,255,255,.12); }
-    .filter-tab.active { color:var(--accent); border-color:rgba(123,97,255,.35); background:rgba(123,97,255,.08); }
+/* ── NAV ─────────────────────────────────── */
+#nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:600;
+  padding:1.5rem 2.5rem;
+  display:flex;gap:2.8rem;
+  pointer-events:none;
+}
+.nb{
+  font-family:var(--f);
+  font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  background:none;border:none;cursor:pointer;
+  pointer-events:all;
+  transition:color .1s;
+  position:relative;
+}
+.nb:hover{color:var(--text);}
+.nb.active{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0px);}
+.nb:nth-child(2){transform:translateY(7px);}
+.nb:nth-child(3){transform:translateY(-4px);}
+.nb:nth-child(4){transform:translateY(9px);}
+.bean-toggle-btn{
+  margin-left:auto;
+  transform:translateY(3px) !important;
+  opacity:.35;
+  transition:opacity .15s,color .1s !important;
+}
+.bean-toggle-btn:hover{opacity:.75;}
+.bean-toggle-btn.off{opacity:.18;}
+.bean-toggle-btn.off::after{content:' off';font-size:.55rem;opacity:.6;}
 
-    /* NEWS GRID */
-    .news-grid {
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:1rem;
-      margin-bottom:5rem;
-    }
+/* ── PAGE CONTENT ────────────────────────── */
+.page-wrap{
+  position:relative;z-index:1;
+  max-width:980px;
+  margin:0 auto;
+  padding:7rem 2.5rem 3rem;
+}
 
-    .news-card {
-      position:relative; display:flex; flex-direction:column; justify-content:flex-end;
-      border-radius:16px; overflow:hidden;
-      border:1px solid var(--border); background:var(--surface);
-      cursor:pointer; text-decoration:none; color:inherit;
-      transition:transform .25s ease, border-color .25s, box-shadow .25s;
-    }
-    .news-card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,.12); box-shadow:0 20px 40px rgba(0,0,0,.4); }
+/* header */
+.page-header{
+  margin-bottom:3rem;
+}
+.ph-label{
+  font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--red);margin-bottom:.9rem;display:block;
+}
+.ph-title{
+  font-size:clamp(2.8rem,6vw,5rem);
+  line-height:.92;letter-spacing:-.02em;
+  font-weight:bold;margin-bottom:1rem;
+}
+.ph-sub{
+  font-size:.82rem;color:var(--muted);
+  letter-spacing:.04em;
+}
 
-    /* priority sizing */
-    .news-card.featured { grid-column:span 2; min-height:360px; }
-    .news-card.high     { grid-column:1 / -1; min-height:280px; }
-    .news-card.normal   { grid-column:span 1; min-height:260px; }
+/* filter bar */
+.filter-bar{
+  display:flex;gap:.5rem;align-items:center;
+  margin-bottom:2.5rem;
+  flex-wrap:wrap;
+}
+.ftb{
+  font-family:var(--f);font-size:.6rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  background:transparent;
+  border:1px solid var(--dim);
+  color:var(--muted);
+  padding:.4rem .85rem;
+  cursor:pointer;
+  transition:color .1s,border-color .1s;
+}
+.ftb:hover{color:var(--text);border-color:rgba(240,240,242,.2);}
+.ftb.active{color:var(--text);border-color:var(--red);color:var(--red);}
 
-    /* priority border accents */
-    .news-card.featured { border-color:rgba(123,97,255,.2); }
-    .news-card.high     { border-color:rgba(34,197,94,.15); }
+/* news grid */
+.news-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--dim);
+  margin-bottom:1px;
+}
 
-    .card-img {
-      position:absolute; inset:0;
-      background-size:cover; background-position:center;
-    }
-    .card-img::after {
-      content:''; position:absolute; inset:0;
-      background:linear-gradient(to bottom, rgba(6,6,8,.05) 0%, rgba(6,6,8,.88) 100%);
-    }
-    .card-no-cover { background:linear-gradient(135deg, #0d0b1a 0%, #130f2a 100%); }
+/* cards */
+.nc{
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  padding:1.4rem 1.5rem;
+  text-decoration:none;color:inherit;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:background .14s;
+  min-height:200px;
+}
+.nc:hover{background:rgba(240,240,242,.025);}
 
-    .card-body { position:relative; z-index:1; padding:1.4rem 1.6rem; }
+/* featured — full width, cover on top */
+.nc.featured{ grid-column:1/-1; min-height:240px; }
+.nc.featured .nc-cover-wrap{ height:200px; }
 
-    .card-meta { display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem; }
-    .cat-badge {
-      font-size:.68rem; font-weight:700; text-transform:uppercase;
-      letter-spacing:.08em; padding:.25rem .7rem; border-radius:4px;
-    }
-    .cat-badge.Update       { background:rgba(123,97,255,.2); color:#a992ff; }
-    .cat-badge.Announcement { background:rgba(34,197,94,.15); color:#4ade80; }
-    .cat-badge.Event        { background:rgba(245,158,11,.15); color:#fbbf24; }
+/* high — 2 cols */
+.nc.high{ grid-column:span 2; min-height:220px; }
 
-    .card-date { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:rgba(221,224,230,.4); }
+/* cover wrap — top strip, all card types */
+.nc-cover-wrap{
+  width:100%;position:relative;overflow:hidden;flex-shrink:0;
+}
+.nc.featured .nc-cover-wrap{ height:200px; }
+.nc.high     .nc-cover-wrap{ height:130px; }
+.nc.normal   .nc-cover-wrap{ height:90px; }
 
-    .card-title {
-      font-family:'Syne',sans-serif; font-weight:700;
-      line-height:1.2; letter-spacing:-.3px; margin-bottom:.5rem;
-    }
-    .news-card.featured .card-title { font-size:1.6rem; }
-    .news-card.high     .card-title { font-size:1.2rem; }
-    .news-card.normal   .card-title { font-size:1rem; }
+.nc-cover{
+  width:100%;height:100%;object-fit:cover;
+  opacity:.5;filter:grayscale(.35);
+  transition:opacity .2s,filter .2s;display:block;
+}
+.nc:hover .nc-cover{opacity:.72;filter:grayscale(0);}
+.nc-cover-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(9,9,9,.0) 0%,rgba(9,9,9,.45) 100%);
+}
+.nc-no-cover{
+  height:90px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;color:rgba(200,21,27,.08);letter-spacing:.1em;user-select:none;
+}
+.nc.normal .nc-no-cover{display:none;}
 
-    .card-brief {
-      font-size:.85rem; color:rgba(221,224,230,.6); line-height:1.55;
-      display:-webkit-box; -webkit-box-orient:vertical; overflow:hidden;
-    }
-    .news-card.featured .card-brief { -webkit-line-clamp:3; }
-    .news-card.high     .card-brief { -webkit-line-clamp:2; }
-    .news-card.normal   .card-brief { -webkit-line-clamp:2; }
+.nc-body{display:flex;flex-direction:column;justify-content:flex-end;gap:.5rem;flex:1;padding:1.2rem 1.5rem;}
 
-    .card-read-more {
-      display:inline-flex; align-items:center; gap:.4rem;
-      margin-top:.8rem; font-size:.82rem; font-weight:600; color:var(--accent);
-    }
+.nc-meta{display:flex;align-items:center;gap:.7rem;margin-bottom:.3rem;}
+.nc-cat{
+  font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.2rem .55rem;
+  border:1px solid;
+}
+.nc-cat.Update{border-color:rgba(200,21,27,.35);color:#e05565;}
+.nc-cat.Announcement{border-color:rgba(0,200,150,.25);color:#00c896;}
+.nc-cat.Event{border-color:rgba(245,158,11,.25);color:#fbbf24;}
+.nc-date{font-size:.56rem;color:var(--muted);letter-spacing:.06em;}
 
-    /* SKELETON */
-    .card-skeleton {
-      border-radius:16px; border:1px solid var(--border); background:var(--surface);
-      animation:skPulse 1.6s ease infinite;
-    }
-    .card-skeleton.featured { grid-column:1 / -1; height:360px; }
-    .card-skeleton.high     { grid-column:span 2; height:280px; }
-    .card-skeleton.normal   { grid-column:span 1; height:260px; }
-    @keyframes skPulse { 0%,100%{opacity:.3} 50%{opacity:.65} }
+.nc-title{
+  font-size:1.05rem;
+  font-weight:bold;
+  line-height:1.25;
+  letter-spacing:-.01em;
+}
+.nc.featured .nc-title{font-size:clamp(1.4rem,2.5vw,2rem);}
+.nc.high .nc-title{font-size:1.2rem;}
 
-    /* EMPTY / ERROR */
-    .news-empty {
-      grid-column:1/-1; text-align:center;
-      padding:4rem 2rem; color:var(--muted); font-size:.95rem;
-    }
-    .news-empty i { font-size:2rem; display:block; margin-bottom:1rem; color:rgba(123,97,255,.3); }
+.nc-brief{
+  font-size:.72rem;color:var(--muted);
+  line-height:1.75;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+}
+.nc.featured .nc-brief{-webkit-line-clamp:3;}
 
-    /* FOOTER */
-    footer { border-top:1px solid var(--border); padding:3rem 0; display:flex; align-items:center; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
-    .footer-brand { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; }
-    .footer-brand span { color:var(--accent); }
-    .footer-copy { color:var(--muted); font-size:.85rem; margin-top:.3rem; }
-    .footer-socials { display:flex; gap:.8rem; }
-    .footer-socials a { width:40px; height:40px; border:1px solid var(--border); border-radius:9px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.9rem; text-decoration:none; transition:all .2s; }
-    .footer-socials a:hover { color:var(--text); border-color:rgba(255,255,255,.15); background:rgba(255,255,255,.04); }
+.nc-arrow{
+  font-size:.6rem;letter-spacing:.1em;
+  color:rgba(240,240,242,.28);
+  margin-top:.4rem;
+  transition:color .1s,transform .15s;
+  display:inline-block;
+}
+.nc:hover .nc-arrow{color:var(--red);transform:translateX(4px);}
 
-    @media (max-width:900px) {
-      .news-grid { grid-template-columns:1fr; }
-      .news-card.featured, .news-card.high, .news-card.normal { grid-column:1/-1; }
-      .card-skeleton.featured, .card-skeleton.high, .card-skeleton.normal { grid-column:1/-1; }
-    }
-  </style>
+/* loading skeletons */
+.nc-skeleton{
+  background:rgba(240,240,242,.03);
+  animation:sk-pulse 1.6s ease infinite;
+}
+.nc-skeleton.featured{grid-column:1/-1;min-height:240px;}
+.nc-skeleton.high{grid-column:span 2;min-height:220px;}
+.nc-skeleton.normal{min-height:200px;}
+@keyframes sk-pulse{0%,100%{opacity:.3}50%{opacity:.7}}
+
+/* state messages */
+.ng-state{
+  grid-column:1/-1;
+  padding:4rem 1.5rem;
+  font-size:.7rem;letter-spacing:.1em;
+  color:rgba(240,240,242,.22);
+  text-align:center;
+}
+
+@keyframes nb-glitch{
+  0%,100%{opacity:1;transform:translateX(0);}
+  20%{opacity:.5;transform:translateX(-1px);}
+  40%{opacity:1;transform:translateX(1px);}
+  60%{opacity:.7;transform:translateX(0);}
+  80%{opacity:1;}
+}
+.nb.glitch{animation:nb-glitch .25s steps(1);}
+.nb:nth-child(1).glitch{animation:nb-glitch1 .25s steps(1);}
+.nb:nth-child(2).glitch{animation:nb-glitch2 .25s steps(1);}
+.nb:nth-child(3).glitch{animation:nb-glitch3 .25s steps(1);}
+.nb:nth-child(4).glitch{animation:nb-glitch4 .25s steps(1);}
+@keyframes nb-glitch1{0%,100%{opacity:1;transform:translateY(0px) translateX(0);}33%{opacity:.4;transform:translateY(0px) translateX(-1px);}66%{opacity:.8;transform:translateY(0px) translateX(1px);}}
+@keyframes nb-glitch2{0%,100%{opacity:1;transform:translateY(7px) translateX(0);}33%{opacity:.4;transform:translateY(7px) translateX(-1px);}66%{opacity:.8;transform:translateY(7px) translateX(1px);}}
+@keyframes nb-glitch3{0%,100%{opacity:1;transform:translateY(-4px) translateX(0);}33%{opacity:.4;transform:translateY(-4px) translateX(-1px);}66%{opacity:.8;transform:translateY(-4px) translateX(1px);}}
+@keyframes nb-glitch4{0%,100%{opacity:1;transform:translateY(9px) translateX(0);}33%{opacity:.4;transform:translateY(9px) translateX(-1px);}66%{opacity:.8;transform:translateY(9px) translateX(1px);}}
+@keyframes hub-glow{
+  0%,60%,100%{box-shadow:none;border-color:var(--dim);}
+  30%{box-shadow:0 -4px 18px rgba(200,21,27,.35);border-color:rgba(200,21,27,.5);}
+}
+@keyframes hub-bounce{
+  0%,60%,100%{transform:translateY(0);}
+  30%{transform:translateY(-4px);}
+}
+@keyframes dot-pulse{
+  0%,60%,100%{opacity:.35;transform:scale(1);}
+  30%{opacity:1;transform:scale(1.6);}
+}
+#hub-drawer{
+  position:fixed;bottom:0;left:0;right:0;
+  z-index:700;
+  background:rgba(10,10,12,.98);
+  border-top:1px solid var(--dim);
+  display:flex;flex-direction:column;
+  height:calc(48vh + 3rem);
+  transition:transform .38s cubic-bezier(.22,1,.36,1);
+  transform:translateY(calc(100% - 3rem));
+}
+#hub-drawer.open{transform:translateY(0);}
+#hub-tab{
+  flex-shrink:0;height:3rem;
+  font-family:var(--f);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--text);
+  background:rgba(14,14,16,.95);border:none;border-bottom:1px solid var(--dim);
+  border-top:2px solid rgba(200,21,27,.0);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.75rem;
+  animation:hub-glow 2.4s ease infinite;
+  transition:border-top-color .2s;
+}
+#hub-tab.open{animation:none;border-top-color:var(--red);}
+#hub-tab:hover{animation:none;}
+.hub-dot{width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;animation:dot-pulse 2.4s ease infinite;flex-shrink:0;}
+#hub-tab.open .hub-dot{animation:none;opacity:1;}
+.hub-label{font-weight:bold;letter-spacing:.3em;}
+.hub-arrow{display:inline-block;font-size:.6rem;transition:transform .32s cubic-bezier(.22,1,.36,1);animation:hub-bounce 2.4s ease infinite;opacity:.6;}
+#hub-tab.open .hub-arrow{transform:rotate(180deg);animation:none;}
+.drawer-inner{flex:1;display:flex;overflow:hidden;padding:1.4rem 2.4rem 1rem;gap:2.5rem;}
+.drawer-news{flex:1.5;display:flex;flex-direction:column;overflow:hidden;}
+.drawer-news-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem;}
+.drawer-news-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);}
+.drawer-news-viewall{font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,240,242,.28);text-decoration:none;transition:color .12s;}
+.drawer-news-viewall:hover{color:var(--red);}
+.dn-list{display:flex;flex-direction:column;gap:0;overflow:hidden;}
+.dn-item{display:flex;gap:.9rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--dim);cursor:pointer;}
+.dn-item:first-child{border-top:1px solid var(--dim);}
+.dn-item:hover .dn-title{color:var(--red);}
+.dn-badge{font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;flex-shrink:0;margin-top:2px;border:1px solid;}
+.dn-badge.Update{border-color:rgba(200,21,27,.3);color:#e05565;}
+.dn-badge.Announcement{border-color:rgba(0,200,150,.25);color:#00c896;}
+.dn-badge.Event{border-color:rgba(245,158,11,.25);color:#fbbf24;}
+.dn-title{font-size:.72rem;line-height:1.4;flex:1;transition:color .1s;}
+.dn-date{font-size:.56rem;color:var(--muted);margin-top:3px;letter-spacing:.06em;}
+.dn-item a{text-decoration:none;color:inherit;}
+.dn-state{font-size:.65rem;letter-spacing:.08em;color:rgba(240,240,242,.25);padding:.8rem 0;}
+.drawer-sep{width:1px;background:var(--dim);flex-shrink:0;}
+.drawer-support{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:.85rem;}
+.ds-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);}
+.ds-desc{font-size:.66rem;color:var(--muted);line-height:1.65;}
+.ds-links{display:flex;flex-direction:column;gap:.38rem;}
+.ds-link{
+  font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  border:1px solid var(--dim);padding:.5rem .85rem;
+  display:flex;align-items:center;gap:0;
+  position:relative;overflow:hidden;transition:border-color .18s;
+}
+.ds-link::before{content:'';position:absolute;inset:0;background:var(--red);transform:translateX(-101%);transition:transform .22s cubic-bezier(.22,1,.36,1);z-index:0;}
+.ds-link:hover{border-color:var(--red);}
+.ds-link:hover::before{transform:translateX(0);}
+.ds-link-icon{position:relative;z-index:1;width:14px;height:14px;flex-shrink:0;margin-right:.6rem;display:flex;align-items:center;}
+.ds-link-icon svg{width:100%;height:100%;fill:currentColor;}
+.ds-link-arrow{position:relative;z-index:1;width:10px;height:10px;flex-shrink:0;margin-right:.7rem;display:flex;align-items:center;justify-content:center;color:rgba(240,240,242,.28);transition:color .1s,transform .15s;}
+.ds-link-arrow::before{content:'';display:inline-block;width:5px;height:5px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg) translateX(-1px);}
+.ds-link-text{position:relative;z-index:1;flex:1;color:var(--muted);transition:color .1s;}
+.ds-link:hover .ds-link-icon,.ds-link:hover .ds-link-arrow,.ds-link:hover .ds-link-text{color:#000;}
+.ds-link:hover .ds-link-arrow{transform:translateX(3px);}
+.drawer-footer{padding:.7rem 2.4rem;border-top:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between;font-size:.58rem;letter-spacing:.07em;color:rgba(235,235,237,.2);}
+.df-links{display:flex;gap:1.6rem;align-items:center;}
+.df-links a{color:rgba(235,235,237,.3);text-decoration:none;font-size:1.15rem;transition:color .12s,transform .12s;display:flex;align-items:center;}
+.df-links a:hover{color:var(--text);transform:translateY(-1px);}
+</style>
 </head>
 <body>
 
-<div class="ambient ambient-1"></div>
-<div class="ambient ambient-2"></div>
+<canvas id="bg-canvas"></canvas>
 
-<nav>
-  <a class="nav-logo" href="index.html">AU <span>Launcher</span></a>
-  <div class="nav-links">
-    <a href="helpPage.html">Docs</a>
-    <a href="news.html" class="active">News</a>
-    <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
-    <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank">YouTube</a>
-  </div>
-  <a class="nav-cta" href="https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe">Download</a>
-</nav>
+<!-- NAV -->
+<div id="nav">
+  <a class="nb" href="index.html">Home</a>
+  <a class="nb" href="helpPage.html">Docs</a>
+  <a class="nb active" href="news.html">News</a>
+  <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+  <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()" title="toggle beans">◉ beans</button>
+</div>
 
-<div class="wrap">
+<!-- PAGE -->
+<div class="page-wrap">
 
   <div class="page-header">
-    <div class="page-header-kicker"><i class="fas fa-newspaper"></i> ShadowSlime</div>
-    <h1>News &amp; Updates</h1>
-    <p>Everything happening with the launcher — updates, announcements and more.</p>
+    <span class="ph-label">// Among Us Launcher</span>
+    <h1 class="ph-title">News &amp;<br>Updates</h1>
+    <p class="ph-sub">Updates, announcements, and whatever else happens.</p>
   </div>
 
-  <div class="filter-bar">
-    <button class="filter-tab active" data-filter="all">All</button>
-    <button class="filter-tab" data-filter="Update">Updates</button>
-    <button class="filter-tab" data-filter="Announcement">Announcements</button>
-    <button class="filter-tab" data-filter="Event">Events</button>
+  <div class="filter-bar" id="filter-bar">
+    <button class="ftb active" data-filter="all">All</button>
+    <button class="ftb" data-filter="Update">Updates</button>
+    <button class="ftb" data-filter="Announcement">Announcements</button>
+    <button class="ftb" data-filter="Event">Events</button>
   </div>
 
   <div class="news-grid" id="news-grid">
-    <div class="card-skeleton featured"></div>
-    <div class="card-skeleton high"></div>
-    <div class="card-skeleton normal"></div>
-    <div class="card-skeleton normal"></div>
-    <div class="card-skeleton normal"></div>
+    <!-- skeletons -->
+    <div class="nc nc-skeleton featured"></div>
+    <div class="nc nc-skeleton high"></div>
+    <div class="nc nc-skeleton normal"></div>
+    <div class="nc nc-skeleton normal"></div>
   </div>
-
-  <footer>
-    <div>
-      <div class="footer-brand">AU <span>Launcher</span></div>
-      <div class="footer-copy">© 2025 ShadowSlimeDEV · Not affiliated with Innersloth</div>
-    </div>
-    <div class="footer-socials">
-      <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank"><i class="fab fa-youtube"></i></a>
-      <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank"><i class="fab fa-discord"></i></a>
-      <a href="helpPage.html"><i class="fas fa-circle-question"></i></a>
-    </div>
-  </footer>
 
 </div>
 
+<!-- HUB DRAWER -->
+<div id="hub-drawer">
+  <button id="hub-tab" onclick="toggleHub()">
+    <span class="hub-dot"></span>
+    <span class="hub-label">HUB</span>
+    <span class="hub-arrow">&#9650;</span>
+  </button>
+  <div class="drawer-inner">
+    <div class="drawer-news">
+      <div class="drawer-news-header">
+        <div class="drawer-news-label">// Latest News</div>
+        <a class="drawer-news-viewall" href="news.html">View all news //</a>
+      </div>
+      <div class="dn-list" id="dn-list">
+        <div class="dn-state" id="dn-state">Loading...</div>
+      </div>
+    </div>
+    <div class="drawer-sep"></div>
+    <div class="drawer-support">
+      <div class="ds-label">// Support</div>
+      <p class="ds-desc">Something broken? Pop into the Discord.</p>
+      <div class="ds-links">
+        <a class="ds-link" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">
+          <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1 13.2 13.2 0 0 0-.6 1.2 17.4 17.4 0 0 0-5.3 0A12.3 12.3 0 0 0 9.2 1.7a.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9zM8.2 14.3c-1.1 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.1 1 2.1 2.3-.9 2.3-2.1 2.3zm7.6 0c-1.1 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.1 1 2.1 2.3-.9 2.3-2.1 2.3z"/></svg></span>
+          <span class="ds-link-arrow"></span>
+          <span class="ds-link-text">Discord</span>
+        </a>
+        <a class="ds-link" href="helpPage.html">
+          <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
+          <span class="ds-link-arrow"></span>
+          <span class="ds-link-text">Help Center</span>
+        </a>
+        <a class="ds-link" href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank">
+          <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></span>
+          <span class="ds-link-arrow"></span>
+          <span class="ds-link-text">Feedback</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <span>AU Launcher &nbsp;&middot;&nbsp; Not affiliated with Innersloth &nbsp;&middot;&nbsp; &copy; 2025 ShadowSlimeDEV</span>
+    <div class="df-links">
+      <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank" title="YouTube">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+      </a>
+      <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" title="Discord">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1 13.2 13.2 0 0 0-.6 1.2 17.4 17.4 0 0 0-5.3 0A12.3 12.3 0 0 0 9.2 1.7a.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9zM8.2 14.3c-1.1 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.1 1 2.1 2.3-.9 2.3-2.1 2.3zm7.6 0c-1.1 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.1 1 2.1 2.3-.9 2.3-2.1 2.3z"/></svg>
+      </a>
+      <a href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank" title="GitHub">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3A12 12 0 0 0 0 12.3c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.4 18 4.7 18 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 24 12.3 12 12 0 0 0 12 .3z"/></svg>
+      </a>
+      <a href="news.html" title="News">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 13H6v-2h5v2zm7-4H6v-2h12v2zm0-4H6V6h12v2z"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ── CONFIG — update this to your own repo URL ──────────────────────────
-  const NEWS_BASE = '/news/';
-  // ───────────────────────────────────────────────────────────────────────
+'use strict';
 
-  let allPosts = [];
-  let activeFilter = 'all';
+// ── BEAN TOGGLE ────────────────────────────
+let beansEnabled = localStorage.getItem('beans') !== 'off';
+window.__beansEnabled = beansEnabled;
+function toggleBeans() {
+  beansEnabled = !beansEnabled;
+  localStorage.setItem('beans', beansEnabled ? 'on' : 'off');
+  window.__beansEnabled = beansEnabled;
+  const btn = document.getElementById('bean-toggle-btn');
+  btn.classList.toggle('off', !beansEnabled);
+}
+if (!beansEnabled) document.getElementById('bean-toggle-btn').classList.add('off');
 
-  function formatDate(d) {
-    return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-  }
+// ── HUB DRAWER ────────────────────────────
+let hubOpen = false;
+function toggleHub() {
+  hubOpen = !hubOpen;
+  document.getElementById('hub-drawer').classList.toggle('open', hubOpen);
+  document.getElementById('hub-tab').classList.toggle('open', hubOpen);
+}
 
-  function getPriority(post) {
-    return post.priority || 'normal';
-  }
-
-  function buildCard(post) {
-    const priority = getPriority(post);
-    const href = `post.html?slug=${post.slug}`;
-    const coverStyle = post.cover
-      ? `style="background-image:url('${post.cover}')"` : '';
-    const coverClass = post.cover ? '' : 'card-no-cover';
-    const cat = post.category || 'Update';
-
-    return `
-      <a class="news-card ${priority}" href="${href}">
-        <div class="card-img ${coverClass}" ${coverStyle}></div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="cat-badge ${cat}">${cat}</span>
-            <span class="card-date">${formatDate(post.date)}</span>
-          </div>
-          <div class="card-title">${post.title}</div>
-          <div class="card-brief">${post.brief}</div>
-          <span class="card-read-more">Read more <i class="fas fa-arrow-right" style="font-size:.7rem"></i></span>
-        </div>
-      </a>`;
-  }
-
-  function renderGrid(posts) {
-    const grid = document.getElementById('news-grid');
-    if (!posts.length) {
-      grid.innerHTML = `<div class="news-empty"><i class="fas fa-newspaper"></i>No posts yet in this category.</div>`;
-      return;
-    }
-
-    // Sort: featured first, then high, then normal — within each group by date desc
-    const order = { featured:0, high:1, normal:2 };
-    const sorted = [...posts].sort((a,b) => {
-      const po = (order[a.priority]||2) - (order[b.priority]||2);
-      if (po !== 0) return po;
-      return new Date(b.date) - new Date(a.date);
-    });
-
-    grid.innerHTML = sorted.map(buildCard).join('');
-  }
-
-  function applyFilter(filter) {
-    activeFilter = filter;
-    document.querySelectorAll('.filter-tab').forEach(t => {
-      t.classList.toggle('active', t.dataset.filter === filter);
-    });
-    const filtered = filter === 'all' ? allPosts : allPosts.filter(p => p.category === filter);
-    renderGrid(filtered);
-  }
-
-  document.querySelectorAll('.filter-tab').forEach(t => {
-    t.addEventListener('click', () => applyFilter(t.dataset.filter));
+// ── NAV GLITCH ────────────────────────────
+document.querySelectorAll('.nb').forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    btn.classList.add('glitch');
+    setTimeout(() => btn.classList.remove('glitch'), 280);
   });
+});
 
-  async function loadNews() {
-    const grid = document.getElementById('news-grid');
-    try {
-      const res   = await fetch(NEWS_BASE + 'index.json');
-      allPosts    = await res.json();
-      applyFilter('all');
-    } catch(e) {
-      grid.innerHTML = `<div class="news-empty"><i class="fas fa-satellite-dish"></i>Could not load news. Check back soon.</div>`;
-    }
+// ── NEWS GRID ─────────────────────────────
+const NEWS_BASE = '/news/';
+let allPosts = [];
+let activeFilter = 'all';
+
+function fmt(d) {
+  return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function buildCard(post, idx) {
+  const cat  = post.category || 'Update';
+  const href = `post.html?slug=${post.slug}`;
+  const cls  = idx === 0 ? 'featured' : (idx === 1 ? 'high' : 'normal');
+
+  // Cover image — shown on all card types
+  let coverHtml = '';
+  if (post.cover) {
+    coverHtml = `<div class="nc-cover-wrap"><img class="nc-cover" src="${post.cover}" alt="" loading="lazy"></div>`;
+  } else if (cls === 'featured' || cls === 'high') {
+    // decorative filler only on larger cards
+    coverHtml = `<div class="nc-no-cover">///</div>`;
   }
 
-  loadNews();
+  return `<a class="nc ${cls}" href="${href}">
+    ${coverHtml}
+    <div class="nc-body">
+      <div class="nc-meta">
+        <span class="nc-cat ${cat}">${cat}</span>
+        <span class="nc-date">${fmt(post.date)}</span>
+      </div>
+      <div class="nc-title">${post.title}</div>
+      ${post.brief ? `<div class="nc-brief">${post.brief}</div>` : ''}
+      <span class="nc-arrow">Read &nbsp;&rsaquo;</span>
+    </div>
+  </a>`;
+}
+
+function renderGrid(posts) {
+  const grid = document.getElementById('news-grid');
+  if (!posts.length) {
+    grid.innerHTML = '<div class="ng-state">// No posts in this category yet.</div>';
+    return;
+  }
+  const sorted = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+  grid.innerHTML = sorted.map((p, i) => buildCard(p, i)).join('');
+}
+
+function applyFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.ftb').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+  renderGrid(f === 'all' ? allPosts : allPosts.filter(p => (p.category || 'Update') === f));
+}
+
+document.querySelectorAll('.ftb').forEach(b => b.addEventListener('click', () => applyFilter(b.dataset.filter)));
+
+async function loadNews() {
+  const grid = document.getElementById('news-grid');
+  try {
+    const res = await fetch(NEWS_BASE + 'index.json');
+    if (!res.ok) throw new Error('bad');
+    allPosts = await res.json();
+    if (!allPosts.length) throw new Error('empty');
+    applyFilter('all');
+  } catch {
+    grid.innerHTML = '<div class="ng-state">// Failed to fetch news. Try again later.</div>';
+  }
+}
+loadNews();
+
+// ── HUB NEWS ──────────────────────────────
+(async function loadHubNews() {
+  const dnList  = document.getElementById('dn-list');
+  const dnState = document.getElementById('dn-state');
+  try {
+    const res = await fetch(NEWS_BASE + 'index.json');
+    if (!res.ok) throw new Error('bad');
+    const posts = await res.json();
+    if (!posts.length) throw new Error('empty');
+    dnState && dnState.remove();
+    posts.sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,4).forEach(p => {
+      const cat  = p.category || 'Update';
+      const date = new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const item = document.createElement('div');
+      item.className = 'dn-item';
+      item.innerHTML = `<span class="dn-badge ${cat}">${cat.toUpperCase()}</span>
+        <div><a href="post.html?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
+      dnList.appendChild(item);
+    });
+  } catch {
+    if (dnState) dnState.textContent = '// Failed to fetch latest news';
+  }
+})();
+
+// ── CANVAS — STARS + BEANS ────────────────
+(function spaceScene() {
+  'use strict';
+  const bgC = document.getElementById('bg-canvas');
+  const bgX = bgC.getContext('2d');
+  let W = 0, H = 0;
+  function resize() { W = bgC.width = window.innerWidth; H = bgC.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', () => { resize(); buildStars(); for(const b of [...BEANS_FAR,...BEANS_NEAR]) if(b.x>W) b.x=Math.random()*W; });
+
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+  const STAR_RADII=[0.55,0.95,1.55,2.40,3.60];
+  const starSprites=[];
+  function bakeStarSprites(){
+    starSprites.length=0;
+    for(const r of STAR_RADII){
+      const sz=Math.ceil(r*2+8)|1;
+      const c=document.createElement('canvas');c.width=c.height=sz;
+      const cx=c.getContext('2d');const half=sz/2;
+      const g=cx.createRadialGradient(half,half,0,half,half,half);
+      g.addColorStop(0,'rgba(222,215,255,1)');g.addColorStop(r/half,'rgba(195,185,255,0.60)');g.addColorStop(1,'rgba(0,0,0,0)');
+      cx.fillStyle=g;cx.fillRect(0,0,sz,sz);starSprites.push(c);
+    }
+  }
+  const STAR_LAYERS=[{count:180,si:0,alpha:0.20,drift:0.006},{count:110,si:1,alpha:0.38,drift:0.018},{count:65,si:2,alpha:0.60,drift:0.040},{count:22,si:3,alpha:0.82,drift:0.085},{count:7,si:4,alpha:1.00,drift:0.050}];
+  const stars=[];
+  function buildStars(){
+    stars.length=0;
+    for(const L of STAR_LAYERS) for(let i=0;i<L.count;i++) stars.push({x:rnd(0,W),y:rnd(0,H),si:L.si,baseAlpha:L.alpha*rnd(0.5,1.0),drift:rnd(-1,1)*L.drift,tw:rnd(0,Math.PI*2),twS:rnd(0.003,0.016)});
+  }
+  function drawStars(){
+    for(const s of stars){
+      s.x+=s.drift;if(s.x<-8)s.x=W+8;if(s.x>W+8)s.x=-8;
+      s.tw+=s.twS;
+      const a=s.baseAlpha*(0.55+0.45*Math.sin(s.tw));
+      const sp=starSprites[s.si];if(!sp)continue;
+      bgX.globalAlpha=a;bgX.drawImage(sp,s.x-sp.width*0.5,s.y-sp.height*0.5);
+    }
+    bgX.globalAlpha=1;
+  }
+
+  const PALETTE=[
+    {body:[197,17,17],shadow:[122,8,8],outline:[30,0,0]},
+    {body:[19,46,209],shadow:[9,21,142],outline:[0,10,50]},
+    {body:[17,127,45],shadow:[10,77,27],outline:[0,20,0]},
+    {body:[237,84,186],shadow:[171,43,131],outline:[60,0,40]},
+    {body:[239,125,13],shadow:[180,62,21],outline:[50,20,0]},
+    {body:[245,245,87],shadow:[194,135,34],outline:[60,40,0]},
+    {body:[63,71,78],shadow:[30,31,38],outline:[10,10,10]},
+    {body:[107,47,187],shadow:[76,30,149],outline:[20,0,40]},
+    {body:[56,254,220],shadow:[36,173,158],outline:[0,50,50]},
+    {body:[80,239,57],shadow:[21,167,38],outline:[10,40,0]},
+  ];
+  const VM=[146,166,176],VS=[113,141,152];
+
+  function recolor(img,pal){
+    const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
+    const cx=c.getContext('2d');cx.drawImage(img,0,0);
+    const id=cx.getImageData(0,0,c.width,c.height),d=id.data;
+    for(let i=0;i<d.length;i+=4){
+      if(d[i+3]<10)continue;
+      const r=d[i],g=d[i+1],b=d[i+2];
+      if(r>200&&g<50&&b<50){d[i]=pal.body[0];d[i+1]=pal.body[1];d[i+2]=pal.body[2];}
+      else if(r<50&&g<50&&b>200){d[i]=pal.shadow[0];d[i+1]=pal.shadow[1];d[i+2]=pal.shadow[2];}
+      else if(r<50&&g<50&&b<150){d[i]=pal.outline[0];d[i+1]=pal.outline[1];d[i+2]=pal.outline[2];}
+      else if(g>200&&r<50&&b<50){d[i]=VM[0];d[i+1]=VM[1];d[i+2]=VM[2];}
+      else if(g>100&&g<200&&r<50&&b<50){d[i]=VS[0];d[i+1]=VS[1];d[i+2]=VS[2];}
+    }
+    cx.putImageData(id,0,0);return c;
+  }
+
+  let templates=[],beanReady=false;
+  const beanImg=new Image();beanImg.crossOrigin='anonymous';beanImg.src='bean.png';
+  beanImg.onload=()=>{templates=[...PALETTE].sort(()=>Math.random()-0.5).map(p=>recolor(beanImg,p));beanReady=true;buildBeans();};
+  beanImg.onerror=()=>{beanReady=false;};
+
+  const BEANS_FAR=[],MAX_FAR=18,BEANS_NEAR=[],MAX_NEAR=10;
+  function mkFar(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(0.05,0.22),vy:rnd(-0.02,0.02),rot:rnd(0,Math.PI*2),vrot:rnd(-0.002,0.002),size:rnd(10,26),alpha:rnd(0.07,0.16),face:Math.random()<0.5?1:-1,tmpl:null};}
+  function mkNear(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(0.08,0.28),vy:rnd(-0.04,0.04),rot:rnd(0,Math.PI*2),vrot:rnd(-0.003,0.003),size:rnd(36,62),alpha:rnd(0.32,0.56),face:Math.random()<0.5?1:-1,tmpl:null};}
+  function buildBeans(){
+    BEANS_FAR.length=0;BEANS_NEAR.length=0;
+    for(let i=0;i<MAX_FAR;i++){const b=mkFar();b.tmpl=pick(templates);BEANS_FAR.push(b);}
+    for(let i=0;i<MAX_NEAR;i++){const b=mkNear();b.tmpl=pick(templates);BEANS_NEAR.push(b);}
+  }
+  function drawLayer(beans){
+    for(const b of beans){
+      b.x+=b.vx;b.y+=b.vy;b.rot+=b.vrot;
+      if(b.x-b.size>W){b.x=-b.size;b.y=rnd(0,H);}
+      if(!b.tmpl)continue;
+      bgX.save();bgX.globalAlpha=b.alpha;
+      bgX.translate(b.x,b.y);bgX.rotate(b.rot);bgX.scale(b.face,1);
+      bgX.drawImage(b.tmpl,-b.size/2,-b.size/2,b.size,b.size);
+      bgX.restore();
+    }
+    bgX.globalAlpha=1;
+  }
+
+  bakeStarSprites();buildStars();
+  function tick(){
+    bgX.clearRect(0,0,W,H);
+    drawStars();
+    if(beanReady && window.__beansEnabled !== false){drawLayer(BEANS_FAR);drawLayer(BEANS_NEAR);}
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
 </script>
 </body>
 </html>

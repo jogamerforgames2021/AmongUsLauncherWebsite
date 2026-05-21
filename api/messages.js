@@ -1,4 +1,6 @@
 // api/messages.js
+const OWNER_ID = '798464378126467122'; // ShadowSlimeDEV — never shown in public feeds
+
 const CHANNELS = {
   general:   process.env.DISCORD_CHANNEL_ID,
   news:      '1166442814708650084',
@@ -112,7 +114,9 @@ export default async function handler(req, res) {
       if (name) mentionMap[id] = name;
     }));
 
-    const shaped = messages.map(m => {
+    const shaped = messages
+      .filter(m => m.author.id !== OWNER_ID)   // never expose owner messages
+      .map(m => {
       // Detect if this is a webhook message
       const isWebhook = !!m.webhook_id;
       const isLauncherWebhook = isWebhook && (m.author.username?.includes('Launcher') || m.author.global_name?.includes('Launcher'));

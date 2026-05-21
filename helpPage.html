@@ -1,969 +1,1089 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Help Center for Among Us Launcher. Learn how to install, update, and get the most out of the launcher.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title>Help Center — Among Us Launcher</title>
-    <style>
-        :root {
-            --bg:      #060608;
-            --surface: #0a0b0d;
-            --surface2:#0e0f12;
-            --border:  rgba(255,255,255,0.055);
-            --accent:  #7b61ff;
-            --text:    #dde0e6;
-            --muted:   rgba(221,224,230,0.38);
-            --warn:    #f5a623;
-            --info:    #4a9eff;
-            --ok:      #3ecf8e;
-            --sidebar-w: 260px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Help center and documentation for the Among Us Launcher.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>Help Center // Among Us Launcher</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.58);
+  --dim:rgba(240,240,242,.09);
+  --surface:rgba(240,240,242,.03);
+  --f:'Share Tech Mono',monospace;
+  --sidebar-w:252px;
+  --nav-h:3.2rem;
+}
 
-        body::after {
-            content:''; position:fixed; inset:0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events:none; z-index:9999; opacity:.6;
-        }
+html{overflow-y:scroll;height:100%;overscroll-behavior-y:none;}
+body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100%;overflow-x:hidden;}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.024'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;
+}
 
-        body {
-            font-family:'DM Sans',sans-serif;
-            background:var(--bg);
-            color:var(--text);
-            min-height:100vh;
-            overflow-x:hidden;
-        }
+/* ── TOP NAV ─────────────────────────────── */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 1.4rem;gap:0;
+  border-bottom:1px solid var(--dim);
+  background:rgba(9,9,9,.94);
+  backdrop-filter:blur(8px);
+}
 
-        .ambient { position:fixed; pointer-events:none; z-index:0; border-radius:50%; filter:blur(140px); opacity:.10; }
-        .ambient-1 { width:700px; height:700px; background:#4a2dcc; top:-250px; right:-150px; }
-        .ambient-2 { width:500px; height:500px; background:#1a0a3d; bottom:0; left:-150px; }
+.nav-logo{
+  font-size:.72rem;letter-spacing:.1em;font-weight:bold;
+  color:var(--text);text-decoration:none;
+  padding-right:1.2rem;
+  border-right:1px solid var(--dim);
+  margin-right:1.2rem;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.nav-logo span{color:var(--red);}
 
-        /* ── NAV ── */
-        nav {
-            display:flex; align-items:center; justify-content:space-between;
-            padding:1.4rem 2rem;
-            border-bottom:1px solid var(--border);
-            position:sticky; top:0; z-index:200;
-            background:rgba(6,6,8,0.92);
-            backdrop-filter:blur(20px);
-        }
-        .nav-left { display:flex; align-items:center; gap:1.2rem; }
-        .nav-logo {
-            font-family:'Syne',sans-serif; font-weight:800; font-size:1.05rem;
-            letter-spacing:-.5px; text-decoration:none; color:var(--text);
-            display:flex; align-items:center; gap:.5rem;
-        }
-        .nav-logo span { color:var(--accent); }
+/* nav links */
+.nb{
+  font-family:var(--f);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;background:none;border:none;
+  cursor:pointer;transition:color .1s;padding:0 .7rem;white-space:nowrap;flex-shrink:0;
+}
+.nb:hover,.nb.active{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0px);}
+.nb:nth-child(2){transform:translateY(4px);}
+.nb:nth-child(3){transform:translateY(-2px);}
+.nb:nth-child(4){transform:translateY(3px);}
 
-        .sidebar-toggle {
-            background:transparent; border:1px solid var(--border);
-            border-radius:7px; width:34px; height:34px;
-            display:flex; align-items:center; justify-content:center;
-            cursor:pointer; color:var(--muted); font-size:.85rem;
-            transition:all .2s;
-        }
-        .sidebar-toggle:hover { color:var(--text); border-color:rgba(255,255,255,.12); }
+/* search bar — right side of nav */
+.nav-search{
+  flex:0 0 auto;min-width:0;
+  position:relative;
+  margin-left:auto;
+  width:280px;
+}
+.nav-search-input{
+  width:100%;
+  font-family:var(--f);font-size:.62rem;letter-spacing:.06em;
+  background:rgba(240,240,242,.05);
+  border:1px solid var(--dim);
+  color:var(--text);
+  padding:.42rem 5rem .42rem 2.2rem; /* right padding leaves room for kbd hint */
+  outline:none;
+  transition:border-color .15s,background .15s;
+}
+.nav-search-input::placeholder{color:rgba(240,240,242,.2);}
+.nav-search-input:focus{border-color:rgba(200,21,27,.4);background:rgba(240,240,242,.07);}
+/* hide kbd hint when search has focus or content */
+.nav-search-input:focus ~ .search-kbd,
+.nav-search-input:not(:placeholder-shown) ~ .search-kbd{opacity:0;pointer-events:none;}
+.nav-search-icon{
+  position:absolute;left:.65rem;top:50%;transform:translateY(-50%);
+  width:12px;height:12px;opacity:.28;pointer-events:none;
+}
+.nav-search-icon svg{width:100%;height:100%;fill:var(--text);}
 
-        .nav-links { display:flex; gap:1.8rem; }
-        .nav-links a { color:var(--muted); text-decoration:none; font-size:.9rem; font-weight:500; transition:color .2s; }
-        .nav-links a:hover { color:var(--text); }
+/* kbd shortcut hint inside search bar */
+.search-kbd{
+  position:absolute;right:.5rem;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;gap:.25rem;
+  pointer-events:none;
+  transition:opacity .15s;
+}
+.kbd{
+  font-family:var(--f);font-size:.48rem;letter-spacing:.04em;
+  color:rgba(240,240,242,.3);
+  background:rgba(240,240,242,.06);
+  border:1px solid rgba(240,240,242,.1);
+  padding:.15rem .35rem;
+  line-height:1.2;
+}
 
-        .nav-cta {
-            background:var(--accent); color:#fff;
-            padding:.5rem 1.2rem; border-radius:8px;
-            font-weight:600; font-size:.88rem;
-            text-decoration:none; border:none; cursor:pointer;
-            transition:background .2s, transform .15s;
-        }
-        .nav-cta:hover { background:#9b85ff; transform:translateY(-1px); }
+/* search results — full dropdown */
+.search-results{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:rgba(11,11,13,.99);
+  border:1px solid var(--dim);
+  z-index:800;max-height:360px;overflow-y:auto;
+  display:none;min-width:340px;
+}
+.search-results.open{display:block;}
+.search-results::-webkit-scrollbar{width:3px;}
+.search-results::-webkit-scrollbar-thumb{background:var(--dim);}
+.sr-item{
+  display:flex;flex-direction:column;gap:.15rem;
+  padding:.6rem 1rem;cursor:pointer;
+  border-bottom:1px solid var(--dim);
+  transition:background .08s;
+}
+.sr-item:last-child{border-bottom:none;}
+.sr-item:hover{background:var(--surface);}
+.sr-title{font-size:.65rem;letter-spacing:.06em;color:var(--text);}
+.sr-title mark,.sr-snippet mark{background:none;color:var(--red);font-style:normal;}
+.sr-section{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,240,242,.28);}
+.sr-snippet{font-size:.6rem;color:var(--muted);line-height:1.5;margin-top:.1rem;}
+.sr-empty{padding:.75rem 1rem;font-size:.62rem;color:rgba(240,240,242,.22);letter-spacing:.06em;}
 
-        /* ── LAYOUT ── */
-        .page-layout {
-            display:flex; position:relative; z-index:1;
-            min-height:calc(100vh - 57px);
-        }
+.bean-toggle-btn{
+  opacity:.28;flex-shrink:0;
+  transition:opacity .15s !important;
+}
+.bean-toggle-btn:hover{opacity:.65;}
+.bean-toggle-btn.off{opacity:.12;}
+.bean-toggle-btn.off::after{content:' off';font-size:.5rem;opacity:.5;}
 
-        /* ── SIDEBAR ── */
-        .sidebar {
-            width:var(--sidebar-w);
-            flex-shrink:0;
-            background:var(--surface);
-            border-right:1px solid var(--border);
-            position:sticky; top:57px;
-            height:calc(100vh - 57px);
-            overflow-y:auto; overflow-x:hidden;
-            transition:width .3s ease, opacity .3s ease;
-            z-index:50;
-        }
-        .sidebar.collapsed { width:0; opacity:0; pointer-events:none; }
+/* sidebar toggle — far left */
+#sidebar-toggle{
+  font-family:var(--f);font-size:.8rem;
+  color:var(--muted);background:none;border:none;
+  border-right:1px solid var(--dim);
+  padding:0 .9rem 0 .4rem;
+  cursor:pointer;flex-shrink:0;
+  align-self:stretch;
+  transition:color .12s,background .12s;
+  margin-right:.5rem;
+}
+#sidebar-toggle:hover{color:var(--text);}
+#sidebar-toggle.active{color:var(--red);}
 
-        .sidebar::-webkit-scrollbar { width:4px; }
-        .sidebar::-webkit-scrollbar-thumb { background:rgba(123,97,255,.3); border-radius:2px; }
+@keyframes nb-glitch{0%,100%{opacity:1;transform:translateX(0);}20%{opacity:.5;transform:translateX(-1px);}40%{opacity:1;transform:translateX(1px);}60%{opacity:.7;}80%{opacity:1;}}
+.nb.glitch{animation:nb-glitch .22s steps(1);}
 
-        .sidebar-inner { width:var(--sidebar-w); padding:1.8rem 0 3rem; }
+/* ── LAYOUT ─────────────────────────────── */
+#layout{display:flex;padding-top:var(--nav-h);min-height:100vh;position:relative;z-index:1;}
 
-        .nav-group { margin-bottom:1.8rem; }
-        .nav-group-label {
-            font-family:'JetBrains Mono',monospace;
-            font-size:.68rem; font-weight:600;
-            color:var(--accent); text-transform:uppercase; letter-spacing:.14em;
-            padding:0 1.4rem; margin-bottom:.6rem; display:block;
-        }
-        .nav-item {
-            display:flex; align-items:center; gap:.6rem;
-            padding:.6rem 1.4rem;
-            color:var(--muted); text-decoration:none; font-size:.87rem; font-weight:500;
-            border-left:2px solid transparent;
-            transition:all .18s;
-            cursor:pointer;
-        }
-        .nav-item i { font-size:.78rem; width:14px; text-align:center; flex-shrink:0; }
-        .nav-item:hover { color:var(--text); background:rgba(255,255,255,.03); border-left-color:rgba(123,97,255,.4); }
-        .nav-item.active { color:#a992ff; border-left-color:var(--accent); background:rgba(123,97,255,.07); font-weight:600; }
+/* ── SIDEBAR ─────────────────────────────── */
+#sidebar{
+  position:fixed;top:var(--nav-h);bottom:0;left:0;
+  width:var(--sidebar-w);
+  border-right:1px solid var(--dim);
+  overflow-y:auto;padding:1.4rem 0 6rem;
+  background:var(--bg);z-index:400;
+  transition:transform .28s cubic-bezier(.22,1,.36,1);
+}
+#sidebar::-webkit-scrollbar{width:3px;}
+#sidebar::-webkit-scrollbar-thumb{background:var(--dim);}
+/* sidebar starts COLLAPSED on load — hero is home */
+#sidebar.collapsed{transform:translateX(-100%);}
 
-        /* ── MAIN CONTENT ── */
-        .main {
-            flex:1; min-width:0;
-            padding:3rem 3.5rem 6rem;
-            max-width:860px;
-        }
+.sb-group{margin-bottom:1.4rem;}
+.sb-group-label{
+  font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--red);padding:.2rem 1.3rem .55rem;display:block;
+}
+.sb-item{
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  padding:.5rem 1.3rem;
+  cursor:pointer;border:none;background:none;
+  width:100%;text-align:left;
+  transition:color .1s,background .1s;position:relative;
+}
+.sb-item::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--red);
+  transform:scaleY(0);
+  transition:transform .18s cubic-bezier(.22,1,.36,1);
+}
+.sb-item:hover{color:var(--text);background:var(--surface);}
+.sb-item.active{color:var(--text);background:var(--surface);}
+.sb-item.active::before{transform:scaleY(1);}
+.sb-icon{width:12px;height:12px;flex-shrink:0;opacity:.45;display:flex;align-items:center;}
+.sb-icon svg{width:100%;height:100%;fill:currentColor;}
+.sb-item.active .sb-icon,.sb-item:hover .sb-icon{opacity:.9;}
 
-        /* ── PAGE HEADER ── */
-        .page-header { margin-bottom:3.5rem; }
-        .page-kicker {
-            display:inline-flex; align-items:center; gap:.5rem;
-            font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:600;
-            color:var(--accent); letter-spacing:.12em; text-transform:uppercase;
-            border:1px solid rgba(123,97,255,.22); background:rgba(123,97,255,.07);
-            padding:.35rem .9rem; border-radius:100px; margin-bottom:1.2rem;
-        }
-        .page-title {
-            font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem);
-            font-weight:800; letter-spacing:-1.5px; line-height:1.1;
-            margin-bottom:.8rem;
-        }
-        .page-sub { color:var(--muted); font-size:1rem; line-height:1.65; max-width:520px; }
+/* ── CONTENT ─────────────────────────────── */
+#content-wrap{
+  flex:1;min-width:0;width:100%;
+  /* starts at full width since sidebar is collapsed */
+  margin-left:0;
+  transition:margin-left .28s cubic-bezier(.22,1,.36,1);
+}
+#content-wrap.sidebar-open{margin-left:var(--sidebar-w);}
 
-        /* ── SEARCH ── */
-        .search-bar {
-            position:relative; margin-bottom:3rem;
-        }
-        .search-bar input {
-            width:100%; background:var(--surface2);
-            border:1px solid var(--border); border-radius:10px;
-            padding:.85rem 1.2rem .85rem 2.8rem;
-            color:var(--text); font-family:'DM Sans',sans-serif; font-size:.95rem;
-            outline:none; transition:border-color .2s;
-        }
-        .search-bar input::placeholder { color:var(--muted); }
-        .search-bar input:focus { border-color:rgba(123,97,255,.5); }
-        .search-bar i { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.85rem; }
-        .search-results { margin-top:.5rem; }
-        .search-result-item {
-            padding:.7rem 1rem; background:var(--surface2); border:1px solid var(--border);
-            border-radius:8px; margin-bottom:.4rem; cursor:pointer;
-            transition:background .15s; display:flex; align-items:center; gap:.8rem;
-        }
-        .search-result-item:hover { background:rgba(123,97,255,.1); }
-        .search-result-item i { color:var(--accent); font-size:.8rem; }
-        .search-result-title { font-weight:600; font-size:.9rem; }
-        .search-result-section { color:var(--muted); font-size:.78rem; margin-top:.1rem; }
-        #searchResults { display:none; }
+/* ── HERO (home state) ───────────────────── */
+#doc-home{
+  width:100%;
+  padding:6rem 2rem 8rem;
+  /* centering via block layout, not flex — reliable on first paint */
+  display:block;
+  text-align:center;
+}
+.hero-eyebrow{
+  font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--red);display:block;margin-bottom:1rem;
+}
+.hero-title{
+  font-size:clamp(2.8rem,5vw,4.8rem);
+  font-weight:bold;letter-spacing:-.025em;line-height:.92;
+  margin-bottom:1rem;
+  max-width:700px;
+  margin-inline:auto;
+}
+.hero-sub{
+  font-size:.8rem;color:var(--muted);
+  line-height:1.8;max-width:360px;margin-bottom:3.2rem;
+  margin-inline:auto;
+}
+.pinned-label{
+  font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(240,240,242,.28);margin-bottom:1rem;display:flex;
+  align-items:center;gap:.6rem;width:100%;max-width:840px;
+  margin-inline:auto;
+}
+.pinned-label::before,.pinned-label::after{content:'';flex:1;height:1px;background:var(--dim);}
+.pinned-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--dim);
+  margin-bottom:2rem;
+  width:100%;max-width:840px;
+  text-align:left;
+  margin-inline:auto;
+}
+.hero-not-found{
+  display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+  justify-content:center;
+  padding:1rem 1.4rem;
+  border:1px solid var(--dim);
+  margin-top:.4rem;
+  width:100%;max-width:840px;
+  margin-inline:auto;
+}
+/* pinned cards */
+.pin-card{
+  background:var(--bg);
+  padding:1.4rem 1.5rem;
+  cursor:pointer;
+  display:flex;flex-direction:column;gap:.65rem;
+  transition:background .12s;
+  border:none;text-align:left;color:inherit;font-family:var(--f);
+  position:relative;overflow:hidden;
+}
+.pin-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--red);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .22s cubic-bezier(.22,1,.36,1);
+}
+.pin-card:hover{background:rgba(240,240,242,.028);}
+.pin-card:hover::after{transform:scaleX(1);}
+.pin-card:hover .pc-arrow{transform:translateX(4px);color:var(--red);}
 
-        /* ── SECTIONS ── */
-        .doc-section { margin-bottom:2rem; scroll-margin-top:80px; }
+.pc-icon{width:28px;height:28px;border:1px solid rgba(200,21,27,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pc-icon svg{width:14px;height:14px;fill:var(--red);}
+.pc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem;}
+.pc-cat{font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(240,240,242,.2);}
+.pc-title{font-size:.82rem;font-weight:bold;letter-spacing:.02em;color:var(--text);line-height:1.2;}
+.pc-desc{font-size:.67rem;color:var(--muted);line-height:1.65;flex:1;}
+.pc-arrow{font-size:.58rem;color:rgba(240,240,242,.2);letter-spacing:.08em;transition:transform .18s,color .15s;display:inline-block;}
 
-        .section-header {
-            display:flex; align-items:center; justify-content:space-between;
-            padding:1.2rem 1.4rem;
-            background:var(--surface2); border:1px solid var(--border);
-            border-radius:12px; cursor:pointer;
-            transition:background .2s, border-color .2s;
-            user-select:none;
-        }
-        .section-header:hover { background:rgba(123,97,255,.07); border-color:rgba(123,97,255,.2); }
-        .section-header.open { border-radius:12px 12px 0 0; border-color:rgba(123,97,255,.25); background:rgba(123,97,255,.08); }
+/* highlight variant — most visited */
+.pin-card--highlight{background:rgba(200,21,27,.03);}
+.pin-card--highlight .pc-cat{color:rgba(200,21,27,.45);}
 
-        .section-header-left { display:flex; align-items:center; gap:.9rem; }
-        .section-icon-wrap {
-            width:36px; height:36px; border-radius:9px; flex-shrink:0;
-            background:rgba(123,97,255,.1); border:1px solid rgba(123,97,255,.18);
-            display:flex; align-items:center; justify-content:center;
-            font-size:.95rem; color:#a992ff;
-        }
-        .section-title {
-            font-family:'Syne',sans-serif; font-weight:700; font-size:1rem;
-            letter-spacing:-.2px;
-        }
-        .section-chevron { color:var(--muted); font-size:.75rem; transition:transform .25s ease; }
-        .section-header.open .section-chevron { transform:rotate(180deg); color:var(--accent); }
+/* not what you're looking for */
+.hnf-text{font-size:.65rem;color:rgba(240,240,242,.28);letter-spacing:.05em;}
+.hnf-or{font-size:.55rem;color:rgba(240,240,242,.15);}
+.hnf-search-btn{
+  font-family:var(--f);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(200,21,27,.08);border:1px solid rgba(200,21,27,.28);
+  color:var(--red);padding:.38rem .85rem;cursor:pointer;
+  display:inline-flex;align-items:center;gap:.45rem;
+  transition:background .12s,border-color .12s;
+}
+.hnf-search-btn:hover{background:rgba(200,21,27,.16);border-color:rgba(200,21,27,.5);}
+.hnf-search-btn svg{flex-shrink:0;}
+.hnf-browse-btn{
+  font-family:var(--f);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--dim);
+  color:var(--muted);padding:.38rem .85rem;cursor:pointer;
+  transition:color .12s,border-color .12s;
+}
+.hnf-browse-btn:hover{color:var(--text);border-color:rgba(240,240,242,.2);}
 
-        .section-body {
-            background:var(--surface); border:1px solid rgba(123,97,255,.2);
-            border-top:none; border-radius:0 0 12px 12px;
-            padding:0; max-height:0; overflow:hidden;
-            transition:max-height .35s ease, padding .2s ease;
-        }
-        .section-body.open { max-height:4000px; padding:1.8rem 1.8rem 2rem; }
 
-        /* ── CONTENT ELEMENTS ── */
-        .prose { font-size:.95rem; line-height:1.72; color:rgba(221,224,230,.78); margin-bottom:1.2rem; }
-        .prose strong { color:var(--text); font-weight:600; }
+/* ── DOC PAGE ────────────────────────────── */
+#doc-page{padding:2.4rem 4rem 5rem;max-width:820px;}
+#doc-page.visible{}
 
-        .steps { list-style:none; counter-reset:step; margin:1.2rem 0; }
-        .steps li {
-            counter-increment:step;
-            display:flex; gap:1rem; align-items:flex-start;
-            padding:1rem 1.2rem; margin-bottom:.6rem;
-            background:rgba(255,255,255,.02); border:1px solid var(--border);
-            border-radius:9px; font-size:.9rem; line-height:1.6;
-            transition:background .15s;
-        }
-        .steps li:hover { background:rgba(123,97,255,.05); }
-        .steps li::before {
-            content:counter(step);
-            min-width:24px; height:24px; border-radius:6px;
-            background:rgba(123,97,255,.2); border:1px solid rgba(123,97,255,.3);
-            display:flex; align-items:center; justify-content:center;
-            font-family:'JetBrains Mono',monospace; font-size:.75rem; font-weight:600;
-            color:#a992ff; flex-shrink:0; margin-top:.1rem;
-        }
+.ds-header{
+  display:flex;align-items:flex-start;gap:1.1rem;
+  margin-bottom:1.8rem;padding-bottom:1.2rem;
+  border-bottom:1px solid var(--dim);
+}
+.ds-icon{
+  width:30px;height:30px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(200,21,27,.22);margin-top:.15rem;
+}
+.ds-icon svg{width:14px;height:14px;fill:var(--red);}
+.ds-section-label{font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:.25rem;display:block;}
+.ds-title{font-size:1.45rem;font-weight:bold;letter-spacing:-.01em;line-height:1.1;}
 
-        .bullets { list-style:none; margin:1rem 0; }
-        .bullets li {
-            display:flex; gap:.8rem; align-items:flex-start;
-            padding:.65rem 1rem; margin-bottom:.4rem;
-            font-size:.9rem; line-height:1.6; color:rgba(221,224,230,.78);
-            border-radius:7px;
-            transition:background .15s;
-        }
-        .bullets li:hover { background:rgba(255,255,255,.02); }
-        .bullets li::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent); opacity:.7; flex-shrink:0; margin-top:.55rem; }
+/* prose */
+.doc-prose{font-size:.78rem;line-height:1.9;color:var(--muted);max-width:640px;}
+.doc-prose p{margin-bottom:1rem;}
+.doc-prose strong{color:var(--text);}
+.doc-prose a{color:var(--red);text-decoration:none;border-bottom:1px solid rgba(200,21,27,.28);transition:border-color .12s;}
+.doc-prose a:hover{border-color:var(--red);}
+.doc-prose code{font-family:var(--f);font-size:.85em;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:.1rem .4rem;color:#ccc;}
+.doc-prose pre{background:rgba(0,0,0,.55);border:1px solid var(--dim);padding:1.1rem 1.3rem;overflow-x:auto;margin:1rem 0 1.2rem;}
+.doc-prose pre code{background:none;border:none;padding:0;font-size:.78rem;color:#b5bac1;}
+.doc-prose ul,.doc-prose ol{padding-left:1.3rem;margin-bottom:1rem;}
+.doc-prose li{margin-bottom:.3rem;line-height:1.75;}
+.doc-prose ul li::marker,.doc-prose ol li::marker{color:var(--red);}
+.doc-prose h3{font-size:.9rem;font-weight:bold;letter-spacing:.04em;color:var(--text);margin:1.8rem 0 .6rem;}
+.doc-prose h4{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,240,242,.35);margin:1.4rem 0 .4rem;}
+.doc-prose img{max-width:100%;display:block;margin:1.2rem 0;border:1px solid var(--dim);opacity:.75;}
 
-        code {
-            font-family:'JetBrains Mono',monospace; font-size:.82rem;
-            background:rgba(0,0,0,.35); border:1px solid var(--border);
-            padding:.15rem .5rem; border-radius:5px; color:#a992ff;
-        }
+/* callout */
+.callout{border:1px solid;padding:.8rem 1.1rem;margin:1.1rem 0;font-size:.72rem;line-height:1.75;}
+.callout.info{border-color:rgba(0,120,255,.22);color:rgba(160,200,255,.72);}
+.callout.warn{border-color:rgba(245,158,11,.22);color:rgba(245,200,100,.72);}
+.callout.tip{border-color:rgba(0,200,150,.18);color:rgba(100,220,180,.72);}
+.callout-label{font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;display:block;margin-bottom:.3rem;font-weight:bold;}
+.callout.info .callout-label{color:rgba(100,160,255,.9);}
+.callout.warn .callout-label{color:rgba(245,185,60,.9);}
+.callout.tip  .callout-label{color:rgba(60,210,160,.9);}
 
-        .callout {
-            display:flex; gap:.9rem; padding:1rem 1.2rem; border-radius:9px;
-            margin:1.2rem 0; font-size:.88rem; line-height:1.65;
-        }
-        .callout i { font-size:1rem; margin-top:.1rem; flex-shrink:0; }
-        .callout.info { background:rgba(74,158,255,.08); border:1px solid rgba(74,158,255,.2); color:rgba(221,224,230,.8); }
-        .callout.info i { color:var(--info); }
-        .callout.warn { background:rgba(245,166,35,.08); border:1px solid rgba(245,166,35,.2); color:rgba(221,224,230,.8); }
-        .callout.warn i { color:var(--warn); }
-        .callout.ok { background:rgba(62,207,142,.08); border:1px solid rgba(62,207,142,.2); color:rgba(221,224,230,.8); }
-        .callout.ok i { color:var(--ok); }
+/* steps */
+.steps{display:flex;flex-direction:column;gap:.35rem;margin:1rem 0 1.2rem;counter-reset:step;}
+.step{display:flex;gap:1rem;align-items:flex-start;padding:.7rem 1rem;border:1px solid var(--dim);counter-increment:step;transition:border-color .12s,background .12s;}
+.step:hover{border-color:rgba(200,21,27,.2);background:rgba(200,21,27,.025);}
+.step-num{font-size:.82rem;font-weight:bold;color:var(--red);flex-shrink:0;min-width:1.4rem;padding-top:.06rem;}
+.step-num::before{content:counter(step);}
+.step-body{font-size:.73rem;line-height:1.8;color:var(--muted);}
+.step-body strong{color:var(--text);}
 
-        .callout-content strong { display:block; font-weight:600; color:var(--text); margin-bottom:.3rem; font-size:.9rem; }
+/* prev/next */
+.doc-footnav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--dim);gap:1rem;}
+.docnav-btn{
+  font-family:var(--f);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;border:1px solid var(--dim);
+  padding:.6rem 1rem;display:flex;flex-direction:column;gap:.22rem;
+  transition:color .12s,border-color .12s;flex:1;cursor:pointer;background:none;text-align:left;
+}
+.docnav-btn:hover{color:var(--text);border-color:rgba(240,240,242,.18);}
+.docnav-btn.next{text-align:right;}
+.docnav-dir{font-size:.48rem;opacity:.38;letter-spacing:.15em;}
+.docnav-label{font-size:.65rem;color:var(--text);}
 
-        .mini-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:.8rem; margin:1.2rem 0; }
-        .mini-card {
-            background:rgba(255,255,255,.02); border:1px solid var(--border);
-            border-radius:9px; padding:1.1rem 1.2rem;
-            transition:background .15s;
-        }
-        .mini-card:hover { background:rgba(123,97,255,.06); }
-        .mini-card h4 { font-size:.88rem; font-weight:700; margin-bottom:.35rem; color:var(--text); }
-        .mini-card p { font-size:.82rem; color:var(--muted); line-height:1.5; }
+/* ── HUB DRAWER ────────────────────────── */
+@keyframes hub-glow{0%,60%,100%{box-shadow:none;border-color:var(--dim);}30%{box-shadow:0 -4px 18px rgba(200,21,27,.35);border-color:rgba(200,21,27,.5);}}
+@keyframes hub-bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-4px);}}
+@keyframes dot-pulse{0%,60%,100%{opacity:.35;transform:scale(1);}30%{opacity:1;transform:scale(1.6);}}
+#hub-drawer{position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(10,10,12,.98);border-top:1px solid var(--dim);display:flex;flex-direction:column;height:calc(48vh + 3rem);transition:transform .38s cubic-bezier(.22,1,.36,1);transform:translateY(calc(100% - 3rem));}
+#hub-drawer.open{transform:translateY(0);}
+#hub-tab{flex-shrink:0;height:3rem;font-family:var(--f);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text);background:rgba(14,14,16,.95);border:none;border-bottom:1px solid var(--dim);border-top:2px solid rgba(200,21,27,.0);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.75rem;animation:hub-glow 2.4s ease infinite;transition:border-top-color .2s;}
+#hub-tab.open{animation:none;border-top-color:var(--red);}
+#hub-tab:hover{animation:none;}
+.hub-dot{width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;animation:dot-pulse 2.4s ease infinite;flex-shrink:0;}
+#hub-tab.open .hub-dot{animation:none;opacity:1;}
+.hub-label{font-weight:bold;letter-spacing:.3em;}
+.hub-arrow{display:inline-block;font-size:.6rem;transition:transform .32s cubic-bezier(.22,1,.36,1);animation:hub-bounce 2.4s ease infinite;opacity:.6;}
+#hub-tab.open .hub-arrow{transform:rotate(180deg);animation:none;}
+.drawer-inner{flex:1;display:flex;overflow:hidden;padding:1.4rem 2.4rem 1rem;gap:2.5rem;}
+.drawer-news{flex:1.5;display:flex;flex-direction:column;overflow:hidden;}
+.drawer-news-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem;}
+.drawer-news-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);}
+.drawer-news-viewall{font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,240,242,.28);text-decoration:none;transition:color .12s;}
+.drawer-news-viewall:hover{color:var(--red);}
+.dn-list{display:flex;flex-direction:column;gap:0;overflow:hidden;}
+.dn-item{display:flex;gap:.9rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--dim);cursor:pointer;}
+.dn-item:first-child{border-top:1px solid var(--dim);}
+.dn-item:hover .dn-title{color:var(--red);}
+.dn-badge{font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;flex-shrink:0;margin-top:2px;border:1px solid;}
+.dn-badge.Update{border-color:rgba(200,21,27,.3);color:#e05565;}
+.dn-badge.Announcement{border-color:rgba(0,200,150,.25);color:#00c896;}
+.dn-badge.Event{border-color:rgba(245,158,11,.25);color:#fbbf24;}
+.dn-title{font-size:.72rem;line-height:1.4;flex:1;transition:color .1s;}
+.dn-date{font-size:.56rem;color:var(--muted);margin-top:3px;letter-spacing:.06em;}
+.dn-item a{text-decoration:none;color:inherit;}
+.dn-state{font-size:.65rem;letter-spacing:.08em;color:rgba(240,240,242,.25);padding:.8rem 0;}
+.drawer-sep{width:1px;background:var(--dim);flex-shrink:0;}
+.drawer-support{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:.85rem;}
+.ds-label-hub{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);}
+.ds-desc{font-size:.66rem;color:var(--muted);line-height:1.65;}
+.ds-links{display:flex;flex-direction:column;gap:.38rem;}
+.ds-link{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;border:1px solid var(--dim);padding:.5rem .85rem;display:flex;align-items:center;gap:0;position:relative;overflow:hidden;transition:border-color .18s;}
+.ds-link::before{content:'';position:absolute;inset:0;background:var(--red);transform:translateX(-101%);transition:transform .22s cubic-bezier(.22,1,.36,1);z-index:0;}
+.ds-link:hover{border-color:var(--red);}
+.ds-link:hover::before{transform:translateX(0);}
+.ds-link-icon{position:relative;z-index:1;width:14px;height:14px;flex-shrink:0;margin-right:.6rem;display:flex;align-items:center;}
+.ds-link-icon svg{width:100%;height:100%;fill:currentColor;}
+.ds-link-arrow{position:relative;z-index:1;width:10px;height:10px;flex-shrink:0;margin-right:.7rem;display:flex;align-items:center;justify-content:center;color:rgba(240,240,242,.28);transition:color .1s,transform .15s;}
+.ds-link-arrow::before{content:'';display:inline-block;width:5px;height:5px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg) translateX(-1px);}
+.ds-link-text{position:relative;z-index:1;flex:1;color:var(--muted);transition:color .1s;}
+.ds-link:hover .ds-link-icon,.ds-link:hover .ds-link-arrow,.ds-link:hover .ds-link-text{color:#000;}
+.ds-link:hover .ds-link-arrow{transform:translateX(3px);}
+.drawer-footer{padding:.7rem 2.4rem;border-top:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between;font-size:.58rem;letter-spacing:.07em;color:rgba(235,235,237,.2);}
+.df-links{display:flex;gap:1.6rem;align-items:center;}
+.df-links a{color:rgba(235,235,237,.3);text-decoration:none;font-size:1.15rem;transition:color .12s,transform .12s;display:flex;align-items:center;}
+.df-links a:hover{color:var(--text);transform:translateY(-1px);}
 
-        .btn-row { display:flex; gap:.7rem; flex-wrap:wrap; margin-top:1.4rem; }
-        .btn {
-            display:inline-flex; align-items:center; gap:.55rem;
-            padding:.65rem 1.2rem; border-radius:8px;
-            font-size:.85rem; font-weight:600; text-decoration:none; cursor:pointer; border:none;
-            transition:all .2s;
-        }
-        .btn-primary { background:var(--accent); color:#fff; }
-        .btn-primary:hover { background:#9b85ff; transform:translateY(-1px); }
-        .btn-ghost { background:transparent; color:#a992ff; border:1px solid rgba(123,97,255,.28); }
-        .btn-ghost:hover { background:rgba(123,97,255,.1); }
+/* ── RESPONSIVE ─────────────────────────── */
+@media(max-width:860px){
+  #sidebar{transform:translateX(-100%)!important;}
+  #sidebar.mobile-open{transform:translateX(0)!important;}
+  #content-wrap{margin-left:0!important;}
+  #doc-home{padding:2.5rem 1.6rem 2rem;}
+  #doc-page{padding:1.8rem 1.6rem 3rem;}
+  .pinned-grid{grid-template-columns:1fr 1fr;}
+  .hero-title{font-size:2.2rem;}
+}
+@media(max-width:540px){
+  .pinned-grid{grid-template-columns:1fr;}
+  .nav-search{display:none;}
+}
 
-        .dl-list { display:flex; flex-direction:column; gap:.5rem; margin:1.2rem 0; }
-        .dl-item {
-            display:flex; align-items:center; justify-content:space-between; gap:1rem;
-            padding:.85rem 1.1rem; background:rgba(255,255,255,.02);
-            border:1px solid var(--border); border-radius:9px;
-            font-size:.88rem; flex-wrap:wrap;
-        }
-        .dl-item-name { font-weight:600; display:flex; align-items:center; gap:.6rem; }
-        .dl-item-name i { color:var(--accent); font-size:.85rem; }
-        .dl-item a {
-            display:inline-flex; align-items:center; gap:.45rem;
-            font-size:.8rem; font-weight:600; color:#a992ff; text-decoration:none;
-            padding:.35rem .85rem; border-radius:6px; border:1px solid rgba(123,97,255,.25);
-            background:rgba(123,97,255,.08); white-space:nowrap;
-            transition:background .15s;
-        }
-        .dl-item a:hover { background:rgba(123,97,255,.18); }
-
-        .divider { height:1px; background:var(--border); margin:1.6rem 0; }
-
-        /* ── MOBILE OVERLAY ── */
-        .sidebar-overlay {
-            display:none; position:fixed; inset:0;
-            background:rgba(0,0,0,.6); z-index:49;
-        }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width:860px) {
-            .sidebar {
-                position:fixed; top:57px; left:0;
-                height:calc(100vh - 57px);
-                transform:translateX(-100%);
-                transition:transform .3s ease, opacity .2s ease;
-                opacity:1; width:var(--sidebar-w) !important;
-            }
-            .sidebar.mobile-open { transform:translateX(0); }
-            .sidebar.collapsed { transform:translateX(-100%); opacity:1; pointer-events:auto; width:var(--sidebar-w) !important; }
-            .sidebar-overlay.active { display:block; }
-            .main { padding:2rem 1.4rem 5rem; }
-            .nav-links { display:none; }
-        }
-        @media (max-width:500px) {
-            .page-title { font-size:1.8rem; }
-            .mini-grid { grid-template-columns:1fr; }
-        }
-    </style>
+/* ── SECTION VISIBILITY — critical ─────── */
+.doc-section{display:none;}
+.doc-section.active{display:block;}
+#doc-page{display:none !important;}
+#doc-page.visible{display:block !important;}
+#doc-home{display:block;}
+</style>
 </head>
 <body>
 
-<div class="ambient ambient-1"></div>
-<div class="ambient ambient-2"></div>
-<div class="sidebar-overlay" id="overlay"></div>
+<canvas id="bg-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
 
-<!-- NAV -->
-<nav>
-    <div class="nav-left">
-        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
-            <i class="fas fa-bars"></i>
-        </button>
-        <a href="index.html" class="nav-logo">AU <span>Launcher</span></a>
-    </div>
-    <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
-    </div>
-    <a href="index.html" class="nav-cta"><i class="fas fa-arrow-down"></i> Download</a>
+<!-- TOP NAV -->
+<nav id="topnav">
+  <button id="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+  <a class="nb" href="index.html">Home</a>
+  <a class="nb active" href="helpPage.html">Docs</a>
+  <a class="nb" href="news.html">News</a>
+  <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+
+  <!-- search bar -->
+  <div class="nav-search">
+    <span class="nav-search-icon"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7 14 5 12 5 9.5S7 5 9.5 5 14 7 14 9.5 12 14 9.5 14z"/></svg></span>
+    <input class="nav-search-input" id="search-input" type="text" placeholder="Search docs..." autocomplete="off" spellcheck="false">
+    <span class="search-kbd" id="search-kbd">
+      <span class="kbd">Ctrl</span>
+      <span class="kbd">K</span>
+    </span>
+    <div class="search-results" id="search-results"></div>
+  </div>
+  <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()">◉ beans</button>
 </nav>
 
-<div class="page-layout">
+<div id="layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-inner">
+  <!-- SIDEBAR — starts collapsed -->
+  <aside id="sidebar" class="collapsed">
+    <div class="sb-group">
+      <span class="sb-group-label">// Quick Links</span>
+      <button class="sb-item" onclick="nav('download-launcher')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg></span>Download Launcher</button>
+      <button class="sb-item" onclick="nav('download-direct')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a3 3 0 0 0-6 0c0 .12.1.56.18 1H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/></svg></span>Download Game Files</button>
+      <button class="sb-item" onclick="nav('discord')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></span>Join Discord</button>
+    </div>
+    <div class="sb-group">
+      <span class="sb-group-label">// Using the Launcher</span>
+      <button class="sb-item" onclick="nav('getting-started')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>Getting Started</button>
+      <button class="sb-item" onclick="nav('install-game')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M21 6H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/></svg></span>Installing the Game</button>
+      <button class="sb-item" onclick="nav('auto-updates')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6a6 6 0 0 1 6 6 5.9 5.9 0 0 1-.6 2.6L19 16a8 8 0 0 0 1-4 8 8 0 0 0-8-8zm0 14a6 6 0 0 1-6-6c0-1 .3-2 .6-2.6L5 8a8 8 0 0 0-1 4 8 8 0 0 0 8 8v3l4-4-4-4v3z"/></svg></span>Auto Updates</button>
+      <button class="sb-item" onclick="nav('version-management')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></span>Version Management</button>
+      <button class="sb-item" onclick="nav('discord-rpc')"><span class="sb-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 4.9C15.2 1 8.8 1 4.9 4.9S1 15.2 4.9 19.1s10.2 3.9 14.2 0 3.9-10.2 0-14.2z"/></svg></span>Discord Rich Presence</button>
+      <button class="sb-item" onclick="nav('shortcuts')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.7 1.4-3.1 3.1-3.1h4V7H7C4.2 7 2 9.2 2 12s2.2 5 5 5h4v-1.9H7c-1.7 0-3.1-1.4-3.1-3.1z"/></svg></span>Desktop Shortcuts</button>
+      <button class="sb-item" onclick="nav('aunlocker')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg></span>AUnlocker</button>
+      <button class="sb-item" onclick="nav('settings')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M19.1 12.9c0-.3 0-.6.1-.9s-.1-.6-.1-.9l1.9-1.5c.2-.2.2-.4.1-.6l-1.8-3.1a.5.5 0 0 0-.6-.2l-2.3.9a6.7 6.7 0 0 0-1.6-.9L14.4 4c0-.3-.3-.4-.5-.4h-3.6c-.3 0-.5.2-.5.4l-.3 2.4a6.9 6.9 0 0 0-1.6.9l-2.3-.9a.5.5 0 0 0-.6.2L3.2 9.7c-.1.2-.1.5.1.6l1.9 1.5c0 .3-.1.6-.1.9s.1.6.1.9L3.3 15c-.2.2-.2.4-.1.6l1.8 3.1c.1.2.4.3.6.2l2.3-.9c.5.4 1 .7 1.6.9l.3 2.4c0 .3.3.5.5.5h3.6c.3 0 .5-.2.5-.5l.3-2.4a6.9 6.9 0 0 0 1.6-.9l2.3.9c.3.1.5 0 .6-.2l1.8-3.1c.1-.2.1-.5-.1-.6z"/></svg></span>Launcher Settings</button>
+    </div>
+    <div class="sb-group">
+      <span class="sb-group-label">// Help</span>
+      <button class="sb-item" onclick="nav('troubleshooting')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1A7 7 0 0 0 5 2C2.8 2 1 3.8 1 6c0 .8.2 1.5.6 2.1L5 4.7l1.4 1.4-3.4 3.4a5 5 0 0 0 7 7l3.4-3.4 1.4 1.4-3.4 3.4c.6.4 1.3.6 2.1.6 2.2 0 4-1.8 4-4 0-.8-.2-1.5-.6-2.1l9.3 9.3-1.5 1.3z"/></svg></span>Troubleshooting</button>
+      <button class="sb-item" onclick="nav('redistributables')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a3 3 0 0 0-6 0c0 .12.1.56.18 1H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/></svg></span>Required Software</button>
+      <button class="sb-item" onclick="nav('support')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/></svg></span>Support</button>
+    </div>
+  </aside>
 
-            <div class="nav-group">
-                <span class="nav-group-label">Website</span>
-                <a class="nav-item" data-target="download-launcher"><i class="fas fa-arrow-down"></i> Download the Launcher</a>
-                <a class="nav-item" data-target="download-direct"><i class="fas fa-file-zipper"></i> Download Game Directly</a>
-                <a class="nav-item" data-target="submit-feedback"><i class="fas fa-message"></i> Submit Feedback</a>
-                <a class="nav-item" data-target="discord"><i class="fab fa-discord"></i> Join Discord</a>
-            </div>
+  <!-- CONTENT -->
+  <div id="content-wrap">
 
-            <div class="nav-group">
-                <span class="nav-group-label">Launcher</span>
-                <a class="nav-item" data-target="getting-started"><i class="fas fa-rocket"></i> Getting Started</a>
-                <a class="nav-item" data-target="install-game"><i class="fas fa-gamepad"></i> Installing the Game</a>
-                <a class="nav-item" data-target="auto-updates"><i class="fas fa-sync-alt"></i> Auto Updates</a>
-                <a class="nav-item" data-target="version-management"><i class="fas fa-code-branch"></i> Version Management</a>
-                <a class="nav-item" data-target="discord-rpc"><i class="fas fa-circle-dot"></i> Discord Rich Presence</a>
-                <a class="nav-item" data-target="aunlocker"><i class="fas fa-unlock"></i> Installing AUnlocker</a>
-                <a class="nav-item" data-target="shortcuts"><i class="fas fa-link"></i> Desktop Shortcuts</a>
-                <a class="nav-item" data-target="settings"><i class="fas fa-gear"></i> Launcher Settings</a>
-            </div>
+    <!-- HOME (default view) -->
+    <div id="doc-home">
+      <span class="hero-eyebrow">// Help Center</span>
+      <h1 class="hero-title">What do you<br>need help with?</h1>
+      <p class="hero-sub">Search above, pick a pinned article, or open the sidebar to browse all docs.</p>
 
-            <div class="nav-group">
-                <span class="nav-group-label">Help</span>
-                <a class="nav-item" data-target="troubleshooting"><i class="fas fa-wrench"></i> Troubleshooting</a>
-                <a class="nav-item" data-target="redistributables"><i class="fas fa-box"></i> Required Software</a>
-                <a class="nav-item" data-target="support"><i class="fas fa-life-ring"></i> Support</a>
-            </div>
+      <div class="pinned-label">Pinned articles</div>
+      <div class="pinned-grid">
 
+        <button class="pin-card" onclick="nav('getting-started')">
+          <div class="pc-top">
+            <div class="pc-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+            <span class="pc-cat">Start here</span>
+          </div>
+          <div class="pc-title">Getting Started</div>
+          <div class="pc-desc">New here? Download, first launch, what to expect — all in one place.</div>
+          <span class="pc-arrow">Read &rsaquo;</span>
+        </button>
+
+        <button class="pin-card pin-card--highlight" onclick="nav('troubleshooting')">
+          <div class="pc-top">
+            <div class="pc-icon"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1A7 7 0 0 0 5 2C2.8 2 1 3.8 1 6c0 .8.2 1.5.6 2.1L5 4.7l1.4 1.4-3.4 3.4a5 5 0 0 0 7 7l3.4-3.4 1.4 1.4-3.4 3.4c.6.4 1.3.6 2.1.6 2.2 0 4-1.8 4-4 0-.8-.2-1.5-.6-2.1l9.3 9.3-1.5 1.3z"/></svg></div>
+            <span class="pc-cat">Most visited</span>
+          </div>
+          <div class="pc-title">Troubleshooting</div>
+          <div class="pc-desc">Launcher won't open, game won't start, itch.io errors — all covered here.</div>
+          <span class="pc-arrow">Read &rsaquo;</span>
+        </button>
+
+        <button class="pin-card" onclick="nav('redistributables')">
+          <div class="pc-top">
+            <div class="pc-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a3 3 0 0 0-6 0c0 .12.1.56.18 1H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/></svg></div>
+            <span class="pc-cat">Required</span>
+          </div>
+          <div class="pc-title">Required Software</div>
+          <div class="pc-desc">Visual C++ Redistributables — install these before anything else.</div>
+          <span class="pc-arrow">Read &rsaquo;</span>
+        </button>
+
+        <button class="pin-card" onclick="nav('version-management')">
+          <div class="pc-top">
+            <div class="pc-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+            <span class="pc-cat">Advanced</span>
+          </div>
+          <div class="pc-title">Version Management</div>
+          <div class="pc-desc">Switch game versions for mods that require a specific build.</div>
+          <span class="pc-arrow">Read &rsaquo;</span>
+        </button>
+
+        <button class="pin-card" onclick="nav('auto-updates')">
+          <div class="pc-top">
+            <div class="pc-icon"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6a6 6 0 0 1 6 6 5.9 5.9 0 0 1-.6 2.6L19 16a8 8 0 0 0 1-4 8 8 0 0 0-8-8zm0 14a6 6 0 0 1-6-6c0-1 .3-2 .6-2.6L5 8a8 8 0 0 0-1 4 8 8 0 0 0 8 8v3l4-4-4-4v3z"/></svg></div>
+            <span class="pc-cat">How it works</span>
+          </div>
+          <div class="pc-title">Auto Updates</div>
+          <div class="pc-desc">The launcher updates silently on startup. Here's exactly how.</div>
+          <span class="pc-arrow">Read &rsaquo;</span>
+        </button>
+
+        <button class="pin-card" onclick="nav('discord-rpc')">
+          <div class="pc-top">
+            <div class="pc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 4.9C15.2 1 8.8 1 4.9 4.9S1 15.2 4.9 19.1s10.2 3.9 14.2 0 3.9-10.2 0-14.2z"/></svg></div>
+            <span class="pc-cat">Feature</span>
+          </div>
+          <div class="pc-title">Discord Rich Presence</div>
+          <div class="pc-desc">Show your game status on Discord — setup, issues, how to disable.</div>
+          <span class="pc-arrow">Read &rsaquo;</span>
+        </button>
+
+      </div>
+
+      <!-- not what you're looking for -->
+      <div class="hero-not-found">
+        <span class="hnf-text">Not what you're looking for?</span>
+        <button class="hnf-search-btn" onclick="focusSearch()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7 14 5 12 5 9.5S7 5 9.5 5 14 7 14 9.5 12 14 9.5 14z"/></svg>
+          Search docs
+        </button>
+        <span class="hnf-or">or</span>
+        <button class="hnf-browse-btn" onclick="toggleSidebar()">Browse all articles</button>
+      </div>
+
+    </div>
+
+    <!-- DOC PAGE (shown when article is open) -->
+    <div id="doc-page">
+
+      <!-- GETTING STARTED -->
+      <div class="doc-section" id="getting-started">
+        <div class="ds-header">
+          <div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Getting Started</h2></div>
         </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main" id="mainContent">
-
-        <div class="page-header">
-            <div class="page-kicker">Help Center</div>
-            <h1 class="page-title">How can we help?</h1>
-            <p class="page-sub">Everything you need to get up and running with the Among Us Launcher. Click any section below to expand it.</p>
+        <div class="doc-prose">
+          <p>The Among Us Launcher handles downloading, updating, and launching the game. No Steam, no itch.io account required — just download and play.</p>
+          <h3>What it does</h3>
+          <p>On startup the launcher checks for the latest game version, updates automatically, and lets you switch versions if a mod requires an older build. Discord rich presence runs while the game is open.</p>
+          <div class="callout info"><span class="callout-label">Note</span>Windows Defender may flag the launcher as suspicious. This is a false positive — it has no publisher signature because it is not commercially distributed. Full source is on <a href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank">GitHub</a>.</div>
+          <h3>Requirements</h3>
+          <ul>
+            <li>Windows 10 or later (64-bit)</li>
+            <li>Visual C++ Redistributables — see <button onclick="nav('redistributables')" style="display:inline;padding:0;border:none;background:none;color:var(--red);cursor:pointer;font-family:var(--f);font-size:inherit;letter-spacing:inherit;text-transform:inherit;">Required Software</button></li>
+            <li>Internet connection for the first download</li>
+          </ul>
+          <h3>First launch</h3>
         </div>
-
-        <!-- SEARCH -->
-        <div class="search-bar">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search the docs...">
-            <div id="searchResults" class="search-results"></div>
+        <div class="steps">
+          <div class="step"><span class="step-num"></span><div class="step-body"><strong>Download</strong> <code>AmongUsLauncher.exe</code> from the <a href="index.html">home page</a>.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body"><strong>Run the file.</strong> If Windows SmartScreen appears, click "More info" then "Run anyway."</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body"><strong>Wait for the download.</strong> The launcher fetches the latest Among Us build automatically. Takes about a minute depending on your connection.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body"><strong>Click Launch.</strong> The game starts. The launcher stays in your system tray while you play.</div></div>
         </div>
-
-        <!-- ═══════════ WEBSITE SECTIONS ═══════════ -->
-
-        <div class="doc-section" id="download-launcher">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-arrow-down"></i></div>
-                    <span class="section-title">How to Download the Launcher</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">The launcher is a small Windows app that handles everything for you. You download it once, and from that point on it manages game installs, updates, and more.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Head to the homepage</strong><br>Go back to the main page and find the big download button.</div></li>
-                    <li><div><strong>Click "Download free"</strong><br>This grabs the file <code>AmongUsLauncher.exe</code> straight from GitHub.</div></li>
-                    <li><div><strong>Save it somewhere you'll find it</strong><br>Desktop or Downloads folder works fine.</div></li>
-                    <li><div><strong>Run it</strong><br>Double-click the file and the launcher will open up.</div></li>
-                </ol>
-
-                <div class="callout warn">
-                    <i class="fas fa-shield-halved"></i>
-                    <div class="callout-content">
-                        <strong>Windows SmartScreen warning</strong>
-                        Windows might warn you because it doesn't recognise the app yet. Just click "More info" then "Run anyway." The launcher is open source and safe to run.
-                    </div>
-                </div>
-            </div>
+        <div class="doc-prose">
+          <div class="callout tip"><span class="callout-label">Tip</span>Pin the launcher to your taskbar for faster access — right-click the exe and choose "Pin to taskbar."</div>
         </div>
-
-        <div class="doc-section" id="download-direct">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-file-zipper"></i></div>
-                    <span class="section-title">Download the Game Directly</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">Prefer to skip the launcher? You can grab any version of the game as a zip file directly from the homepage.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Find the version picker</strong><br>On the homepage, below the main download button, there's a small panel that says "Just want the game files?"</div></li>
-                    <li><div><strong>Pick a version</strong><br>Click the dropdown to see all available versions. The latest one is marked at the top.</div></li>
-                    <li><div><strong>Download and unzip</strong><br>Click "Download game zip", extract the folder wherever you like, and run <code>Among Us.exe</code> inside it.</div></li>
-                </ol>
-
-                <div class="callout info">
-                    <i class="fas fa-lightbulb"></i>
-                    <div class="callout-content">
-                        <strong>Heads up</strong>
-                        The launcher is easier to use long-term since it handles updates for you. Direct downloads are great if you just need a specific version quickly.
-                    </div>
-                </div>
-            </div>
+        <div class="doc-footnav">
+          <button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button>
+          <button class="docnav-btn next" onclick="nav('install-game')"><span class="docnav-dir">Next</span><span class="docnav-label">Installing the Game &rsaquo;</span></button>
         </div>
+      </div>
 
-        <div class="doc-section" id="submit-feedback">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-message"></i></div>
-                    <span class="section-title">Submit Feedback</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">Found a bug? Have a suggestion? We actually read everything. The more detail you include, the more useful it is.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Scroll to the footer on the homepage</strong><br>Look for the speech bubble icon, or use the button below.</div></li>
-                    <li><div><strong>Fill in the form</strong><br>It's a Google Form. Describe what happened or what you'd like to see.</div></li>
-                    <li><div><strong>Include context</strong><br>Version numbers, what OS you're on, screenshots if you have them. It really helps.</div></li>
-                </ol>
-
-                <div class="btn-row">
-                    <a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Open Feedback Form</a>
-                </div>
-            </div>
+      <!-- TROUBLESHOOTING -->
+      <div class="doc-section" id="troubleshooting">
+        <div class="ds-header">
+          <div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1A7 7 0 0 0 5 2C2.8 2 1 3.8 1 6c0 .8.2 1.5.6 2.1L5 4.7l1.4 1.4-3.4 3.4a5 5 0 0 0 7 7l3.4-3.4 1.4 1.4-3.4 3.4c.6.4 1.3.6 2.1.6 2.2 0 4-1.8 4-4 0-.8-.2-1.5-.6-2.1l9.3 9.3-1.5 1.3z"/></svg></div>
+          <div><span class="ds-section-label">Help</span><h2 class="ds-title">Troubleshooting</h2></div>
         </div>
-
-        <div class="doc-section" id="discord">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fab fa-discord"></i></div>
-                    <span class="section-title">Join the Discord</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">The Discord is the fastest way to get help or stay in the loop. Most issues get sorted in minutes.</p>
-
-                <div class="mini-grid">
-                    <div class="mini-card"><h4>Live support</h4><p>Ask a question and usually someone will jump in to help pretty quickly.</p></div>
-                    <div class="mini-card"><h4>Update pings</h4><p>Get notified as soon as a new launcher or game version drops.</p></div>
-                    <div class="mini-card"><h4>Community</h4><p>Chat with other players, share mods, and hang out.</p></div>
-                </div>
-
-                <div class="btn-row">
-                    <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="btn btn-primary"><i class="fab fa-discord"></i> Join the Server</a>
-                </div>
-            </div>
+        <div class="doc-prose">
+          <p>Run through this before asking in Discord. Most problems are covered here and fix in under two minutes.</p>
+          <h3>Launcher won't open</h3>
+          <ul>
+            <li>Install both the <strong>x64 and x86 Visual C++ Redistributables</strong>. See <button onclick="nav('redistributables')" style="display:inline;padding:0;border:none;background:none;color:var(--red);cursor:pointer;font-family:var(--f);font-size:inherit;letter-spacing:inherit;text-transform:inherit;">Required Software</button>.</li>
+            <li>Confirm you're on <strong>Windows 10 or later</strong>. Windows 7/8 are not supported.</li>
+            <li>Right-click the exe and choose "Run as administrator."</li>
+            <li>Check your antivirus isn't quarantining the file. Add an exception for the launcher folder.</li>
+          </ul>
+          <h3>Game won't launch from the launcher</h3>
+          <ul>
+            <li>Let the download finish completely. A partial install won't run.</li>
+            <li>Delete the <code>Among Us</code> folder inside the launcher directory and restart to re-download fresh.</li>
+            <li>Temporarily disable your antivirus. Some AV software kills Among Us processes on spawn.</li>
+          </ul>
+          <div class="callout warn"><span class="callout-label">Warning</span>Do not move the launcher exe after the game has downloaded. The launcher stores the game relative to its own location — moving the exe breaks the path.</div>
+          <h3>Launcher says "Update failed"</h3>
+          <ul>
+            <li>Check your internet connection.</li>
+            <li>GitHub's release servers occasionally have brief outages. Wait a few minutes and retry.</li>
+            <li>If the problem persists more than an hour, <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">report it in Discord</a> with a screenshot.</li>
+          </ul>
+          <h3>itch.io ownership error</h3>
+          <p>Use the <strong>Itch Login Fixer</strong> on the <a href="index.html">home page</a> under "Don't need the launcher?" — follow the instructions there.</p>
+          <h3>Black screen on launch</h3>
+          <ul>
+            <li>Update your graphics drivers.</li>
+            <li>Try windowed mode: hold <code>Alt</code> while launching.</li>
+            <li>If you have multiple monitors, move the window to your primary display.</li>
+          </ul>
+          <h3>Discord Rich Presence not showing</h3>
+          <ul>
+            <li>Open Discord <em>before</em> launching the game.</li>
+            <li>In Discord settings, enable "Display current activity as a status message."</li>
+            <li>Restart both the game and Discord.</li>
+          </ul>
+          <h3>Still stuck?</h3>
         </div>
-
-        <!-- ═══════════ LAUNCHER SECTIONS ═══════════ -->
-
-        <div class="doc-section" id="getting-started">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-rocket"></i></div>
-                    <span class="section-title">Getting Started</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">Once you've downloaded the launcher, setup takes less than two minutes. Here's what to expect the first time you open it.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Open the launcher</strong><br>Double-click <code>AmongUsLauncher.exe</code>. A window will open with a clean interface.</div></li>
-                    <li><div><strong>Internet check</strong><br>The launcher checks your connection and looks for any updates to itself. This takes a second or two.</div></li>
-                    <li><div><strong>You're in</strong><br>You'll see the main screen with a big install button, your version info, and a sidebar for settings and tools.</div></li>
-                </ol>
-
-                <div class="callout ok">
-                    <i class="fas fa-circle-check"></i>
-                    <div class="callout-content">
-                        <strong>Worth knowing</strong>
-                        Your settings and game path are saved between sessions. You only have to set things up once.
-                    </div>
-                </div>
-            </div>
+        <div class="steps">
+          <div class="step"><span class="step-num"></span><div class="step-body">Search this page — your issue is probably answered above.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">Check the <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">#support channel</a> for recent similar reports.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">Post in #support with your Windows version, exactly what happens, and a screenshot if possible.</div></div>
         </div>
-
-        <div class="doc-section" id="install-game">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-gamepad"></i></div>
-                    <span class="section-title">Installing the Game</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">The launcher downloads and sets up Among Us for you. Here's how the first install goes.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Click "Install Game"</strong><br>It's the big button in the middle of the launcher window.</div></li>
-                    <li><div><strong>Choose an install folder</strong><br>Pick somewhere sensible like <code>C:\Games\Among Us</code>. You can change this later in settings.</div></li>
-                    <li><div><strong>Wait for the download</strong><br>You'll see a progress bar with a real-time speed indicator. Shouldn't take long on a decent connection.</div></li>
-                    <li><div><strong>Automatic setup</strong><br>The launcher extracts everything into place on its own. Nothing else to do.</div></li>
-                    <li><div><strong>Launch button appears</strong><br>Once it's done, the button flips to "Launch Game." You're good to play.</div></li>
-                </ol>
-            </div>
+        <div class="doc-footnav">
+          <button class="docnav-btn" onclick="nav('version-management')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Version Management</span></button>
+          <button class="docnav-btn next" onclick="nav('redistributables')"><span class="docnav-dir">Next</span><span class="docnav-label">Required Software &rsaquo;</span></button>
         </div>
+      </div>
 
-        <div class="doc-section" id="auto-updates">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-sync-alt"></i></div>
-                    <span class="section-title">Auto Updates</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">Keeping the game up to date is completely automatic. You don't have to check anything or visit the website again.</p>
-
-                <ul class="bullets">
-                    <li>Every time you open the launcher, it checks for a newer version in the background.</li>
-                    <li>If something new is available, the main button turns into "Update Available."</li>
-                    <li>Click it once and it downloads and installs the update by itself.</li>
-                    <li>Every download includes a checksum check so corrupted files are caught automatically.</li>
-                </ul>
-            </div>
+      <!-- REDISTRIBUTABLES -->
+      <div class="doc-section" id="redistributables">
+        <div class="ds-header">
+          <div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a3 3 0 0 0-6 0c0 .12.1.56.18 1H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/></svg></div>
+          <div><span class="ds-section-label">Help</span><h2 class="ds-title">Required Software</h2></div>
         </div>
-
-        <div class="doc-section" id="version-management">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-code-branch"></i></div>
-                    <span class="section-title">Version Management</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">Need to play on an older version? Maybe your friends are still on a build from a few months back. The launcher makes it easy to switch.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Click "Install Specific"</strong><br>You'll find this next to the main action button in the Game tab.</div></li>
-                    <li><div><strong>Browse the list</strong><br>A window opens showing every available version, newest first.</div></li>
-                    <li><div><strong>Pick one and install</strong><br>Click the version you want and hit "Install Selected." That's it.</div></li>
-                </ol>
-
-                <div class="callout warn">
-                    <i class="fas fa-triangle-exclamation"></i>
-                    <div class="callout-content">
-                        <strong>This replaces your current install</strong>
-                        Switching versions overwrites what's currently installed. If you've got any save data you care about, back it up before switching.
-                    </div>
-                </div>
-            </div>
+        <div class="doc-prose">
+          <p>The launcher requires the <strong>Microsoft Visual C++ Redistributables</strong>. Install both — x64 and x86 — even on a 64-bit system.</p>
+          <h3>Download links</h3>
+          <ul>
+            <li><a href="https://aka.ms/vs/17/release/vc_redist.x64.exe" target="_blank">Visual C++ x64 Redistributable</a></li>
+            <li><a href="https://aka.ms/vs/17/release/vc_redist.x86.exe" target="_blank">Visual C++ x86 Redistributable</a></li>
+          </ul>
+          <h3>Install steps</h3>
         </div>
-
-        <div class="doc-section" id="discord-rpc">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-circle-dot"></i></div>
-                    <span class="section-title">Discord Rich Presence</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">When you're in-game, your Discord status can show that you're playing Among Us along with which version you're on. Friends can see it at a glance.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Turn it on in Settings</strong><br>Open the sidebar menu, go to Settings, and enable "Discord Rich Presence."</div></li>
-                    <li><div><strong>Make sure Discord is running</strong><br>Discord needs to be open before you launch the game or it won't pick up the status.</div></li>
-                    <li><div><strong>It just works from there</strong><br>Your status will automatically show "Playing Among Us" with the version info.</div></li>
-                </ol>
-
-                <div class="callout info">
-                    <i class="fas fa-eye"></i>
-                    <div class="callout-content">
-                        <strong>What shows up</strong>
-                        Your status shows "Playing Among Us Shadow Slime" with your current version and whether you're in the launcher or actually in-game.
-                    </div>
-                </div>
-            </div>
+        <div class="steps">
+          <div class="step"><span class="step-num"></span><div class="step-body">Download both files from the links above.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">Run the x64 installer first. Accept and complete it.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">Run the x86 installer. Accept and complete it.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body"><strong>Restart your PC.</strong> Then try launching the launcher again.</div></div>
         </div>
-
-        <div class="doc-section" id="aunlocker">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-unlock"></i></div>
-                    <span class="section-title">Installing AUnlocker</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">AUnlocker is an optional mod that unlocks all cosmetics and lets you use characters like Russian letters in your player name. It only touches visual stuff and doesn't affect gameplay or multiplayer.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Open the launcher</strong><br>Go to the Tools or Mods section from the sidebar.</div></li>
-                    <li><div><strong>Hit "Install AUnlocker"</strong><br>It downloads and installs automatically. No files to move around yourself.</div></li>
-                    <li><div><strong>Launch the game normally</strong><br>Everything will be unlocked the next time you start.</div></li>
-                </ol>
-
-                <div class="callout ok">
-                    <i class="fas fa-shield-halved"></i>
-                    <div class="callout-content">
-                        <strong>It's safe</strong>
-                        AUnlocker is cosmetics only. It doesn't touch personal data, doesn't contain malware, and is verified when installed through the launcher.
-                    </div>
-                </div>
-            </div>
+        <div class="doc-prose">
+          <div class="callout tip"><span class="callout-label">Tip</span>If you already have these installed and the launcher still crashes, try repairing the installation — run the installer again and choose "Repair" instead of "Install."</div>
         </div>
-
-        <div class="doc-section" id="shortcuts">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-link"></i></div>
-                    <span class="section-title">Desktop Shortcuts</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">You can create a desktop shortcut to launch a specific version of the game directly, without opening the full launcher UI first.</p>
-
-                <ol class="steps">
-                    <li><div><strong>Select the version you want a shortcut for</strong></div></li>
-                    <li><div><strong>Click "Create Desktop Shortcut"</strong><br>The button is in the version management view.</div></li>
-                    <li><div><strong>Done</strong><br>A shortcut appears on your desktop. Double-click it to go straight in.</div></li>
-                </ol>
-            </div>
+        <div class="doc-footnav">
+          <button class="docnav-btn" onclick="nav('troubleshooting')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Troubleshooting</span></button>
+          <button class="docnav-btn next" onclick="nav('support')"><span class="docnav-dir">Next</span><span class="docnav-label">Support &rsaquo;</span></button>
         </div>
+      </div>
 
-        <div class="doc-section" id="settings">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-gear"></i></div>
-                    <span class="section-title">Launcher Settings</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">The Settings panel lets you adjust how the launcher behaves. Here's a quick overview of what each option does.</p>
+      <!-- PLACEHOLDER SECTIONS -->
+      <div class="doc-section" id="download-launcher"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg></div><div><span class="ds-section-label">Quick Links</span><h2 class="ds-title">Download the Launcher</h2></div></div><div class="doc-prose"><p>Grab the latest release from the <a href="index.html">home page</a>. The file is <code>AmongUsLauncher.exe</code>.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button><button class="docnav-btn next" onclick="nav('getting-started')"><span class="docnav-dir">Next</span><span class="docnav-label">Getting Started &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="download-direct"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a3 3 0 0 0-6 0c0 .12.1.56.18 1H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/></svg></div><div><span class="ds-section-label">Quick Links</span><h2 class="ds-title">Download Game Files</h2></div></div><div class="doc-prose"><p>Download the raw game zip from the <a href="index.html">home page</a> under "Don't need the launcher?" — pick your version from the dropdown.</p><p>Content coming soon — full documentation for the direct download process will be written here.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button></div></div>
+      <div class="doc-section" id="discord"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></div><div><span class="ds-section-label">Quick Links</span><h2 class="ds-title">Join Discord</h2></div></div><div class="doc-prose"><p>Join at <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">discord.com/invite/7Vvj2vpT6S</a>. Ask questions, report bugs, and keep up with updates in real time.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button></div></div>
+      <div class="doc-section" id="install-game"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M21 6H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Installing the Game</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will explain how the launcher manages game files and where they are stored on your machine.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('getting-started')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Getting Started</span></button><button class="docnav-btn next" onclick="nav('auto-updates')"><span class="docnav-dir">Next</span><span class="docnav-label">Auto Updates &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="auto-updates"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6a6 6 0 0 1 6 6 5.9 5.9 0 0 1-.6 2.6L19 16a8 8 0 0 0 1-4 8 8 0 0 0-8-8zm0 14a6 6 0 0 1-6-6c0-1 .3-2 .6-2.6L5 8a8 8 0 0 0-1 4 8 8 0 0 0 8 8v3l4-4-4-4v3z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Auto Updates</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will cover how automatic game updates work, how long they take, and how to disable them if you need to stay on a specific version.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('install-game')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Installing the Game</span></button><button class="docnav-btn next" onclick="nav('version-management')"><span class="docnav-dir">Next</span><span class="docnav-label">Version Management &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="version-management"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Version Management</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will explain how to switch between game versions, which versions are available, and why you might need an older one for mods.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('auto-updates')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Auto Updates</span></button><button class="docnav-btn next" onclick="nav('troubleshooting')"><span class="docnav-dir">Next</span><span class="docnav-label">Troubleshooting &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="discord-rpc"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 4.9C15.2 1 8.8 1 4.9 4.9S1 15.2 4.9 19.1s10.2 3.9 14.2 0 3.9-10.2 0-14.2z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Discord Rich Presence</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will cover the Discord status integration: what it shows, how to enable or disable it, and what to do if it is not working.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('version-management')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Version Management</span></button><button class="docnav-btn next" onclick="nav('shortcuts')"><span class="docnav-dir">Next</span><span class="docnav-label">Desktop Shortcuts &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="shortcuts"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.7 1.4-3.1 3.1-3.1h4V7H7C4.2 7 2 9.2 2 12s2.2 5 5 5h4v-1.9H7c-1.7 0-3.1-1.4-3.1-3.1z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Desktop Shortcuts</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will explain how to create and manage desktop shortcuts for the launcher.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('discord-rpc')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Discord Rich Presence</span></button><button class="docnav-btn next" onclick="nav('aunlocker')"><span class="docnav-dir">Next</span><span class="docnav-label">AUnlocker &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="aunlocker"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">AUnlocker</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will cover the AUnlocker integration.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('shortcuts')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Desktop Shortcuts</span></button><button class="docnav-btn next" onclick="nav('settings')"><span class="docnav-dir">Next</span><span class="docnav-label">Launcher Settings &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="settings"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M19.1 12.9c0-.3 0-.6.1-.9s-.1-.6-.1-.9l1.9-1.5c.2-.2.2-.4.1-.6l-1.8-3.1a.5.5 0 0 0-.6-.2l-2.3.9a6.7 6.7 0 0 0-1.6-.9L14.4 4c0-.3-.3-.4-.5-.4h-3.6c-.3 0-.5.2-.5.4l-.3 2.4a6.9 6.9 0 0 0-1.6.9l-2.3-.9a.5.5 0 0 0-.6.2L3.2 9.7c-.1.2-.1.5.1.6l1.9 1.5c0 .3-.1.6-.1.9s.1.6.1.9L3.3 15c-.2.2-.2.4-.1.6l1.8 3.1c.1.2.4.3.6.2l2.3-.9c.5.4 1 .7 1.6.9l.3 2.4c0 .3.3.5.5.5h3.6c.3 0 .5-.2.5-.5l.3-2.4a6.9 6.9 0 0 0 1.6-.9l2.3.9c.3.1.5 0 .6-.2l1.8-3.1c.1-.2.1-.5-.1-.6z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Launcher Settings</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will document every setting and toggle in the launcher interface.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('aunlocker')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; AUnlocker</span></button><button class="docnav-btn next" onclick="nav('troubleshooting')"><span class="docnav-dir">Next</span><span class="docnav-label">Troubleshooting &rsaquo;</span></button></div></div>
+      <div class="doc-section" id="support"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/></svg></div><div><span class="ds-section-label">Help</span><h2 class="ds-title">Support</h2></div></div><div class="doc-prose"><p>If nothing in this help center solved your problem, reach out directly.</p><ul><li><a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord #support</a> — fastest response, usually under an hour during active hours.</li><li><a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank">Feedback form</a> — for detailed bug reports without needing to join Discord.</li></ul></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('redistributables')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Required Software</span></button><button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button></div></div>
 
-                <div class="mini-grid">
-                    <div class="mini-card"><h4>Auto Updates</h4><p>Automatically install new game versions when they come out.</p></div>
-                    <div class="mini-card"><h4>Discord RPC</h4><p>Show your game status on Discord while you're playing.</p></div>
-                    <div class="mini-card"><h4>Install Path</h4><p>Change where the game files get saved on your computer.</p></div>
-                </div>
-            </div>
-        </div>
+    </div><!-- #doc-page -->
+  </div><!-- #content-wrap -->
+</div><!-- #layout -->
 
-        <!-- ═══════════ HELP SECTIONS ═══════════ -->
-
-        <div class="doc-section" id="troubleshooting">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-wrench"></i></div>
-                    <span class="section-title">Troubleshooting</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">Most issues have a pretty simple fix. Try these first before heading to Discord.</p>
-
-                <ul class="bullets">
-                    <li><strong>Launcher won't open</strong> — Right-click the .exe and choose "Run as administrator."</li>
-                    <li><strong>Game won't launch</strong> — Use the launcher to reinstall the game. This usually fixes any missing or corrupted files.</li>
-                    <li><strong>Antivirus deleting files</strong> — Add the launcher folder and game folder to your antivirus exclusions, then reinstall the game.</li>
-                    <li><strong>Stuck on infinite loading screen</strong> — Check you have all the required redistributables installed (see the section below).</li>
-                    <li><strong>Discord status not showing</strong> — Close Discord and reopen it, then relaunch the game.</li>
-                    <li><strong>Download keeps failing</strong> — Try pausing your antivirus during the download, then add the folder to exclusions afterwards.</li>
-                </ul>
-
-                <div class="callout info">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="callout-content">
-                        <strong>Still stuck?</strong>
-                        Jump into the Discord and describe what's happening. Include your Windows version and what error you're seeing if there is one.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="doc-section" id="redistributables">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-box"></i></div>
-                    <span class="section-title">Required Software</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">If Among Us crashes on startup, won't open at all, or gets stuck loading forever, the most common cause is missing system components. These are small packages that the game needs in order to run.</p>
-                <p class="prose">Think of them like drivers. Even on a clean Windows install, some of these might not be there yet. Installing them takes a few minutes total and often fixes the problem immediately.</p>
-
-                <div class="divider"></div>
-
-                <p class="prose" style="font-weight:600; color:var(--text);">Install everything in this list:</p>
-
-                <div class="dl-list">
-                    <div class="dl-item">
-                        <div class="dl-item-name"><i class="fas fa-cube"></i> Microsoft Visual C++ 2010 (x86 and x64)</div>
-                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=26999" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-item-name"><i class="fas fa-cube"></i> Microsoft Visual C++ 2015–2019 (x86 and x64)</div>
-                        <a href="https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-item-name"><i class="fas fa-volume-high"></i> OpenAL (by Creative Labs)</div>
-                        <a href="https://www.openal.org/downloads/" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-item-name"><i class="fas fa-display"></i> DirectX Runtime (10 or newer)</div>
-                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=35" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-item-name"><i class="fab fa-microsoft"></i> .NET Framework 4.0</div>
-                        <a href="https://dotnet.microsoft.com/en-us/download/dotnet-framework/net40" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-item-name"><i class="fas fa-gamepad"></i> Microsoft XNA Framework 4.0</div>
-                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=20914" target="_blank"><i class="fas fa-arrow-down"></i> Download</a>
-                    </div>
-                </div>
-
-                <div class="callout warn">
-                    <i class="fas fa-triangle-exclamation"></i>
-                    <div class="callout-content">
-                        <strong>Install both x86 and x64 where available</strong>
-                        Even if your system is 64-bit, some games need the 32-bit versions too. Install both to be safe.
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-                <p class="prose" style="font-weight:600; color:var(--text);">A few extra things to check:</p>
-
-                <ul class="bullets">
-                    <li><strong>Set a default browser</strong> — Some launcher features use it. If you don't have one set, go to Windows Settings and pick one.</li>
-                    <li><strong>Run as administrator</strong> — Right-click <code>Among Us.exe</code> and choose "Run as administrator" if it keeps failing to start.</li>
-                    <li><strong>Disable antivirus during extraction</strong> — Real-time protection can silently delete files mid-extraction. Pause it, extract, then add the folder to exclusions.</li>
-                </ul>
-
-                <div class="callout ok">
-                    <i class="fas fa-circle-check"></i>
-                    <div class="callout-content">
-                        <strong>That should do it</strong>
-                        If you've gone through everything here and the game still won't run, pop into the Discord and someone will help you figure it out.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="doc-section" id="support">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div class="section-header-left">
-                    <div class="section-icon-wrap"><i class="fas fa-life-ring"></i></div>
-                    <span class="section-title">Support</span>
-                </div>
-                <i class="fas fa-chevron-down section-chevron"></i>
-            </div>
-            <div class="section-body">
-                <p class="prose">There are a couple of ways to get help depending on what you're dealing with.</p>
-
-                <div class="divider"></div>
-                <p class="prose" style="font-weight:600; color:var(--text);">Discord — best for launcher issues</p>
-                <p class="prose">The Discord is the main place for support. It's primarily for launcher stuff, but people are generally helpful about game issues too. No guarantees on that second part though.</p>
-
-                <p class="prose">Things we can definitely help with:</p>
-                <ul class="bullets">
-                    <li>Launcher not opening or crashing</li>
-                    <li>Download or installation problems</li>
-                    <li>AUnlocker issues</li>
-                    <li>Discord Rich Presence not working</li>
-                    <li>Version switching problems</li>
-                </ul>
-
-                <div class="divider"></div>
-                <p class="prose" style="font-weight:600; color:var(--text);">Before asking about game issues</p>
-                <p class="prose">If Among Us itself is crashing or stuck loading, please check the Required Software section above and make sure everything is installed. It fixes the issue the vast majority of the time and saves everyone time.</p>
-
-                <div class="callout warn">
-                    <i class="fas fa-triangle-exclamation"></i>
-                    <div class="callout-content">
-                        <strong>Check this first</strong>
-                        Missing Visual C++ redistributables and antivirus interference are the cause of probably 80% of game startup issues. Sort those out before asking.
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-                <p class="prose" style="font-weight:600; color:var(--text);">Feedback form — bugs and suggestions</p>
-                <p class="prose">For things that aren't urgent, use the feedback form. It's better for detailed bug reports, reproducible issues, and feature requests where we can look into it properly.</p>
-
-                <div class="btn-row">
-                    <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="btn btn-primary"><i class="fab fa-discord"></i> Join Discord</a>
-                    <a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank" class="btn btn-ghost"><i class="fas fa-paper-plane"></i> Feedback Form</a>
-                </div>
-            </div>
-        </div>
-
-    </main>
+<!-- HUB DRAWER -->
+<div id="hub-drawer">
+  <button id="hub-tab" onclick="toggleHub()">
+    <span class="hub-dot"></span><span class="hub-label">HUB</span><span class="hub-arrow">&#9650;</span>
+  </button>
+  <div class="drawer-inner">
+    <div class="drawer-news">
+      <div class="drawer-news-header">
+        <div class="drawer-news-label">// Latest News</div>
+        <a class="drawer-news-viewall" href="news.html">View all news //</a>
+      </div>
+      <div class="dn-list" id="dn-list"><div class="dn-state" id="dn-state">Loading...</div></div>
+    </div>
+    <div class="drawer-sep"></div>
+    <div class="drawer-support">
+      <div class="ds-label-hub">// Support</div>
+      <p class="ds-desc">Something broken? Pop into Discord.</p>
+      <div class="ds-links">
+        <a class="ds-link" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank"><span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></span><span class="ds-link-arrow"></span><span class="ds-link-text">Discord</span></a>
+        <a class="ds-link" href="helpPage.html"><span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span><span class="ds-link-arrow"></span><span class="ds-link-text">Help Center</span></a>
+        <a class="ds-link" href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank"><span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></span><span class="ds-link-arrow"></span><span class="ds-link-text">Feedback</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <span>AU Launcher &nbsp;&middot;&nbsp; Not affiliated with Innersloth &nbsp;&middot;&nbsp; &copy; 2025 ShadowSlimeDEV</span>
+    <div class="df-links">
+      <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank" title="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg></a>
+      <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" title="Discord"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></a>
+      <a href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank" title="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3A12 12 0 0 0 0 12.3c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.4 18 4.7 18 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 24 12.3 12 12 0 0 0 12 .3z"/></svg></a>
+      <a href="news.html" title="News"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 13H6v-2h5v2zm7-4H6v-2h12v2zm0-4H6V6h12v2z"/></svg></a>
+    </div>
+  </div>
 </div>
 
 <script>
-    /* ── Accordion ── */
-    function toggleSection(header) {
-        const body = header.nextElementSibling;
-        const isOpen = header.classList.contains('open');
-        header.classList.toggle('open', !isOpen);
-        body.classList.toggle('open', !isOpen);
-        // update active nav item
-        const id = header.closest('.doc-section').id;
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.target === id && !isOpen));
-    }
+'use strict';
 
-    /* ── Sidebar toggle ── */
-    const sidebar   = document.getElementById('sidebar');
-    const overlay   = document.getElementById('overlay');
-    const toggleBtn = document.getElementById('sidebarToggle');
-    const isMobile  = () => window.innerWidth <= 860;
+// ── STATE ────────────────────────────────────
+let sidebarExpanded = false;
+let currentSection  = null; // null = home
 
-    function openSidebar() {
-        if (isMobile()) { sidebar.classList.add('mobile-open'); overlay.classList.add('active'); }
-        else            { sidebar.classList.remove('collapsed'); }
-    }
-    function closeSidebar() {
-        if (isMobile()) { sidebar.classList.remove('mobile-open'); overlay.classList.remove('active'); }
-        else            { sidebar.classList.add('collapsed'); }
-    }
-    function sidebarOpen() {
-        return isMobile() ? sidebar.classList.contains('mobile-open') : !sidebar.classList.contains('collapsed');
-    }
+// ── HOME / NAV ───────────────────────────────
+function goHome() {
+  document.getElementById('doc-home').style.display = 'block';
+  document.getElementById('doc-page').classList.remove('visible');
+  document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  currentSection = null;
+  history.replaceState(null,'','#');
+  window.scrollTo(0,0);
+}
 
-    toggleBtn.addEventListener('click', () => sidebarOpen() ? closeSidebar() : openSidebar());
-    overlay.addEventListener('click', closeSidebar);
+function nav(id) {
+  const target = document.getElementById(id);
+  if (!target) return;
 
-    /* ── Nav item clicks ── */
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const id = item.dataset.target;
-            const section = document.getElementById(id);
-            if (!section) return;
-            const header = section.querySelector('.section-header');
-            const body   = section.querySelector('.section-body');
-            if (!header.classList.contains('open')) { header.classList.add('open'); body.classList.add('open'); }
-            section.scrollIntoView({ behavior:'smooth', block:'start' });
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            if (isMobile()) closeSidebar();
-        });
+  // hide home, show doc page
+  document.getElementById('doc-home').style.display = 'none';
+  document.getElementById('doc-page').classList.add('visible');
+
+  // swap section
+  document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+  target.classList.add('active');
+
+  // sidebar highlight
+  document.querySelectorAll('.sb-item').forEach(b => {
+    b.classList.toggle('active', !!(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")));
+  });
+
+  // open sidebar on first article open
+  if (!sidebarExpanded) openSidebar();
+
+  currentSection = id;
+  history.replaceState(null,'','#'+id);
+  window.scrollTo(0,0);
+}
+
+// ── SIDEBAR ──────────────────────────────────
+function openSidebar() {
+  sidebarExpanded = true;
+  document.getElementById('sidebar').classList.remove('collapsed');
+  document.getElementById('sidebar-toggle').classList.add('active');
+  if (window.innerWidth > 860) {
+    document.getElementById('content-wrap').classList.add('sidebar-open');
+  }
+}
+function closeSidebar() {
+  sidebarExpanded = false;
+  document.getElementById('sidebar').classList.add('collapsed');
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-toggle').classList.remove('active');
+  document.getElementById('content-wrap').classList.remove('sidebar-open');
+}
+function toggleSidebar() {
+  if (window.innerWidth <= 860) {
+    // mobile: slide in over content
+    const sb = document.getElementById('sidebar');
+    const open = sb.classList.contains('mobile-open');
+    if (open) {
+      sb.classList.remove('mobile-open');
+    } else {
+      sb.classList.add('mobile-open');
+      sb.classList.remove('collapsed');
+    }
+  } else {
+    sidebarExpanded ? closeSidebar() : openSidebar();
+  }
+}
+
+// restore from URL hash
+const initHash = window.location.hash.slice(1);
+if (initHash && document.getElementById(initHash)) {
+  nav(initHash);
+}
+
+function focusSearch() {
+  const inp = document.getElementById('search-input');
+  inp.focus();
+  inp.select();
+  inp.style.transition = 'border-color .1s';
+  inp.style.borderColor = 'rgba(200,21,27,.7)';
+  setTimeout(() => { inp.style.borderColor = ''; }, 500);
+}
+
+// ── SEARCH ───────────────────────────────────
+const DOC_INDEX = [];
+document.querySelectorAll('.doc-section').forEach(sec => {
+  const id    = sec.id;
+  const title = sec.querySelector('.ds-title')?.textContent || id;
+  const group = sec.querySelector('.ds-section-label')?.textContent || '';
+  const text  = sec.textContent.replace(/\s+/g,' ').trim();
+  DOC_INDEX.push({ id, title, group, text });
+});
+
+const searchInput   = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function highlight(str, q){ return str.replace(new RegExp('('+esc(q)+')','gi'),'<mark>$1</mark>'); }
+function snippet(text, q, len=110){
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if(idx<0) return text.slice(0,len)+'...';
+  const start = Math.max(0,idx-35);
+  const end   = Math.min(text.length,start+len);
+  return (start>0?'...:':'')+text.slice(start,end)+(end<text.length?'...':'');
+}
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim();
+  if(!q){ searchResults.innerHTML=''; searchResults.classList.remove('open'); return; }
+  const hits = DOC_INDEX.filter(d =>
+    d.title.toLowerCase().includes(q.toLowerCase()) ||
+    d.text.toLowerCase().includes(q.toLowerCase())
+  ).slice(0,8);
+  if(!hits.length){
+    searchResults.innerHTML=`<div class="sr-empty">No results for "${q}"</div>`;
+    searchResults.classList.add('open');
+    return;
+  }
+  searchResults.innerHTML = hits.map(r=>`
+    <div class="sr-item" onclick="nav('${r.id}');searchInput.value='';searchResults.classList.remove('open');">
+      <span class="sr-title">${highlight(r.title,q)}</span>
+      <span class="sr-section">${r.group}</span>
+      <span class="sr-snippet">${highlight(snippet(r.text,q),q)}</span>
+    </div>`).join('');
+  searchResults.classList.add('open');
+});
+document.addEventListener('click', e => {
+  if(!e.target.closest('.nav-search')) searchResults.classList.remove('open');
+});
+searchInput.addEventListener('keydown', e => {
+  if(e.key==='Enter' && DOC_INDEX.length){
+    const q = searchInput.value.trim();
+    const hit = DOC_INDEX.find(d => d.title.toLowerCase().includes(q.toLowerCase()) || d.text.toLowerCase().includes(q.toLowerCase()));
+    if(hit){ nav(hit.id); searchInput.value=''; searchResults.classList.remove('open'); }
+  }
+});
+
+// ── HUB ─────────────────────────────────────
+let hubOpen = false;
+function toggleHub(){
+  hubOpen=!hubOpen;
+  document.getElementById('hub-drawer').classList.toggle('open',hubOpen);
+  document.getElementById('hub-tab').classList.toggle('open',hubOpen);
+}
+(async function loadHubNews(){
+  const dnList=document.getElementById('dn-list');
+  const dnState=document.getElementById('dn-state');
+  try{
+    const res=await fetch('/news/index.json');
+    if(!res.ok)throw new Error();
+    const posts=await res.json();
+    if(!posts.length)throw new Error();
+    dnState&&dnState.remove();
+    posts.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4).forEach(p=>{
+      const cat=p.category||'Update';
+      const date=new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const item=document.createElement('div');item.className='dn-item';
+      item.innerHTML=`<span class="dn-badge ${cat}">${cat.toUpperCase()}</span><div><a href="post.html?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
+      dnList.appendChild(item);
     });
+  }catch{if(dnState)dnState.textContent='// Failed to fetch latest news';}
+})();
 
-    /* ── Search ── */
-    const searchData = [
-        { title:'Download the Launcher', section:'Website', target:'download-launcher', icon:'fa-arrow-down' },
-        { title:'Download Game Directly', section:'Website', target:'download-direct', icon:'fa-file-zipper' },
-        { title:'Submit Feedback', section:'Website', target:'submit-feedback', icon:'fa-message' },
-        { title:'Join Discord', section:'Website', target:'discord', icon:'fa-discord fab' },
-        { title:'Getting Started', section:'Launcher', target:'getting-started', icon:'fa-rocket' },
-        { title:'Installing the Game', section:'Launcher', target:'install-game', icon:'fa-gamepad' },
-        { title:'Auto Updates', section:'Launcher', target:'auto-updates', icon:'fa-sync-alt' },
-        { title:'Version Management', section:'Launcher', target:'version-management', icon:'fa-code-branch' },
-        { title:'Discord Rich Presence', section:'Launcher', target:'discord-rpc', icon:'fa-circle-dot' },
-        { title:'Installing AUnlocker', section:'Launcher', target:'aunlocker', icon:'fa-unlock' },
-        { title:'Desktop Shortcuts', section:'Launcher', target:'shortcuts', icon:'fa-link' },
-        { title:'Launcher Settings', section:'Launcher', target:'settings', icon:'fa-gear' },
-        { title:'Troubleshooting', section:'Help', target:'troubleshooting', icon:'fa-wrench' },
-        { title:'Required Software / Redistributables', section:'Help', target:'redistributables', icon:'fa-box' },
-        { title:'Support', section:'Help', target:'support', icon:'fa-life-ring' },
-    ];
+// ── CTRL+K SEARCH ────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    focusSearch();
+  }
+  // Escape closes results and blurs
+  if (e.key === 'Escape') {
+    document.getElementById('search-results').classList.remove('open');
+    document.getElementById('search-input').blur();
+  }
+});
 
-    const searchInput   = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResults');
+// ── BEANS ────────────────────────────────────
+let beansEnabled = localStorage.getItem('beans') !== 'off';
+window.__beansEnabled = beansEnabled;
+function toggleBeans() {
+  beansEnabled = !beansEnabled;
+  localStorage.setItem('beans', beansEnabled ? 'on' : 'off');
+  window.__beansEnabled = beansEnabled;
+  document.getElementById('bean-toggle-btn').classList.toggle('off', !beansEnabled);
+}
+// apply saved button state after DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  if (!beansEnabled) document.getElementById('bean-toggle-btn').classList.add('off');
+});
 
-    searchInput.addEventListener('input', () => {
-        const q = searchInput.value.trim().toLowerCase();
-        if (!q) { searchResults.style.display = 'none'; searchResults.innerHTML = ''; return; }
-        const hits = searchData.filter(d => d.title.toLowerCase().includes(q) || d.section.toLowerCase().includes(q));
-        if (!hits.length) { searchResults.style.display = 'none'; return; }
-        searchResults.innerHTML = hits.map(h => `
-            <div class="search-result-item" onclick="jumpTo('${h.target}')">
-                <i class="fas ${h.icon}" style="color:var(--accent);font-size:.8rem;width:14px;text-align:center;flex-shrink:0"></i>
-                <div>
-                    <div class="search-result-title">${h.title}</div>
-                    <div class="search-result-section">${h.section}</div>
-                </div>
-            </div>`).join('');
-        searchResults.style.display = 'block';
-    });
+(function spaceScene() {
+  const bgC = document.getElementById('bg-canvas');
+  if (!bgC) return;
+  const bgX = bgC.getContext('2d');
+  let W=0,H=0;
+  function resize(){W=bgC.width=window.innerWidth;H=bgC.height=window.innerHeight;}
+  resize();
+  window.addEventListener('resize',()=>{resize();buildStars();});
 
-    document.addEventListener('click', e => {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
-    function jumpTo(id) {
-        const section = document.getElementById(id);
-        if (!section) return;
-        const header = section.querySelector('.section-header');
-        const body   = section.querySelector('.section-body');
-        if (!header.classList.contains('open')) { header.classList.add('open'); body.classList.add('open'); }
-        section.scrollIntoView({ behavior:'smooth', block:'start' });
-        searchResults.style.display = 'none';
-        searchInput.value = '';
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.target === id));
+  const STAR_RADII=[0.55,0.95,1.55,2.40,3.60];
+  const starSprites=[];
+  function bakeStarSprites(){
+    for(const r of STAR_RADII){
+      const sz=Math.ceil(r*2+8)|1;
+      const c=document.createElement('canvas');c.width=c.height=sz;
+      const cx=c.getContext('2d');const half=sz/2;
+      const g=cx.createRadialGradient(half,half,0,half,half,half);
+      g.addColorStop(0,'rgba(222,215,255,1)');
+      g.addColorStop(r/half,'rgba(195,185,255,0.60)');
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      cx.fillStyle=g;cx.fillRect(0,0,sz,sz);
+      starSprites.push(c);
     }
+  }
+  const STAR_LAYERS=[
+    {count:180,si:0,alpha:.20,drift:.006},{count:110,si:1,alpha:.38,drift:.018},
+    {count:65,si:2,alpha:.60,drift:.040},{count:22,si:3,alpha:.82,drift:.085},{count:7,si:4,alpha:1,drift:.050}
+  ];
+  const stars=[];
+  function buildStars(){
+    stars.length=0;
+    for(const L of STAR_LAYERS)
+      for(let i=0;i<L.count;i++)
+        stars.push({x:rnd(0,W),y:rnd(0,H),si:L.si,baseAlpha:L.alpha*rnd(.5,1),drift:rnd(-1,1)*L.drift,tw:rnd(0,Math.PI*2),twS:rnd(.003,.016)});
+  }
+  function drawStars(){
+    for(const s of stars){
+      s.x+=s.drift;if(s.x<-8)s.x=W+8;if(s.x>W+8)s.x=-8;
+      s.tw+=s.twS;
+      const a=s.baseAlpha*(.55+.45*Math.sin(s.tw));
+      const sp=starSprites[s.si];if(!sp)continue;
+      bgX.globalAlpha=a;bgX.drawImage(sp,s.x-sp.width*.5,s.y-sp.height*.5);
+    }
+    bgX.globalAlpha=1;
+  }
 
-    /* ── Scroll spy ── */
-    const sections = document.querySelectorAll('.doc-section');
-    const navItems = document.querySelectorAll('.nav-item');
-    window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
-        navItems.forEach(n => n.classList.toggle('active', n.dataset.target === current));
-    }, { passive:true });
+  const PALETTE=[
+    {body:[197,17,17],shadow:[122,8,8],outline:[30,0,0]},
+    {body:[19,46,209],shadow:[9,21,142],outline:[0,10,50]},
+    {body:[17,127,45],shadow:[10,77,27],outline:[0,20,0]},
+    {body:[237,84,186],shadow:[171,43,131],outline:[60,0,40]},
+    {body:[239,125,13],shadow:[180,62,21],outline:[50,20,0]},
+    {body:[63,71,78],shadow:[30,31,38],outline:[10,10,10]},
+    {body:[107,47,187],shadow:[76,30,149],outline:[20,0,40]},
+  ];
+  const VM=[146,166,176],VS=[113,141,152];
+  function recolor(img,pal){
+    const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
+    const cx=c.getContext('2d');cx.drawImage(img,0,0);
+    const id=cx.getImageData(0,0,c.width,c.height),d=id.data;
+    for(let i=0;i<d.length;i+=4){
+      if(d[i+3]<10)continue;
+      const r=d[i],g=d[i+1],b=d[i+2];
+      if(r>200&&g<50&&b<50){d[i]=pal.body[0];d[i+1]=pal.body[1];d[i+2]=pal.body[2];}
+      else if(r<50&&g<50&&b>200){d[i]=pal.shadow[0];d[i+1]=pal.shadow[1];d[i+2]=pal.shadow[2];}
+      else if(r<50&&g<50&&b<150){d[i]=pal.outline[0];d[i+1]=pal.outline[1];d[i+2]=pal.outline[2];}
+      else if(g>200&&r<50&&b<50){d[i]=VM[0];d[i+1]=VM[1];d[i+2]=VM[2];}
+      else if(g>100&&g<200&&r<50&&b<50){d[i]=VS[0];d[i+1]=VS[1];d[i+2]=VS[2];}
+    }
+    cx.putImageData(id,0,0);return c;
+  }
+  let templates=[],beanReady=false;
+  const beanImg=new Image();beanImg.crossOrigin='anonymous';beanImg.src='bean.png';
+  beanImg.onload=()=>{
+    templates=[...PALETTE].sort(()=>Math.random()-.5).map(p=>recolor(beanImg,p));
+    beanReady=true;buildBeans();
+  };
+  const BEANS_FAR=[],BEANS_NEAR=[];
+  function mkFar(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(.05,.22),vy:rnd(-.02,.02),rot:rnd(0,Math.PI*2),vrot:rnd(-.002,.002),size:rnd(10,26),alpha:rnd(.07,.16),face:Math.random()<.5?1:-1,tmpl:null};}
+  function mkNear(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(.08,.28),vy:rnd(-.04,.04),rot:rnd(0,Math.PI*2),vrot:rnd(-.003,.003),size:rnd(36,62),alpha:rnd(.32,.56),face:Math.random()<.5?1:-1,tmpl:null};}
+  function buildBeans(){
+    BEANS_FAR.length=0;BEANS_NEAR.length=0;
+    for(let i=0;i<18;i++){const b=mkFar();b.tmpl=pick(templates);BEANS_FAR.push(b);}
+    for(let i=0;i<10;i++){const b=mkNear();b.tmpl=pick(templates);BEANS_NEAR.push(b);}
+  }
+  function drawLayer(beans){
+    for(const b of beans){
+      b.x+=b.vx;b.y+=b.vy;b.rot+=b.vrot;
+      if(b.x-b.size>W){b.x=-b.size;b.y=rnd(0,H);}
+      if(!b.tmpl)continue;
+      bgX.save();bgX.globalAlpha=b.alpha;
+      bgX.translate(b.x,b.y);bgX.rotate(b.rot);bgX.scale(b.face,1);
+      bgX.drawImage(b.tmpl,-b.size/2,-b.size/2,b.size,b.size);
+      bgX.restore();
+    }
+    bgX.globalAlpha=1;
+  }
+  bakeStarSprites();buildStars();
+  function tick(){
+    bgX.clearRect(0,0,W,H);
+    drawStars();
+    if(beanReady && window.__beansEnabled !== false){drawLayer(BEANS_FAR);drawLayer(BEANS_NEAR);}
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+// ── NAV GLITCH ───────────────────────────────
+document.querySelectorAll('.nb').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{
+    btn.classList.add('glitch');
+    setTimeout(()=>btn.classList.remove('glitch'),220);
+  });
+});
 </script>
 </body>
 </html>

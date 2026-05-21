@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Developer resources for the Among Us Launcher.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>Developer // Among Us Launcher</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.58);
+  --dim:rgba(240,240,242,.09);
+  --surface:rgba(240,240,242,.035);
+  --f:'Share Tech Mono',monospace;
+}
+
+html{overflow-y:scroll;height:100%;overscroll-behavior-y:none;}
+body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100%;overflow-x:hidden;padding-bottom:6rem;}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.026'/%3E%3C/svg%3E");
+}
+
+#bg-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+/* ── NAV ─────────────────────────────────── */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  padding:1.4rem 2.5rem;display:flex;gap:2.4rem;
+  pointer-events:none;
+}
+.nb{
+  font-family:var(--f);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;background:none;border:none;
+  cursor:pointer;pointer-events:all;transition:color .1s;
+}
+.nb:hover,.nb.active{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0px);}
+.nb:nth-child(2){transform:translateY(7px);}
+.nb:nth-child(3){transform:translateY(-4px);}
+.nb:nth-child(4){transform:translateY(9px);}
+.nb:nth-child(5){transform:translateY(2px);}
+.bean-toggle-btn{margin-left:auto;opacity:.3;transform:translateY(3px) !important;transition:opacity .15s !important;}
+.bean-toggle-btn:hover{opacity:.7;}
+.bean-toggle-btn.off{opacity:.15;}
+.bean-toggle-btn.off::after{content:' off';font-size:.5rem;opacity:.5;}
+@keyframes nb-glitch{0%,100%{opacity:1;transform:translateX(0);}20%{opacity:.5;transform:translateX(-1px);}40%{opacity:1;transform:translateX(1px);}60%{opacity:.7;}80%{opacity:1;}}
+.nb.glitch{animation:nb-glitch .22s steps(1);}
+
+/* ── PAGE ───────────────────────────────── */
+.page{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:7rem 2.5rem 3rem;}
+
+/* hero */
+.dev-eyebrow{font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:.9rem;}
+.dev-title{font-size:clamp(2.4rem,5vw,4rem);font-weight:bold;letter-spacing:-.025em;line-height:.92;margin-bottom:.8rem;}
+.dev-sub{font-size:.78rem;color:var(--muted);line-height:1.8;max-width:440px;margin-bottom:3.5rem;}
+
+/* ── SOURCE CODE SECTION ────────────────── */
+.section-label{font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:1.2rem;display:block;}
+
+.src-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--dim);
+  margin-bottom:4rem;
+}
+
+.src-card{
+  background:var(--bg);
+  padding:1.4rem 1.5rem 1.3rem;
+  display:flex;flex-direction:column;gap:.7rem;
+  position:relative;overflow:hidden;
+}
+/* placeholder state */
+.src-card.placeholder{opacity:.5;cursor:default;}
+.src-card:not(.placeholder){cursor:pointer;text-decoration:none;color:inherit;transition:background .12s;}
+.src-card:not(.placeholder):hover{background:var(--surface);}
+.src-card:not(.placeholder)::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--red);transform:scaleX(0);transform-origin:left;
+  transition:transform .22s cubic-bezier(.22,1,.36,1);
+}
+.src-card:not(.placeholder):hover::after{transform:scaleX(1);}
+.src-card:not(.placeholder):hover .src-arrow{color:var(--red);transform:translateX(3px);}
+
+.src-icon{width:24px;height:24px;border:1px solid rgba(200,21,27,.2);display:flex;align-items:center;justify-content:center;}
+.src-icon svg{width:12px;height:12px;fill:var(--red);}
+.src-name{font-size:.8rem;font-weight:bold;color:var(--text);letter-spacing:.02em;}
+.src-desc{font-size:.64rem;color:var(--muted);line-height:1.65;flex:1;}
+.src-footer{display:flex;align-items:center;justify-content:space-between;}
+.src-lang{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,240,242,.22);}
+.src-arrow{font-size:.58rem;color:rgba(240,240,242,.2);transition:color .15s,transform .18s;display:inline-block;}
+.src-badge{
+  font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.18rem .5rem;border:1px solid rgba(240,240,242,.12);
+  color:rgba(240,240,242,.28);
+}
+.src-badge.soon{border-color:rgba(200,21,27,.2);color:rgba(200,21,27,.45);}
+
+/* ── ENDPOINT SECTION ───────────────────── */
+.endpoint-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:1.8rem;gap:2rem;flex-wrap:wrap;
+}
+.endpoint-meta{}
+.endpoint-name{font-size:1.2rem;font-weight:bold;letter-spacing:-.01em;margin-bottom:.3rem;}
+.endpoint-desc{font-size:.72rem;color:var(--muted);line-height:1.7;max-width:420px;}
+
+/* mode toggle */
+.mode-toggle{
+  display:flex;gap:1px;background:var(--dim);flex-shrink:0;
+  align-self:flex-start;
+  margin-top:.2rem;
+}
+.mode-btn{
+  font-family:var(--f);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--bg);border:none;color:var(--muted);
+  padding:.5rem 1.1rem;cursor:pointer;
+  transition:color .1s,background .1s;
+  white-space:nowrap;
+}
+.mode-btn.active{background:var(--surface);color:var(--text);}
+.mode-btn:hover:not(.active){color:var(--text);}
+
+/* code block */
+.code-block{
+  background:rgba(0,0,0,.55);
+  border:1px solid var(--dim);
+  margin-bottom:1.4rem;
+}
+.code-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.55rem .9rem;
+  border-bottom:1px solid var(--dim);
+}
+.lang-tabs{display:flex;gap:0;}
+.lang-tab{
+  font-family:var(--f);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;
+  background:none;border:none;color:rgba(240,240,242,.28);
+  padding:.2rem .65rem;cursor:pointer;
+  transition:color .1s;
+  border-right:1px solid var(--dim);
+}
+.lang-tab:last-child{border-right:none;}
+.lang-tab.active{color:var(--text);}
+.lang-tab:hover:not(.active){color:var(--muted);}
+.copy-btn{
+  font-family:var(--f);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;
+  background:none;border:1px solid var(--dim);color:rgba(240,240,242,.3);
+  padding:.18rem .55rem;cursor:pointer;
+  transition:color .1s,border-color .1s;
+}
+.copy-btn:hover{color:var(--text);border-color:rgba(240,240,242,.2);}
+.copy-btn.copied{color:#00c896;border-color:rgba(0,200,150,.3);}
+
+pre.code-body{
+  padding:1.2rem 1.1rem;
+  overflow-x:auto;
+  font-family:var(--f);font-size:.75rem;
+  line-height:1.85;
+  color:#b5bac1;
+  white-space:pre;
+}
+pre.code-body::-webkit-scrollbar{height:3px;}
+pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
+/* syntax highlight classes */
+.tk-k{color:#e06c75;}   /* keyword */
+.tk-s{color:#98c379;}   /* string */
+.tk-c{color:#7f848e;font-style:italic;} /* comment */
+.tk-n{color:#e5c07b;}   /* number / const */
+.tk-f{color:#61afef;}   /* function/method */
+.tk-p{color:#c678dd;}   /* punctuation / type */
+
+/* note below code */
+.code-note{
+  font-size:.64rem;color:rgba(240,240,242,.28);
+  line-height:1.7;margin-bottom:2rem;
+  padding-left:.2rem;
+}
+
+/* ── PLAYGROUND ─────────────────────────── */
+.playground{
+  border:1px solid var(--dim);
+  margin-top:.4rem;
+}
+.playground-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.65rem 1rem;
+  border-bottom:1px solid var(--dim);
+  background:var(--surface);
+}
+.playground-label{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+.playground-run{
+  font-family:var(--f);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--red);border:none;color:#fff;
+  padding:.3rem .9rem;cursor:pointer;
+  transition:background .1s;
+}
+.playground-run:hover{background:#a01015;}
+.playground-run:disabled{background:rgba(200,21,27,.3);cursor:default;}
+
+.playground-url{
+  display:flex;align-items:center;gap:0;
+  border-bottom:1px solid var(--dim);
+}
+.playground-method{
+  font-size:.58rem;letter-spacing:.08em;
+  background:rgba(200,21,27,.08);color:var(--red);
+  padding:.5rem .8rem;flex-shrink:0;
+  border-right:1px solid var(--dim);
+}
+.playground-endpoint{
+  flex:1;font-family:var(--f);font-size:.65rem;
+  color:rgba(240,240,242,.45);
+  padding:.5rem .9rem;letter-spacing:.04em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+.playground-response{
+  padding:1rem;
+  min-height:120px;
+  font-family:var(--f);font-size:.7rem;
+  color:#b5bac1;line-height:1.75;
+  position:relative;
+}
+.playground-response .pr-empty{color:rgba(240,240,242,.18);font-size:.65rem;letter-spacing:.06em;}
+.playground-response .pr-loading{
+  color:rgba(240,240,242,.35);font-size:.65rem;letter-spacing:.06em;
+}
+.playground-response .pr-loading::after{
+  content:'...';animation:pr-dots 1.2s steps(4,end) infinite;
+}
+@keyframes pr-dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:'...'}}
+.playground-response .pr-error{color:#e06c75;}
+.playground-response .pr-data{white-space:pre-wrap;word-break:break-word;}
+
+/* response pretty key/value */
+.pr-key{color:#e5c07b;}
+.pr-str{color:#98c379;}
+.pr-num{color:#d19a66;}
+.pr-bool{color:#c678dd;}
+
+/* ── HUB DRAWER ─────────────────────────── */
+@keyframes hub-glow{0%,60%,100%{box-shadow:none;border-color:var(--dim);}30%{box-shadow:0 -4px 18px rgba(200,21,27,.35);border-color:rgba(200,21,27,.5);}}
+@keyframes hub-bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-4px);}}
+@keyframes dot-pulse{0%,60%,100%{opacity:.35;transform:scale(1);}30%{opacity:1;transform:scale(1.6);}}
+#hub-drawer{position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(10,10,12,.98);border-top:1px solid var(--dim);display:flex;flex-direction:column;height:calc(48vh + 3rem);transition:transform .38s cubic-bezier(.22,1,.36,1);transform:translateY(calc(100% - 3rem));}
+#hub-drawer.open{transform:translateY(0);}
+#hub-tab{flex-shrink:0;height:3rem;font-family:var(--f);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text);background:rgba(14,14,16,.95);border:none;border-bottom:1px solid var(--dim);border-top:2px solid rgba(200,21,27,.0);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.75rem;animation:hub-glow 2.4s ease infinite;transition:border-top-color .2s;}
+#hub-tab.open{animation:none;border-top-color:var(--red);}
+.hub-dot{width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;animation:dot-pulse 2.4s ease infinite;flex-shrink:0;}
+#hub-tab.open .hub-dot{animation:none;}
+.hub-label{font-weight:bold;letter-spacing:.3em;}
+.hub-arrow{display:inline-block;font-size:.6rem;transition:transform .32s cubic-bezier(.22,1,.36,1);animation:hub-bounce 2.4s ease infinite;opacity:.6;}
+#hub-tab.open .hub-arrow{transform:rotate(180deg);animation:none;}
+.drawer-inner{flex:1;display:flex;overflow:hidden;padding:1.4rem 2.4rem 1rem;gap:2.5rem;}
+.drawer-news{flex:1.5;display:flex;flex-direction:column;overflow:hidden;}
+.drawer-news-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem;}
+.drawer-news-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);}
+.drawer-news-viewall{font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,240,242,.28);text-decoration:none;transition:color .12s;}
+.drawer-news-viewall:hover{color:var(--red);}
+.dn-list{display:flex;flex-direction:column;gap:0;overflow:hidden;}
+.dn-item{display:flex;gap:.9rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--dim);}
+.dn-item:first-child{border-top:1px solid var(--dim);}
+.dn-item:hover .dn-title{color:var(--red);}
+.dn-badge{font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;flex-shrink:0;margin-top:2px;border:1px solid;}
+.dn-badge.Update{border-color:rgba(200,21,27,.3);color:#e05565;}
+.dn-badge.Announcement{border-color:rgba(0,200,150,.25);color:#00c896;}
+.dn-badge.Event{border-color:rgba(245,158,11,.25);color:#fbbf24;}
+.dn-title{font-size:.72rem;line-height:1.4;flex:1;transition:color .1s;}
+.dn-date{font-size:.56rem;color:var(--muted);margin-top:3px;letter-spacing:.06em;}
+.dn-item a{text-decoration:none;color:inherit;}
+.dn-state{font-size:.65rem;letter-spacing:.08em;color:rgba(240,240,242,.25);padding:.8rem 0;}
+.drawer-sep{width:1px;background:var(--dim);flex-shrink:0;}
+.drawer-support{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:.85rem;}
+.ds-label-hub{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);}
+.ds-desc{font-size:.66rem;color:var(--muted);line-height:1.65;}
+.ds-links{display:flex;flex-direction:column;gap:.38rem;}
+.ds-link{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;border:1px solid var(--dim);padding:.5rem .85rem;display:flex;align-items:center;gap:0;position:relative;overflow:hidden;transition:border-color .18s;}
+.ds-link::before{content:'';position:absolute;inset:0;background:var(--red);transform:translateX(-101%);transition:transform .22s cubic-bezier(.22,1,.36,1);z-index:0;}
+.ds-link:hover{border-color:var(--red);}
+.ds-link:hover::before{transform:translateX(0);}
+.ds-link-icon{position:relative;z-index:1;width:14px;height:14px;flex-shrink:0;margin-right:.6rem;display:flex;align-items:center;}
+.ds-link-icon svg{width:100%;height:100%;fill:currentColor;}
+.ds-link-arrow{position:relative;z-index:1;width:10px;height:10px;flex-shrink:0;margin-right:.7rem;display:flex;align-items:center;justify-content:center;color:rgba(240,240,242,.28);transition:color .1s,transform .15s;}
+.ds-link-arrow::before{content:'';display:inline-block;width:5px;height:5px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg) translateX(-1px);}
+.ds-link-text{position:relative;z-index:1;flex:1;color:var(--muted);transition:color .1s;}
+.ds-link:hover .ds-link-icon,.ds-link:hover .ds-link-arrow,.ds-link:hover .ds-link-text{color:#000;}
+.ds-link:hover .ds-link-arrow{transform:translateX(3px);}
+.drawer-footer{padding:.7rem 2.4rem;border-top:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between;font-size:.58rem;letter-spacing:.07em;color:rgba(235,235,237,.2);}
+.df-links{display:flex;gap:1.6rem;align-items:center;}
+.df-links a{color:rgba(235,235,237,.3);text-decoration:none;font-size:1.15rem;transition:color .12s,transform .12s;display:flex;align-items:center;}
+.df-links a:hover{color:var(--text);transform:translateY(-1px);}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="nav">
+  <a class="nb" href="index.html">Home</a>
+  <a class="nb" href="helpPage.html">Docs</a>
+  <a class="nb" href="news.html">News</a>
+  <a class="nb active" href="developer.html">Dev</a>
+  <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+  <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()">&#9711; beans</button>
+</div>
+
+<div class="page">
+
+  <span class="dev-eyebrow">// Developer</span>
+  <h1 class="dev-title">Resources &amp;<br>Integration</h1>
+  <p class="dev-sub">Source code, APIs, and two ways to fetch launcher data. Pick what fits how you build.</p>
+
+  <!-- SOURCE CODE -->
+  <span class="section-label">// Source Code</span>
+  <div class="src-grid">
+
+    <div class="src-card placeholder">
+      <div class="src-icon"><svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg></div>
+      <div class="src-name">Launcher</div>
+      <div class="src-desc">The Among Us Launcher application. C#/.NET, handles downloads, updates, Discord RPC, and game management.</div>
+      <div class="src-footer">
+        <span class="src-lang">C# / .NET</span>
+        <span class="src-badge soon">Coming soon</span>
+      </div>
+    </div>
+
+    <a class="src-card" href="https://github.com/jogamerforgames2021/AmongUsLauncherWebsite" target="_blank">
+      <div class="src-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+      <div class="src-name">Website &amp; API</div>
+      <div class="src-desc">This site and the Vercel API functions that power the trust wall and version endpoints.</div>
+      <div class="src-footer">
+        <span class="src-lang">HTML / JS / Node</span>
+        <span class="src-arrow">GitHub &rsaquo;</span>
+      </div>
+    </a>
+
+    <div class="src-card placeholder">
+      <div class="src-icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg></div>
+      <div class="src-name">Itch Login Fixer</div>
+      <div class="src-desc">OAuth flow that writes the itch.io auth token to the Among Us AppData folder. Bypasses the ownership check.</div>
+      <div class="src-footer">
+        <span class="src-lang">Python</span>
+        <span class="src-badge soon">Coming soon</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FETCH LATEST VERSION -->
+  <div class="endpoint-header">
+    <div class="endpoint-meta">
+      <div class="endpoint-name">Game Versions</div>
+      <p class="endpoint-desc">List all available Among Us game releases — version, date, download link, and file size. Normal hits GitHub directly; API gives you a clean pre-filtered array with query param support.</p>
+    </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-normal" onclick="setMode('normal')">Normal</button>
+      <button class="mode-btn" id="mode-api" onclick="setMode('api')">API</button>
+    </div>
+  </div>
+
+  <!-- CODE BLOCK -->
+  <div class="code-block">
+    <div class="code-top">
+      <div class="lang-tabs">
+        <button class="lang-tab active" onclick="setLang('js')">JS</button>
+        <button class="lang-tab" onclick="setLang('py')">Python</button>
+        <button class="lang-tab" onclick="setLang('rs')">Rust</button>
+      </div>
+      <button class="copy-btn" id="copy-btn" onclick="copyCode()">Copy</button>
+    </div>
+    <pre class="code-body" id="code-body"></pre>
+  </div>
+
+  <p class="code-note" id="code-note"></p>
+
+  <!-- PLAYGROUND -->
+  <span class="section-label">// Try it live</span>
+  <div class="playground">
+    <div class="playground-top">
+      <span class="playground-label">Playground</span>
+      <button class="playground-run" id="run-btn" onclick="runPlayground()">&#9654; Run</button>
+    </div>
+    <div class="playground-url">
+      <span class="playground-method">GET</span>
+      <span class="playground-endpoint" id="pg-url"></span>
+    </div>
+    <div class="playground-response" id="pg-response">
+      <span class="pr-empty">// Hit Run to see the response</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- HUB DRAWER -->
+<div id="hub-drawer">
+  <button id="hub-tab" onclick="toggleHub()">
+    <span class="hub-dot"></span>
+    <span class="hub-label">HUB</span>
+    <span class="hub-arrow">&#9650;</span>
+  </button>
+  <div class="drawer-inner">
+    <div class="drawer-news">
+      <div class="drawer-news-header">
+        <div class="drawer-news-label">// Latest News</div>
+        <a class="drawer-news-viewall" href="news.html">View all news //</a>
+      </div>
+      <div class="dn-list" id="dn-list"><div class="dn-state" id="dn-state">Loading...</div></div>
+    </div>
+    <div class="drawer-sep"></div>
+    <div class="drawer-support">
+      <div class="ds-label-hub">// Support</div>
+      <p class="ds-desc">Something broken? Pop into Discord.</p>
+      <div class="ds-links">
+        <a class="ds-link" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">
+          <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></span>
+          <span class="ds-link-arrow"></span><span class="ds-link-text">Discord</span>
+        </a>
+        <a class="ds-link" href="helpPage.html">
+          <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
+          <span class="ds-link-arrow"></span><span class="ds-link-text">Help Center</span>
+        </a>
+        <a class="ds-link" href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank">
+          <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></span>
+          <span class="ds-link-arrow"></span><span class="ds-link-text">Feedback</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <span>AU Launcher &nbsp;&middot;&nbsp; Not affiliated with Innersloth &nbsp;&middot;&nbsp; &copy; 2025 ShadowSlimeDEV</span>
+    <div class="df-links">
+      <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank" title="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg></a>
+      <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" title="Discord"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></a>
+      <a href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank" title="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3A12 12 0 0 0 0 12.3c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.4 18 4.7 18 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 24 12.3 12 12 0 0 0 12 .3z"/></svg></a>
+      <a href="news.html" title="News"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 13H6v-2h5v2zm7-4H6v-2h12v2zm0-4H6V6h12v2z"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── STATE ─────────────────────────────────
+const REPO    = 'jogamerforgames2021/AmongUsLauncherNew';
+const GH_URL  = `https://api.github.com/repos/${REPO}/releases`;
+const API_URL = `https://amongus-launcher.vercel.app/api/game-versions`;
+
+let currentMode = 'normal';
+let currentLang = 'js';
+
+// ── CODE TEMPLATES ────────────────────────
+const CODES = {
+  normal: {
+    js: `<span class="tk-c">// Direct GitHub Releases API — parse it yourself</span>
+<span class="tk-k">const</span> <span class="tk-n">res</span>      = <span class="tk-k">await</span> <span class="tk-f">fetch</span>(<span class="tk-s">'https://api.github.com/repos/${REPO}/releases'</span>);
+<span class="tk-k">const</span> <span class="tk-n">releases</span> = <span class="tk-k">await</span> <span class="tk-n">res</span>.<span class="tk-f">json</span>();
+
+<span class="tk-k">const</span> <span class="tk-n">versions</span> = <span class="tk-n">releases</span>.<span class="tk-f">map</span>(<span class="tk-n">r</span> => {
+  <span class="tk-k">const</span> <span class="tk-n">asset</span> = <span class="tk-n">r</span>.<span class="tk-n">assets</span>.<span class="tk-f">find</span>(<span class="tk-n">a</span> => <span class="tk-n">a</span>.<span class="tk-n">name</span> === <span class="tk-s">'app.zip'</span>);
+  <span class="tk-k">return</span> {
+    version:  <span class="tk-n">r</span>.<span class="tk-n">tag_name</span>,
+    date:     <span class="tk-n">r</span>.<span class="tk-n">published_at</span>.<span class="tk-f">slice</span>(<span class="tk-num">0</span>, <span class="tk-num">10</span>),
+    download: <span class="tk-n">asset</span>?.<span class="tk-n">browser_download_url</span>,
+    size_mb:  <span class="tk-n">asset</span> ? (<span class="tk-n">asset</span>.<span class="tk-n">size</span> / <span class="tk-num">1048576</span>).<span class="tk-f">toFixed</span>(<span class="tk-num">2</span>) : <span class="tk-k">null</span>,
+  };
+}).<span class="tk-f">filter</span>(<span class="tk-n">v</span> => <span class="tk-n">v</span>.<span class="tk-n">download</span>);
+
+<span class="tk-n">console</span>.<span class="tk-f">log</span>(<span class="tk-n">versions</span>);`,
+
+    py: `<span class="tk-c"># Direct GitHub Releases API — parse it yourself</span>
+<span class="tk-k">import</span> requests
+
+<span class="tk-n">releases</span> = requests.<span class="tk-f">get</span>(<span class="tk-s">"https://api.github.com/repos/${REPO}/releases"</span>).<span class="tk-f">json</span>()
+
+<span class="tk-n">versions</span> = []
+<span class="tk-k">for</span> <span class="tk-n">r</span> <span class="tk-k">in</span> <span class="tk-n">releases</span>:
+    <span class="tk-n">asset</span> = <span class="tk-f">next</span>((<span class="tk-n">a</span> <span class="tk-k">for</span> <span class="tk-n">a</span> <span class="tk-k">in</span> <span class="tk-n">r</span>[<span class="tk-s">"assets"</span>] <span class="tk-k">if</span> <span class="tk-n">a</span>[<span class="tk-s">"name"</span>] == <span class="tk-s">"app.zip"</span>), <span class="tk-k">None</span>)
+    <span class="tk-k">if</span> <span class="tk-k">not</span> <span class="tk-n">asset</span>: <span class="tk-k">continue</span>
+    <span class="tk-n">versions</span>.<span class="tk-f">append</span>({
+        <span class="tk-s">"version"</span>:  <span class="tk-n">r</span>[<span class="tk-s">"tag_name"</span>],
+        <span class="tk-s">"date"</span>:     <span class="tk-n">r</span>[<span class="tk-s">"published_at"</span>][:<span class="tk-num">10</span>],
+        <span class="tk-s">"download"</span>: <span class="tk-n">asset</span>[<span class="tk-s">"browser_download_url"</span>],
+        <span class="tk-s">"size_mb"</span>:  <span class="tk-f">round</span>(<span class="tk-n">asset</span>[<span class="tk-s">"size"</span>] / <span class="tk-num">1048576</span>, <span class="tk-num">2</span>),
+    })
+
+<span class="tk-f">print</span>(<span class="tk-n">versions</span>)`,
+
+    rs: `<span class="tk-c">// Direct GitHub Releases API — parse it yourself</span>
+<span class="tk-k">use</span> reqwest;
+<span class="tk-k">use</span> serde_json::Value;
+
+<span class="tk-k">let</span> <span class="tk-n">releases</span>: Vec&lt;Value&gt; = reqwest::<span class="tk-f">get</span>(
+    <span class="tk-s">"https://api.github.com/repos/${REPO}/releases"</span>
+).<span class="tk-k">await</span>?.<span class="tk-f">json</span>().<span class="tk-k">await</span>?;
+
+<span class="tk-k">let</span> <span class="tk-n">versions</span>: Vec&lt;_&gt; = <span class="tk-n">releases</span>.<span class="tk-f">iter</span>()
+    .<span class="tk-f">filter_map</span>(|<span class="tk-n">r</span>| {
+        <span class="tk-k">let</span> <span class="tk-n">asset</span> = <span class="tk-n">r</span>[<span class="tk-s">"assets"</span>].<span class="tk-f">as_array</span>()?
+            .<span class="tk-f">iter</span>().<span class="tk-f">find</span>(|<span class="tk-n">a</span>| <span class="tk-n">a</span>[<span class="tk-s">"name"</span>] == <span class="tk-s">"app.zip"</span>)?;
+        <span class="tk-p">Some</span>((<span class="tk-n">r</span>[<span class="tk-s">"tag_name"</span>].<span class="tk-f">as_str</span>()?, <span class="tk-n">asset</span>))
+    })
+    .<span class="tk-f">collect</span>();
+
+<span class="tk-f">println!</span>(<span class="tk-s">"{:?}"</span>, <span class="tk-n">versions</span>);`
+  },
+
+  api: {
+    js: `<span class="tk-c">// AU Launcher API — clean array, zero parsing</span>
+<span class="tk-k">const</span> <span class="tk-n">res</span>      = <span class="tk-k">await</span> <span class="tk-f">fetch</span>(<span class="tk-s">'https://amongus-launcher.vercel.app/api/game-versions'</span>);
+<span class="tk-k">const</span> <span class="tk-n">versions</span> = <span class="tk-k">await</span> <span class="tk-n">res</span>.<span class="tk-f">json</span>();
+
+<span class="tk-c">// optional query params:</span>
+<span class="tk-c">// ?limit=5        — last N versions</span>
+<span class="tk-c">// ?latest=true    — single object, latest only</span>
+
+<span class="tk-c">// returns: [{ version, date, download, size_mb }, ...]</span>
+<span class="tk-n">console</span>.<span class="tk-f">log</span>(<span class="tk-n">versions</span>[<span class="tk-num">0</span>].<span class="tk-n">version</span>, <span class="tk-n">versions</span>[<span class="tk-num">0</span>].<span class="tk-n">download</span>);`,
+
+    py: `<span class="tk-c"># AU Launcher API — clean array, zero parsing</span>
+<span class="tk-k">import</span> requests
+
+<span class="tk-c"># optional params: limit=5 | latest=true</span>
+<span class="tk-n">versions</span> = requests.<span class="tk-f">get</span>(
+    <span class="tk-s">"https://amongus-launcher.vercel.app/api/game-versions"</span>,
+    params={<span class="tk-s">"limit"</span>: <span class="tk-num">5</span>}
+).<span class="tk-f">json</span>()
+
+<span class="tk-c"># [{ "version", "date", "download", "size_mb" }, ...]</span>
+<span class="tk-k">for</span> <span class="tk-n">v</span> <span class="tk-k">in</span> <span class="tk-n">versions</span>:
+    <span class="tk-f">print</span>(<span class="tk-n">v</span>[<span class="tk-s">"version"</span>], <span class="tk-n">v</span>[<span class="tk-s">"size_mb"</span>], <span class="tk-s">"MB"</span>)`,
+
+    rs: `<span class="tk-c">// AU Launcher API — clean array, zero parsing</span>
+<span class="tk-k">use</span> reqwest;
+<span class="tk-k">use</span> serde::{Deserialize};
+
+<span class="tk-p">#[derive(Deserialize, Debug)]</span>
+<span class="tk-k">struct</span> <span class="tk-p">GameVersion</span> {
+    version:  <span class="tk-p">String</span>,
+    date:     <span class="tk-p">String</span>,
+    download: <span class="tk-p">String</span>,
+    size_mb:  <span class="tk-p">f64</span>,
+}
+
+<span class="tk-c">// optional params: ?limit=5 or ?latest=true</span>
+<span class="tk-k">let</span> <span class="tk-n">versions</span>: Vec&lt;<span class="tk-p">GameVersion</span>&gt; = reqwest::<span class="tk-f">get</span>(
+    <span class="tk-s">"https://amongus-launcher.vercel.app/api/game-versions?limit=5"</span>
+).<span class="tk-k">await</span>?.<span class="tk-f">json</span>().<span class="tk-k">await</span>?;
+
+<span class="tk-f">println!</span>(<span class="tk-s">"{:?}"</span>, <span class="tk-n">versions</span>);`
+  }
+};
+
+const NOTES = {
+  normal: 'Calls GitHub directly. Free, no limits on your end. Returns the full releases array — you filter for app.zip assets yourself. Rate limit: 60 req/hour unauthenticated.',
+  api:    'Calls the AU Launcher API. Returns a clean pre-filtered array: only releases that have an app.zip, shaped exactly as { version, date, download, size_mb }. Supports ?limit=N and ?latest=true.'
+};
+
+const PLAYGROUND_URLS = {
+  normal: GH_URL,
+  api:    API_URL
+};
+
+function renderCode() {
+  document.getElementById('code-body').innerHTML = CODES[currentMode][currentLang];
+  document.getElementById('code-note').textContent = NOTES[currentMode];
+  document.getElementById('pg-url').textContent = PLAYGROUND_URLS[currentMode];
+  document.getElementById('pg-response').innerHTML = '<span class="pr-empty">// Hit Run to see the response</span>';
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('mode-normal').classList.toggle('active', mode === 'normal');
+  document.getElementById('mode-api').classList.toggle('active', mode === 'api');
+  renderCode();
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === lang));
+  renderCode();
+}
+
+function copyCode() {
+  // strip HTML tags to get plain text
+  const plain = CODES[currentMode][currentLang].replace(/<[^>]+>/g, '');
+  navigator.clipboard.writeText(plain).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// ── PLAYGROUND ────────────────────────────
+async function runPlayground() {
+  const btn = document.getElementById('run-btn');
+  const out  = document.getElementById('pg-response');
+  btn.disabled = true;
+  out.innerHTML = '<span class="pr-loading">// Fetching</span>';
+
+  try {
+    const url      = PLAYGROUND_URLS[currentMode];
+    const res      = await fetch(url);
+    const data     = await res.json();
+
+    if (currentMode === 'normal') {
+      // GitHub returns full release objects — shape to our spec
+      const releases = Array.isArray(data) ? data : [data];
+      const versions = releases
+        .map(r => {
+          const asset = (r.assets || []).find(a => a.name === 'app.zip');
+          if (!asset) return null;
+          return {
+            version:  r.tag_name,
+            date:     (r.published_at || '').slice(0, 10),
+            download: asset.browser_download_url,
+            size_mb:  parseFloat((asset.size / 1048576).toFixed(2)),
+          };
+        })
+        .filter(Boolean)
+        .slice(0, 6); // show first 6 in playground
+      out.innerHTML = prettyJson(versions);
+    } else {
+      out.innerHTML = prettyJson(Array.isArray(data) ? data.slice(0, 6) : data);
+    }
+  } catch (e) {
+    out.innerHTML = `<span class="pr-error">// Error: ${e.message}</span>`;
+  }
+
+  btn.disabled = false;
+}
+
+function prettyJson(obj, indent = 0) {
+  const pad = '  '.repeat(indent);
+  const inner = '  '.repeat(indent + 1);
+  if (Array.isArray(obj)) {
+    if (!obj.length) return '<span class="tk-p">[]</span>';
+    return `<span class="tk-p">[</span>\n${obj.map(v => inner + prettyJson(v, indent+1)).join(',\n')}\n${pad}<span class="tk-p">]</span>`;
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const keys = Object.keys(obj);
+    if (!keys.length) return '<span class="tk-p">{}</span>';
+    const lines = keys.map(k => {
+      const v = prettyJson(obj[k], indent + 1);
+      return `${inner}<span class="pr-key">"${k}"</span>: ${v}`;
+    });
+    return `<span class="tk-p">{</span>\n${lines.join(',\n')}\n${pad}<span class="tk-p">}</span>`;
+  }
+  if (typeof obj === 'string') return `<span class="pr-str">"${obj}"</span>`;
+  if (typeof obj === 'number') return `<span class="pr-num">${obj}</span>`;
+  if (typeof obj === 'boolean') return `<span class="pr-bool">${obj}</span>`;
+  if (obj === null) return `<span class="pr-bool">null</span>`;
+  return String(obj);
+}
+
+// init
+renderCode();
+
+// ── NAV GLITCH ────────────────────────────
+document.querySelectorAll('.nb').forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    btn.classList.add('glitch');
+    setTimeout(() => btn.classList.remove('glitch'), 220);
+  });
+});
+
+// ── HUB ──────────────────────────────────
+let hubOpen = false;
+function toggleHub() {
+  hubOpen = !hubOpen;
+  document.getElementById('hub-drawer').classList.toggle('open', hubOpen);
+  document.getElementById('hub-tab').classList.toggle('open', hubOpen);
+}
+(async function loadHubNews() {
+  const dnList = document.getElementById('dn-list');
+  const dnState = document.getElementById('dn-state');
+  try {
+    const res = await fetch('/news/index.json');
+    if (!res.ok) throw new Error();
+    const posts = await res.json();
+    if (!posts.length) throw new Error();
+    dnState && dnState.remove();
+    posts.sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,4).forEach(p => {
+      const cat  = p.category || 'Update';
+      const date = new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const item = document.createElement('div');
+      item.className = 'dn-item';
+      item.innerHTML = `<span class="dn-badge ${cat}">${cat.toUpperCase()}</span><div><a href="post.html?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
+      dnList.appendChild(item);
+    });
+  } catch { if (dnState) dnState.textContent = '// Failed to fetch latest news'; }
+})();
+
+// ── BEANS ─────────────────────────────────
+let beansEnabled = localStorage.getItem('beans') !== 'off';
+window.__beansEnabled = beansEnabled;
+function toggleBeans() {
+  beansEnabled = !beansEnabled;
+  localStorage.setItem('beans', beansEnabled ? 'on' : 'off');
+  window.__beansEnabled = beansEnabled;
+  document.getElementById('bean-toggle-btn').classList.toggle('off', !beansEnabled);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  if (!beansEnabled) document.getElementById('bean-toggle-btn').classList.add('off');
+});
+
+(function spaceScene() {
+  const bgC = document.getElementById('bg-canvas');
+  if (!bgC) return;
+  const bgX = bgC.getContext('2d');
+  let W=0,H=0;
+  function resize(){W=bgC.width=window.innerWidth;H=bgC.height=window.innerHeight;}
+  resize();
+  window.addEventListener('resize',()=>{resize();buildStars();});
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+  const STAR_RADII=[0.55,0.95,1.55,2.40,3.60];
+  const starSprites=[];
+  function bakeStarSprites(){
+    for(const r of STAR_RADII){
+      const sz=Math.ceil(r*2+8)|1;
+      const c=document.createElement('canvas');c.width=c.height=sz;
+      const cx=c.getContext('2d');const half=sz/2;
+      const g=cx.createRadialGradient(half,half,0,half,half,half);
+      g.addColorStop(0,'rgba(222,215,255,1)');g.addColorStop(r/half,'rgba(195,185,255,0.60)');g.addColorStop(1,'rgba(0,0,0,0)');
+      cx.fillStyle=g;cx.fillRect(0,0,sz,sz);starSprites.push(c);
+    }
+  }
+  const STAR_LAYERS=[{count:180,si:0,alpha:.20,drift:.006},{count:110,si:1,alpha:.38,drift:.018},{count:65,si:2,alpha:.60,drift:.040},{count:22,si:3,alpha:.82,drift:.085},{count:7,si:4,alpha:1,drift:.050}];
+  const stars=[];
+  function buildStars(){
+    stars.length=0;
+    for(const L of STAR_LAYERS)for(let i=0;i<L.count;i++)stars.push({x:rnd(0,W),y:rnd(0,H),si:L.si,baseAlpha:L.alpha*rnd(.5,1),drift:rnd(-1,1)*L.drift,tw:rnd(0,Math.PI*2),twS:rnd(.003,.016)});
+  }
+  function drawStars(){
+    for(const s of stars){
+      s.x+=s.drift;if(s.x<-8)s.x=W+8;if(s.x>W+8)s.x=-8;
+      s.tw+=s.twS;const a=s.baseAlpha*(.55+.45*Math.sin(s.tw));
+      const sp=starSprites[s.si];if(!sp)continue;
+      bgX.globalAlpha=a;bgX.drawImage(sp,s.x-sp.width*.5,s.y-sp.height*.5);
+    }
+    bgX.globalAlpha=1;
+  }
+  const PALETTE=[{body:[197,17,17],shadow:[122,8,8],outline:[30,0,0]},{body:[19,46,209],shadow:[9,21,142],outline:[0,10,50]},{body:[17,127,45],shadow:[10,77,27],outline:[0,20,0]},{body:[237,84,186],shadow:[171,43,131],outline:[60,0,40]},{body:[239,125,13],shadow:[180,62,21],outline:[50,20,0]},{body:[63,71,78],shadow:[30,31,38],outline:[10,10,10]},{body:[107,47,187],shadow:[76,30,149],outline:[20,0,40]}];
+  const VM=[146,166,176],VS=[113,141,152];
+  function recolor(img,pal){const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const cx=c.getContext('2d');cx.drawImage(img,0,0);const id=cx.getImageData(0,0,c.width,c.height),d=id.data;for(let i=0;i<d.length;i+=4){if(d[i+3]<10)continue;const r=d[i],g=d[i+1],b=d[i+2];if(r>200&&g<50&&b<50){d[i]=pal.body[0];d[i+1]=pal.body[1];d[i+2]=pal.body[2];}else if(r<50&&g<50&&b>200){d[i]=pal.shadow[0];d[i+1]=pal.shadow[1];d[i+2]=pal.shadow[2];}else if(r<50&&g<50&&b<150){d[i]=pal.outline[0];d[i+1]=pal.outline[1];d[i+2]=pal.outline[2];}else if(g>200&&r<50&&b<50){d[i]=VM[0];d[i+1]=VM[1];d[i+2]=VM[2];}else if(g>100&&g<200&&r<50&&b<50){d[i]=VS[0];d[i+1]=VS[1];d[i+2]=VS[2];}}cx.putImageData(id,0,0);return c;}
+  let templates=[],beanReady=false;
+  const beanImg=new Image();beanImg.crossOrigin='anonymous';beanImg.src='bean.png';
+  beanImg.onload=()=>{templates=[...PALETTE].sort(()=>Math.random()-.5).map(p=>recolor(beanImg,p));beanReady=true;buildBeans();};
+  const BEANS_FAR=[],BEANS_NEAR=[];
+  function mkFar(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(.05,.22),vy:rnd(-.02,.02),rot:rnd(0,Math.PI*2),vrot:rnd(-.002,.002),size:rnd(10,26),alpha:rnd(.07,.16),face:Math.random()<.5?1:-1,tmpl:null};}
+  function mkNear(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(.08,.28),vy:rnd(-.04,.04),rot:rnd(0,Math.PI*2),vrot:rnd(-.003,.003),size:rnd(36,62),alpha:rnd(.32,.56),face:Math.random()<.5?1:-1,tmpl:null};}
+  function buildBeans(){BEANS_FAR.length=0;BEANS_NEAR.length=0;for(let i=0;i<18;i++){const b=mkFar();b.tmpl=pick(templates);BEANS_FAR.push(b);}for(let i=0;i<10;i++){const b=mkNear();b.tmpl=pick(templates);BEANS_NEAR.push(b);}}
+  function drawLayer(beans){for(const b of beans){b.x+=b.vx;b.y+=b.vy;b.rot+=b.vrot;if(b.x-b.size>W){b.x=-b.size;b.y=rnd(0,H);}if(!b.tmpl)continue;bgX.save();bgX.globalAlpha=b.alpha;bgX.translate(b.x,b.y);bgX.rotate(b.rot);bgX.scale(b.face,1);bgX.drawImage(b.tmpl,-b.size/2,-b.size/2,b.size,b.size);bgX.restore();}bgX.globalAlpha=1;}
+  bakeStarSprites();buildStars();
+  function tick(){bgX.clearRect(0,0,W,H);drawStars();if(beanReady&&window.__beansEnabled!==false){drawLayer(BEANS_FAR);drawLayer(BEANS_NEAR);}requestAnimationFrame(tick);}
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Download and install Among Us with our modern, feature-rich launcher. Auto-updates, Discord RPC, version management and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Among Us Launcher — ShadowSlime</title>
+
+    <!-- TrustBox script -->
+    <script type="text/javascript" src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
+
+    <style>
+        :root {
+            --bg:       #060608;
+            --surface:  #0a0b0d;
+            --border:   rgba(255,255,255,0.055);
+            --accent:   #7b61ff;
+            --accent2:  #5e48d4;
+            --text:     #dde0e6;
+            --muted:    rgba(221,224,230,0.38);
+            --red:      #ff4d6a;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ─── Grain overlay ─── */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 9999; opacity: .6;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── Canvas layers ─── */
+        #bg-canvas {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #fg-canvas {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* ─── Ambient light blobs ─── */
+        .ambient {
+            position: fixed; pointer-events: none; z-index: 0;
+            border-radius: 50%; filter: blur(140px); opacity: .12;
+        }
+        .ambient-1 { width: 700px; height: 700px; background: #4a2dcc; top: -250px; right: -150px; }
+        .ambient-2 { width: 500px; height: 500px; background: #1a0a3d; bottom: 0; left: -150px; }
+
+        /* ─── Layout ─── */
+        .wrap { max-width: 1180px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+        /* ─── Nav ─── */
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.6rem 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(6, 6, 8, 0.88);
+            backdrop-filter: blur(20px);
+        }
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800; font-size: 1.1rem;
+            letter-spacing: -.5px;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .nav-logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a {
+            color: var(--muted); text-decoration: none;
+            font-size: .9rem; font-weight: 500;
+            transition: color .2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta {
+            background: var(--accent); color: #000;
+            padding: .55rem 1.3rem; border-radius: 8px;
+            font-weight: 600; font-size: .9rem;
+            text-decoration: none;
+            transition: background .2s, transform .15s;
+            cursor: pointer; border: none;
+        }
+        .nav-cta:hover { background: #9b85ff; transform: translateY(-1px); }
+
+        /* ─── Hero ─── */
+        .hero {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 5rem; align-items: center;
+            padding: 7rem 0 5rem;
+        }
+
+        .hero-kicker {
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem; font-weight: 600;
+            color: var(--accent); letter-spacing: .12em;
+            text-transform: uppercase;
+            border: 1px solid rgba(123,97,255,.22);
+            background: rgba(123,97,255,.07);
+            padding: .4rem .9rem; border-radius: 100px;
+            margin-bottom: 1.6rem;
+        }
+        .hero-kicker::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 2s ease infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.8rem, 5vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin-bottom: 1.4rem;
+        }
+        .hero h1 em { font-style: normal; color: var(--accent); }
+
+        .hero-sub {
+            font-size: 1.05rem; color: var(--muted);
+            line-height: 1.7; max-width: 420px;
+            margin-bottom: 2.5rem; font-weight: 400;
+        }
+
+        .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: nowrap; }
+
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: .7rem;
+            background: var(--accent); color: #000;
+            padding: .85rem 1.8rem; border-radius: 10px;
+            font-weight: 700; font-size: 1rem;
+            text-decoration: none; border: none; cursor: pointer;
+            transition: background .2s, transform .2s, box-shadow .2s;
+            box-shadow: 0 0 0 rgba(0,229,176,0);
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            background: #9b85ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(123,97,255,.35);
+        }
+
+        .btn-ghost {
+            display: inline-flex; align-items: center; gap: .7rem;
+            color: var(--muted); padding: .85rem 1.6rem;
+            border-radius: 10px; font-weight: 500; font-size: 1rem;
+            text-decoration: none; cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.04); }
+
+        .hero-preview {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        /* Accent glow blob behind the frame */
+        .preview-glow {
+            position: absolute;
+            inset: -30px;
+            background: radial-gradient(ellipse at center, rgba(123,97,255,0.35) 0%, transparent 70%);
+            filter: blur(40px);
+            z-index: 0;
+            animation: float-glow 4s ease-in-out infinite;
+            pointer-events: none;
+            transition: opacity .4s ease, transform .4s ease;
+        }
+        .hero-preview:hover .preview-glow {
+            opacity: 1.4;
+            transform: scale(1.15);
+            background: radial-gradient(ellipse at center, rgba(123,97,255,0.55) 0%, transparent 70%);
+        }
+        @keyframes float-glow {
+            0%, 100% { transform: translateY(0) scale(1);       opacity: .7; }
+            50%       { transform: translateY(-10px) scale(1.05); opacity: 1; }
+        }
+
+        .preview-frame {
+            position: relative; z-index: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow:
+                0 40px 80px rgba(0,0,0,.6),
+                0 0 0 1px rgba(123,97,255,.15),
+                inset 0 1px 0 rgba(255,255,255,.05);
+            transform: perspective(1000px) rotateY(-12deg) rotateX(4deg);
+            animation: float-frame 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transition: box-shadow .4s ease, border-color .4s ease;
+        }
+        .hero-preview:hover .preview-frame {
+            animation-play-state: paused;
+            box-shadow:
+                0 60px 120px rgba(0,0,0,.7),
+                0 0 0 1px rgba(123,97,255,.4),
+                0 0 60px rgba(123,97,255,.2),
+                inset 0 1px 0 rgba(255,255,255,.08);
+            border-color: rgba(123,97,255,.35);
+            transition: transform .08s ease-out, box-shadow .4s ease, border-color .4s ease;
+        }
+
+        .trustpilot-wrap { margin-top: 2.5rem; display: flex; justify-content: flex-start; }
+
+        .preview-frame::after {
+            content: '';
+            position: absolute; inset: 0; z-index: 2;
+            border-radius: 18px;
+            background: radial-gradient(
+                ellipse at calc(var(--mx,50) * 1%) calc(var(--my,50) * 1%),
+                rgba(123,97,255,0.22) 0%,
+                rgba(94,72,212,0.10) 40%,
+                transparent 70%
+            );
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity .3s ease;
+            pointer-events: none;
+        }
+        .hero-preview:hover .preview-frame::after { opacity: 1; }
+
+        .preview-frame::before {
+            content: '';
+            position: absolute; inset: 0; z-index: 3;
+            border-radius: 18px;
+            background: radial-gradient(
+                circle at calc(var(--mx,50) * 1%) calc(var(--my,50) * 1%),
+                rgba(255,255,255,0.12) 0%,
+                transparent 50%
+            );
+            mix-blend-mode: screen;
+            opacity: 0;
+            transition: opacity .3s ease;
+            pointer-events: none;
+        }
+        .hero-preview:hover .preview-frame::before { opacity: 1; }
+
+        @media (max-width: 900px) {
+            .preview-frame {
+                transform: perspective(800px) rotateX(-6deg) rotateY(0deg);
+                animation: float-frame-mobile 4s ease-in-out infinite;
+            }
+            .hero-preview:hover .preview-frame {
+                transform: perspective(800px) rotateX(-2deg) rotateY(0deg) translateY(-8px) scale(1.02) !important;
+            }
+        }
+
+        @keyframes float-frame {
+            0%, 100% { transform: perspective(1000px) rotateY(-12deg) rotateX(4deg)  translateY(0);     }
+            50%       { transform: perspective(1000px) rotateY(-10deg) rotateX(3deg)  translateY(-12px); }
+        }
+        @keyframes float-frame-mobile {
+            0%, 100% { transform: perspective(800px) rotateX(-6deg) rotateY(0deg) translateY(0);     }
+            50%       { transform: perspective(800px) rotateX(-4deg) rotateY(0deg) translateY(-10px); }
+        }
+
+        .preview-bar {
+            background: #1a1c20; padding: .85rem 1.2rem;
+            display: flex; align-items: center; gap: .5rem;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .preview-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+        .preview-dot:nth-child(1) { background: #ff5f57; }
+        .preview-dot:nth-child(2) { background: #febc2e; }
+        .preview-dot:nth-child(3) { background: #28c840; }
+        .preview-frame img {
+            width: 100%; height: auto; display: block;
+            object-fit: contain; object-position: center;
+        }
+
+        /* ─── Version Card ─── */
+        .version-strip {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 4rem 0 5rem;
+            background: var(--surface);
+        }
+        .vstrip-cell {
+            padding: 1.5rem 2rem;
+            border-right: 1px solid var(--border);
+        }
+        .vstrip-cell:last-child { border-right: none; }
+        .vstrip-label {
+            font-size: .75rem; font-weight: 600;
+            color: var(--muted); text-transform: uppercase;
+            letter-spacing: .1em; margin-bottom: .5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .vstrip-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem; font-weight: 600; color: var(--text);
+        }
+        .status-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem; font-weight: 600;
+            padding: .4rem .9rem; border-radius: 6px;
+        }
+        .status-badge.ok { background: rgba(123,97,255,.12); color: #a992ff; border: 1px solid rgba(123,97,255,.25); }
+        .status-badge.bad { background: rgba(255,77,106,.1); color: var(--red); border: 1px solid rgba(255,77,106,.2); }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .status-badge.ok .status-dot { background: #a992ff; animation: blink 2s ease infinite; }
+        .status-badge.bad .status-dot { background: var(--red); animation: blink 1s ease infinite; }
+
+        /* ─── Download panel ─── */
+        .download-panel {
+            display: grid; grid-template-columns: 1.6fr 1fr;
+            gap: 1.5rem; margin: 2rem 0 5rem;
+        }
+
+        .dl-main {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            position: relative; overflow: hidden;
+        }
+        .dl-main::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at top left, rgba(123,97,255,.07), transparent 60%);
+            pointer-events: none;
+        }
+        .dl-main-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem; font-weight: 700;
+            margin-bottom: .5rem;
+        }
+        .dl-main-sub { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+        .dl-tags { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .dl-tag {
+            font-size: .75rem; font-family: 'JetBrains Mono', monospace;
+            padding: .3rem .8rem; border-radius: 5px;
+            border: 1px solid var(--border); color: var(--muted);
+        }
+
+        .dl-version {
+            background: rgba(17,19,22,1);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem;
+        }
+        .dl-version-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem; font-weight: 700;
+            margin-bottom: 1.2rem; color: var(--muted);
+        }
+
+        .version-selector { position: relative; }
+        .vs-trigger {
+            width: 100%;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 9px; padding: .85rem 1.2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: border-color .2s;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .9rem; color: var(--text);
+        }
+        .vs-trigger:hover { border-color: rgba(255,255,255,.18); }
+        .vs-trigger i { color: var(--muted); font-size: .7rem; transition: transform .2s; }
+        .vs-trigger.open i { transform: rotate(180deg); }
+
+        .vs-dropdown {
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+            background: #1a1c20; border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden;
+            max-height: 240px; overflow-y: auto;
+            display: none; z-index: 200;
+            box-shadow: 0 16px 48px rgba(0,0,0,.6);
+        }
+        .vs-dropdown.active { display: block; animation: dropIn .18s ease; }
+        @keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+        .vs-option {
+            padding: .85rem 1.2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem; color: var(--text);
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+        .vs-option:last-child { border-bottom: none; }
+        .vs-option:hover { background: rgba(255,255,255,.04); }
+        .vs-option .latest-tag {
+            font-size: .7rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: .08em; color: #a992ff;
+            background: rgba(123,97,255,.1); border: 1px solid rgba(123,97,255,.2);
+            padding: .2rem .6rem; border-radius: 4px;
+        }
+
+        .vs-dropdown::-webkit-scrollbar { width: 6px; }
+        .vs-dropdown::-webkit-scrollbar-track { background: transparent; }
+        .vs-dropdown::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+
+        .dl-version-btn {
+            width: 100%; margin-top: 1rem;
+            background: rgba(123,97,255,.1); color: #a992ff;
+            border: 1px solid rgba(123,97,255,.25);
+            padding: .85rem; border-radius: 9px;
+            font-weight: 600; font-size: .9rem; cursor: pointer;
+            transition: all .2s; display: flex; align-items: center; justify-content: center; gap: .6rem;
+        }
+        .dl-version-btn:hover { background: rgba(123,97,255,.18); transform: translateY(-1px); }
+
+        /* ─── Features ─── */
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem; color: var(--accent);
+            text-transform: uppercase; letter-spacing: .15em;
+            margin-bottom: 1.2rem;
+        }
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 800; letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+        .section-sub { color: var(--muted); max-width: 480px; line-height: 1.65; margin-bottom: 3.5rem; }
+
+        .features-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1px; background: var(--border);
+            border: 1px solid var(--border); border-radius: 18px;
+            overflow: hidden; margin-bottom: 6rem;
+        }
+
+        .feat {
+            background: var(--surface);
+            padding: 2.5rem; transition: background .25s;
+        }
+        .feat:hover { background: #101118; }
+
+        .feat-icon {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            background: rgba(123,97,255,.08);
+            border: 1px solid rgba(123,97,255,.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: #a992ff;
+            margin-bottom: 1.4rem;
+        }
+        .feat h3 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 1.05rem;
+            margin-bottom: .6rem; letter-spacing: -.3px;
+        }
+        .feat p { color: var(--muted); font-size: .9rem; line-height: 1.6; }
+
+        /* ─── Support ─── */
+        .support-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 3rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 2rem; margin-bottom: 5rem;
+        }
+        .support-bar h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem; font-weight: 700; margin-bottom: .4rem;
+        }
+        .support-bar p { color: var(--muted); font-size: .9rem; }
+        .support-actions { display: flex; gap: .8rem; flex-shrink: 0; }
+
+        /* ─── Footer ─── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3.5rem 0;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .footer-brand {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 1rem;
+        }
+        .footer-brand span { color: var(--accent); }
+        .footer-copy { color: var(--muted); font-size: .85rem; margin-top: .3rem; }
+
+        .footer-socials { display: flex; gap: .8rem; }
+        .footer-socials a {
+            width: 40px; height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--muted); font-size: .9rem;
+            text-decoration: none;
+            transition: all .2s;
+        }
+        .footer-socials a:hover { color: var(--text); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.04); }
+
+        /* ─── Loader ─── */
+        .spin {
+            display: inline-block; width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,.15);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Scroll reveal ─── */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+        .reveal.in { opacity: 1; transform: translateY(0); }
+
+        /* ── Splash screen ── */
+        #splash-overlay-bg {
+            position: fixed; inset: 0; z-index: 9998;
+            background: var(--bg);
+            pointer-events: none;
+            transition: opacity .55s ease;
+        }
+        #splash-overlay-bg.fade { opacity: 0; }
+
+        #site-splash {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        #site-splash.hidden { display: none; }
+
+        #splash-logo {
+            display: flex; align-items: baseline;
+            position: fixed;
+        }
+        .splash-au {
+            font-family: 'Syne', sans-serif; font-weight: 800;
+            color: var(--text); white-space: nowrap;
+        }
+        .splash-accent {
+            font-family: 'Syne', sans-serif; font-weight: 800;
+            color: var(--accent); white-space: nowrap;
+        }
+
+        /* ── Trust wall arc carousel ── */
+        .trustwall-section { margin-bottom: 5rem; }
+
+        /* Horizontal clip + edge fade lives here — separate from the height-bounded wrap */
+        .trustwall-clip {
+            position: relative;
+            width: 100%;
+            overflow-x: clip;
+            mask-image: linear-gradient(to right,
+                transparent 0%, black 14%, black 86%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right,
+                transparent 0%, black 14%, black 86%, transparent 100%);
+        }
+
+        /* Inner wrap: overflow visible so expanded cards aren't clipped at bottom */
+        .trustwall-ticker-wrap {
+            position: relative;
+            width: 100%;
+            overflow: visible;
+            /* height set by JS — siblings use this for layout, cards can paint below */
+        }
+
+        .tw-card {
+            position: absolute;
+            width: 276px;
+            border: none;
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem 1.05rem;
+            box-sizing: border-box;
+            overflow: hidden;
+            will-change: transform, opacity;
+            transform-origin: center center;
+            background: linear-gradient(160deg, #0f1016 0%, #090a0e 100%);
+            transition: none;
+            /* base dim ring always visible */
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.07);
+        }
+        .tw-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(123,97,255,.2), transparent);
+        }
+        .tw-card-header {
+            display: flex; align-items: center; gap: .7rem; margin-bottom: .8rem;
+        }
+        .tw-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            overflow: hidden; flex-shrink: 0;
+            background: rgba(123,97,255,.14);
+            border: 1.5px solid rgba(123,97,255,.2);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: .86rem; color: #a992ff;
+        }
+        .tw-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .tw-meta { flex: 1; min-width: 0; }
+        .tw-name {
+            font-weight: 700; font-size: .875rem; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .tw-time { font-size: .68rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: .1rem; }
+        .tw-discord-icon { color: rgba(123,97,255,.28); font-size: .85rem; flex-shrink: 0; }
+        .tw-content {
+            font-size: .84rem; color: rgba(221,224,230,.70); line-height: 1.60;
+            display: -webkit-box; -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3; overflow: hidden;
+            transition: all .3s ease;
+        }
+        /* expanded state — hovered card shows full text */
+        .tw-card.tw-expanded .tw-content {
+            -webkit-line-clamp: unset;
+            display: block;
+            overflow: visible;
+        }
+        .tw-content .tw-mention {
+            color: #a992ff; background: rgba(123,97,255,.10);
+            border-radius: 3px; padding: 0 .2rem; font-weight: 600; font-size: .80rem;
+        }
+        /* Discord markdown styles */
+        .tw-content strong { color: rgba(221,224,230,.92); font-weight: 700; }
+        .tw-content em     { font-style: italic; color: rgba(221,224,230,.80); }
+        .tw-content del    { text-decoration: line-through; color: rgba(221,224,230,.45); }
+        .tw-content u      { text-decoration: underline; }
+        .tw-content .tw-code {
+            font-family: 'JetBrains Mono', monospace; font-size: .78rem;
+            background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.08);
+            border-radius: 4px; padding: .05rem .38rem; color: #c4b5fd;
+        }
+        .tw-content .tw-spoiler {
+            background: rgba(255,255,255,.08); border-radius: 3px;
+            padding: 0 .2rem; cursor: pointer; color: transparent;
+            transition: color .2s, background .2s;
+        }
+        .tw-content .tw-spoiler:hover { color: inherit; background: rgba(255,255,255,.04); }
+        .tw-reactions { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .75rem; }
+        .tw-reaction {
+            display: inline-flex; align-items: center; gap: .25rem;
+            padding: .15rem .5rem; border-radius: 20px;
+            background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+            font-size: .74rem; color: rgba(221,224,230,.45);
+        }
+
+        /* ── News preview (homepage) ── */
+        .news-preview { margin-bottom: 5rem; }
+        .news-preview-header {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;
+        }
+        .news-more-btn {
+            display: inline-flex; align-items: center; gap: .5rem;
+            color: var(--accent); text-decoration: none;
+            font-size: .9rem; font-weight: 600;
+            border: 1px solid rgba(123,97,255,.25);
+            padding: .6rem 1.2rem; border-radius: 8px;
+            background: rgba(123,97,255,.07);
+            transition: background .2s, transform .15s;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .news-more-btn:hover { background: rgba(123,97,255,.14); transform: translateY(-1px); }
+        .homepage-news-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem;
+        }
+        .hn-skeleton {
+            height: 280px; border-radius: 16px;
+            background: var(--surface); border: 1px solid var(--border);
+            animation: shimmer 1.6s ease infinite;
+        }
+        .hn-skeleton.small { height: 280px; }
+        @keyframes shimmer { 0%,100%{opacity:.4} 50%{opacity:.8} }
+        .hn-card {
+            position: relative; display: flex; flex-direction: column;
+            justify-content: flex-end; border-radius: 16px; overflow: hidden;
+            border: 1px solid var(--border); background: var(--surface);
+            cursor: pointer; text-decoration: none; color: inherit;
+            min-height: 280px; transition: transform .25s ease, border-color .25s;
+        }
+        .hn-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.12); }
+        .hn-card-img {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+        }
+        .hn-card-img::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(6,6,8,.05) 0%, rgba(6,6,8,.85) 100%);
+        }
+        .hn-card-body { position: relative; z-index: 1; padding: 1.2rem 1.4rem; }
+        .hn-card-meta { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+        .hn-cat-badge {
+            font-size: .68rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .08em; padding: .25rem .65rem; border-radius: 4px;
+        }
+        .hn-cat-badge.Update       { background: rgba(123,97,255,.2); color: #a992ff; }
+        .hn-cat-badge.Announcement { background: rgba(34,197,94,.15); color: #4ade80; }
+        .hn-cat-badge.Event        { background: rgba(245,158,11,.15); color: #fbbf24; }
+        .hn-date { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: rgba(221,224,230,.4); }
+        .hn-card-title { font-family: 'Syne', sans-serif; font-weight: 700; line-height: 1.2; letter-spacing: -.3px; margin-bottom: .4rem; }
+        .hn-card-title.featured { font-size: 1.3rem; }
+        .hn-card-title.normal   { font-size: 1rem; }
+        .hn-card-brief {
+            font-size: .83rem; color: rgba(221,224,230,.65); line-height: 1.5;
+            display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .hn-card-brief.featured { -webkit-line-clamp: 3; }
+        .hn-card-brief.normal   { -webkit-line-clamp: 2; }
+        .hn-no-cover { background: linear-gradient(135deg, #0d0b1a 0%, #130f2a 100%); }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 0 3rem; }
+            .hero-sub { max-width: 100%; }
+            .download-panel { grid-template-columns: 1fr; }
+            .version-strip { grid-template-columns: 1fr; }
+            .vstrip-cell { border-right: none; border-bottom: 1px solid var(--border); }
+            .vstrip-cell:last-child { border-bottom: none; }
+            .features-grid { grid-template-columns: 1fr; }
+            .support-bar { flex-direction: column; align-items: flex-start; }
+            footer { flex-direction: column; gap: 1.5rem; }
+            .homepage-news-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ─── Defender warning ─── */
+        .defender-warning {
+            display: flex; align-items: flex-start; gap: 1.2rem;
+            background: rgba(255, 160, 50, 0.05);
+            border: 1px solid rgba(255, 160, 50, 0.2);
+            border-radius: 14px;
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 2rem;
+        }
+        .dw-icon { font-size: 1.4rem; color: #f59e0b; margin-top: .1rem; flex-shrink: 0; }
+        .dw-title { font-weight: 700; font-size: .95rem; color: #fbbf24; margin-bottom: .4rem; }
+        .dw-text { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+        .dw-text a { color: #a992ff; text-decoration: none; }
+        .dw-text a:hover { text-decoration: underline; }
+        .dw-body { flex: 1; }
+        .dw-btn {
+            display: inline-flex; align-items: center; gap: .5rem;
+            background: rgba(88,101,242,.15); color: #7289da;
+            border: 1px solid rgba(88,101,242,.25);
+            padding: .6rem 1.1rem; border-radius: 8px;
+            font-size: .82rem; font-weight: 600;
+            text-decoration: none; white-space: nowrap; flex-shrink: 0;
+            transition: background .2s;
+        }
+        .dw-btn:hover { background: rgba(88,101,242,.25); }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,.7);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity .25s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: #0f1013;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 520px; width: 100%;
+            transform: translateY(20px);
+            transition: transform .25s ease;
+            box-shadow: 0 40px 80px rgba(0,0,0,.6);
+        }
+        .modal-overlay.active .modal-box { transform: translateY(0); }
+        .modal-win-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            background: rgba(91,155,213,.1); color: #5b9bd5;
+            border: 1px solid rgba(91,155,213,.2);
+            padding: .35rem .85rem; border-radius: 6px;
+            font-size: .78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .08em;
+            margin-bottom: 1.2rem;
+        }
+        .modal-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.45rem; font-weight: 800;
+            margin-bottom: .6rem; letter-spacing: -.5px;
+        }
+        .modal-body { color: var(--muted); font-size: .92rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .modal-body strong { color: var(--text); }
+        .modal-defender {
+            display: flex; gap: 1rem; align-items: flex-start;
+            background: rgba(245,158,11,.05);
+            border: 1px solid rgba(245,158,11,.18);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            margin-bottom: 1.8rem;
+        }
+        .modal-def-icon { font-size: 1.2rem; color: #f59e0b; margin-top: .1rem; flex-shrink: 0; }
+        .modal-def-title { font-weight: 700; font-size: .9rem; color: #fbbf24; margin-bottom: .4rem; }
+        .modal-def-body { font-size: .83rem; color: var(--muted); line-height: 1.6; margin-bottom: .7rem; }
+        .modal-def-link {
+            display: inline-flex; align-items: center; gap: .4rem;
+            font-size: .82rem; font-weight: 600; color: #7289da;
+            text-decoration: none;
+        }
+        .modal-def-link:hover { text-decoration: underline; }
+        .modal-actions { display: flex; gap: .8rem; align-items: center; }
+
+        .win-notice {
+            display: flex; align-items: center; gap: .6rem;
+            margin-top: 1rem;
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 9px;
+            padding: .75rem 1rem;
+            font-size: .85rem; color: var(--muted);
+        }
+        .win-notice i { color: #5b9bd5; font-size: 1rem; flex-shrink: 0; }
+        .win-notice span { line-height: 1.4; }
+
+        /* ── Glitch boot ── */
+        #glitch-boot {
+            position: fixed; inset: 0; z-index: 19999;
+            background: #000;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        #glitch-boot.out { animation: gb-fadeout .45s ease forwards; }
+        @keyframes gb-fadeout { to { opacity: 0; } }
+
+        #glitch-boot::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 3px,rgba(0,0,0,.28) 3px,rgba(0,0,0,.28) 4px);
+            pointer-events: none; z-index: 1;
+        }
+        #glitch-boot::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.85) 100%);
+            pointer-events: none; z-index: 1;
+        }
+
+        .gb-content { position: relative; z-index: 2; text-align: center; }
+        .gb-tag { font-size: .72rem; letter-spacing: 6px; color: rgba(123,97,255,.7); text-transform: uppercase; margin-bottom: 1.6rem; opacity: 0; }
+        .gb-tag.in { animation: gb-el-in .3s ease forwards; }
+        .gb-headline { font-size: clamp(2rem, 5vw, 3.8rem); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: .8rem; opacity: 0; position: relative; }
+        .gb-headline .gac { color: var(--accent); }
+        .gb-headline.in { animation: gb-el-in .4s ease forwards; }
+        .gb-headline::before, .gb-headline::after { content: attr(data-text); position: absolute; inset: 0; clip-path: polygon(0 25%, 100% 25%, 100% 55%, 0 55%); }
+        .gb-headline::before { color: #ff0050; animation: gb-ghost-r 2s steps(1) infinite; }
+        .gb-headline::after  { color: #00f5ff; animation: gb-ghost-b 2s steps(1) infinite .25s; }
+        @keyframes gb-ghost-r { 0%,88%{opacity:0;transform:translate(0)} 89%{opacity:1;transform:translate(-5px,-1px)} 93%{opacity:1;transform:translate(5px,1px)} 97%{opacity:0} }
+        @keyframes gb-ghost-b { 0%,83%{opacity:0;transform:translate(0)} 84%{opacity:1;transform:translate(6px,2px)} 88%{opacity:1;transform:translate(-6px,-2px)} 92%{opacity:0} }
+        .gb-sub { font-size: clamp(.65rem, 1.2vw, .82rem); color: rgba(255,255,255,.35); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 2rem; opacity: 0; }
+        .gb-sub.in { animation: gb-el-in .3s ease forwards .15s; }
+        .gb-log { background: rgba(0,0,0,.6); border: 1px solid rgba(123,97,255,.18); border-radius: 10px; padding: .8rem 1.2rem; width: min(480px, 88vw); text-align: left; font-size: clamp(.62rem, .9vw, .78rem); color: rgba(255,255,255,.4); opacity: 0; }
+        .gb-log.in { animation: gb-el-in .4s ease forwards; }
+        .gb-log-line { margin: 0; line-height: 1.8; }
+        .gb-ok  { color: #4ade80; }
+        .gb-err { color: #ff0050; }
+        .gb-hl  { color: var(--accent); }
+        .gb-dim { color: rgba(255,255,255,.22); }
+        .gb-divider { width: min(360px, 80vw); height: 1px; background: linear-gradient(90deg, transparent, var(--accent), #ff0050, transparent); margin: 1.4rem auto; opacity: 0; }
+        .gb-divider.in { animation: gb-el-in .3s ease forwards; }
+        .gb-progress-wrap { width: min(360px, 80vw); height: 4px; background: rgba(255,255,255,.06); border-radius: 100px; overflow: hidden; margin: 0 auto; opacity: 0; }
+        .gb-progress-wrap.in { animation: gb-el-in .3s ease forwards; }
+        .gb-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #a992ff); border-radius: 100px; box-shadow: 0 0 10px rgba(123,97,255,.6); transition: width .1s linear; }
+        @keyframes gb-el-in { from { opacity: 0; transform: translateY(10px); filter: blur(4px); } to   { opacity: 1; transform: translateY(0);    filter: none; } }
+        @keyframes gb-shake { 0%{transform:translate(0)} 20%{transform:translate(-4px,2px)} 40%{transform:translate(4px,-2px)} 60%{transform:translate(-3px,3px)} 80%{transform:translate(3px,-3px)} 100%{transform:translate(0)} }
+        @keyframes gb-rgb { 0%,100%{filter:none} 20%{filter:drop-shadow(-5px 0 0 rgba(255,0,80,.7)) drop-shadow(5px 0 0 rgba(0,245,255,.7))} 50%{filter:none} 75%{filter:drop-shadow(-3px 0 0 rgba(255,0,80,.5)) brightness(1.3)} }
+        .gb-shaking { animation: gb-shake .12s steps(1) infinite, gb-rgb .4s ease-in-out infinite; }
+    </style>
+
+    <script>
+        if (!sessionStorage.getItem('splash_seen')) {
+            document.documentElement.style.visibility = 'hidden';
+        }
+    </script>
+</head>
+<body>
+
+<!-- ── Canvas layers ── -->
+<canvas id="bg-canvas"></canvas>
+<canvas id="fg-canvas"></canvas>
+
+<!-- ── Glitch boot ── -->
+<div id="glitch-boot" style="display:none">
+    <div class="gb-content">
+        <div class="gb-tag" id="gb-tag">⚡ signal acquired ⚡</div>
+        <div class="gb-headline" id="gb-headline" data-text="NEW DOMAIN."><span class="gac">NEW DOMAIN.</span></div>
+        <div class="gb-sub" id="gb-sub">connection re-established</div>
+        <div class="gb-divider" id="gb-divider"></div>
+        <div class="gb-log" id="gb-log">
+            <p class="gb-log-line"><span class="gb-dim">[00:01]</span> <span class="gb-err">ERR</span> old domain routing table offline</p>
+            <p class="gb-log-line"><span class="gb-dim">[00:02]</span> <span class="gb-ok">OK </span> new endpoint → <span class="gb-hl">amongus-launcher.vercel.app</span></p>
+            <p class="gb-log-line"><span class="gb-dim">[00:03]</span> <span class="gb-ok">OK </span> loading interface...</p>
+        </div>
+        <div class="gb-divider" style="margin-top:1.4rem"></div>
+        <div class="gb-progress-wrap" id="gb-progress-wrap">
+            <div class="gb-progress-bar" id="gb-progress-bar"></div>
+        </div>
+    </div>
+</div>
+
+<div id="splash-overlay-bg" style="position:fixed;inset:0;z-index:9998;background:#060608;pointer-events:none;transition:opacity .55s ease"></div>
+<div id="site-splash">
+  <div id="splash-logo">
+    <span class="splash-au" id="splash-au" style="font-size:72px;letter-spacing:-3px;opacity:0">Among Us</span>
+    <span class="splash-accent" id="splash-accent" style="font-size:72px;letter-spacing:-3px;opacity:0">&nbsp;Launcher</span>
+  </div>
+</div>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo" id="nav-logo" style="opacity:0">AU <span>Launcher</span></div>
+    <div class="nav-links">
+        <a href="helpPage.html">Docs</a>
+        <a href="news.html">News</a>
+        <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+        <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank">YouTube</a>
+    </div>
+    <button class="nav-cta" onclick="window.location.href='https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe'">
+        Download
+    </button>
+</nav>
+
+<div class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-left">
+            <div class="hero-kicker">Launcher v<span id="heroVersion">…</span> · Windows only</div>
+            <h1>Getting into<br>Among Us has<br>never been <em>this easy.</em></h1>
+            <p class="hero-sub">
+                Download it, open it, play. The launcher takes care of updates, versions and Discord status so you honestly never have to think about any of that stuff.
+            </p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="openWinModal()">
+                    <i class="fab fa-windows"></i> Download free
+                </button>
+                <a class="btn-ghost" href="helpPage.html">
+                    How does it work? <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="trustpilot-wrap">
+                <div class="trustpilot-widget" data-locale="en-US" data-template-id="56278e9abfbbba0bdcd568bc" data-businessunit-id="6954fced74cf034e3abd0db3" data-style-height="52px" data-style-width="200px" data-token="9b269b6d-83ad-4d7b-851b-6243ed497843">
+                    <a href="https://www.trustpilot.com/review/jogamerforgames2021.github.io" target="_blank" rel="noopener">Trustpilot</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-preview">
+            <div class="preview-glow"></div>
+            <div class="preview-frame">
+                <img src="https://i.ibb.co/zHPYTKp2/Screenshot-2026-03-17-024143.png" alt="Among Us Launcher Preview">
+            </div>
+        </div>
+    </section>
+
+    <!-- VERSION STRIP -->
+    <div class="version-strip reveal">
+        <div class="vstrip-cell">
+            <div class="vstrip-label">Launcher Version</div>
+            <div class="vstrip-value" id="launcherVersion"><span class="spin"></span></div>
+        </div>
+        <div class="vstrip-cell">
+            <div class="vstrip-label">Latest Game Version</div>
+            <div class="vstrip-value" id="uploadedVersion"><span class="spin"></span></div>
+        </div>
+        <div class="vstrip-cell">
+            <div class="vstrip-label">Game Status</div>
+            <div id="statusBadge"><span class="spin"></span></div>
+        </div>
+    </div>
+
+    <!-- DEFENDER WARNING -->
+    <div class="defender-warning reveal">
+        <div class="dw-icon"><i class="fas fa-shield-halved"></i></div>
+        <div class="dw-body">
+            <div class="dw-title">Windows Defender might flag this as a threat. It's a false positive.</div>
+            <p class="dw-text">Because this is an unofficial launcher, Windows Defender sometimes gets a bit jumpy and flags it. It's not malware. The source code is fully open on GitHub so you can check it yourself. If you're unsure, come check out the <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord server</a> where you'll find a trust wall with genuine reviews from real users.</p>
+        </div>
+        <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="dw-btn">
+            <i class="fab fa-discord"></i> See reviews
+        </a>
+    </div>
+
+    <!-- DOWNLOAD PANEL -->
+    <div class="download-panel reveal">
+        <div class="dl-main">
+            <div class="dl-main-title">Grab the Launcher</div>
+            <p class="dl-main-sub">One file, one click. Updates, Discord status and version switching all come included. Just run it and you're good to go.</p>
+            <div class="dl-tags">
+                <span class="dl-tag">auto-update</span>
+                <span class="dl-tag">discord rpc</span>
+                <span class="dl-tag">version manager</span>
+                <span class="dl-tag">mods tab</span>
+                <span class="dl-tag">aunlocker</span>
+                <span class="dl-tag">community chat</span>
+                <span class="dl-tag">news feed</span>
+                <span class="dl-tag">system tray</span>
+                <span class="dl-tag">windows</span>
+            </div>
+            <button class="btn-primary" onclick="window.location.href='https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe'">
+                <i class="fas fa-arrow-down"></i> AmongUsLauncher.exe
+            </button>
+            <div class="win-notice">
+                <i class="fab fa-windows"></i>
+                <span>Windows only. Mac and Linux are not supported right now.</span>
+            </div>
+        </div>
+
+        <div class="dl-version">
+            <div class="dl-version-title">Just want the game files?</div>
+            <div class="version-selector">
+                <div class="vs-trigger" id="vsTrigger">
+                    <span id="selectedVersion"><span class="spin"></span></span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="vs-dropdown" id="vsDropdown"></div>
+            </div>
+            <button class="dl-version-btn" id="dlVersionBtn">
+                <i class="fas fa-arrow-down"></i> Download game zip
+            </button>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section class="reveal">
+        <div class="section-label">What's inside</div>
+        <h2 class="section-title">You'll wonder how you<br>played without it.</h2>
+        <p class="section-sub">Seriously. It's just Among Us but the way it should've been.</p>
+
+        <div class="features-grid">
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-gamepad"></i></div>
+                <h3>Play Among Us Free</h3>
+                <p>Yeah, free. Download it, open it, play it. No Steam, no purchase, no nonsense. Just click and you're in.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-users"></i></div>
+                <h3>Real Multiplayer</h3>
+                <p>Actual online lobbies with real people. Host games, join randoms, play with friends — nothing is blocked or limited.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-sync-alt"></i></div>
+                <h3>Always Up to Date</h3>
+                <p>New version drops? You'll have it. The launcher just handles it. You don't have to do anything.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fab fa-discord"></i></div>
+                <h3>Shows Up on Discord</h3>
+                <p>Your friends see you're playing Among Us. Automatically. It's a small thing but you'll love it.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-comments"></i></div>
+                <h3>Chat Without Discord</h3>
+                <p>There's a whole community chat built right into the launcher. Talk to people, read announcements, no Discord app needed.</p>
+            </div>
+            <div class="feat">
+                <div class="feat-icon"><i class="fas fa-puzzle-piece"></i></div>
+                <h3>Mod Manager</h3>
+                <p>Install mods straight from the launcher. More mods coming — this is just getting started.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRUST WALL -->
+    <section class="trustwall-section reveal">
+      <div class="section-label">Community</div>
+      <h2 class="section-title" style="margin-bottom:.6rem">People love it.</h2>
+      <p class="section-sub" style="margin-bottom:2rem">Real messages from our Discord trust wall.</p>
+      <div class="trustwall-clip">
+        <div class="trustwall-ticker-wrap" id="tw-wrap">
+          <!-- cards injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- LATEST NEWS -->
+    <section class="news-preview reveal">
+        <div class="news-preview-header">
+            <div>
+                <div class="section-label">Latest News</div>
+                <h2 class="section-title" style="margin-bottom:.5rem">What's going on</h2>
+                <p style="color:var(--muted);font-size:.9rem;line-height:1.6">Updates, announcements and everything happening with the launcher.</p>
+            </div>
+            <a href="news.html" class="news-more-btn">All news <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="homepage-news-grid" class="homepage-news-grid">
+            <div class="hn-skeleton"></div>
+            <div class="hn-skeleton small"></div>
+            <div class="hn-skeleton small"></div>
+        </div>
+    </section>
+
+    <!-- SUPPORT -->
+    <div class="support-bar reveal">
+        <div>
+            <h2>Something not working?</h2>
+            <p>Pop into the Discord and someone will sort you out. Or check the Help Center if you prefer reading.</p>
+        </div>
+        <div class="support-actions">
+            <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="btn-primary" style="font-size:.9rem; padding:.75rem 1.4rem;">
+                <i class="fab fa-discord"></i> Discord
+            </a>
+            <a href="helpPage.html" class="btn-ghost" style="font-size:.9rem; padding:.75rem 1.4rem;">
+                Help Center
+            </a>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div>
+            <div class="footer-brand">AU <span>Launcher</span></div>
+            <div class="footer-copy">© 2025 ShadowSlimeDEV · Not affiliated with Innersloth</div>
+        </div>
+        <div class="footer-socials">
+            <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>
+            <a href="https://store.steampowered.com/app/945360/Among_Us/" target="_blank" title="Steam"><i class="fab fa-steam"></i></a>
+            <a href="helpPage.html" title="Help"><i class="fas fa-circle-question"></i></a>
+            <a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank" title="Feedback"><i class="fas fa-message"></i></a>
+        </div>
+    </footer>
+
+</div><!-- /wrap -->
+
+<!-- WINDOWS MODAL -->
+<div class="modal-overlay" id="winModal" onclick="closeWinModal(event)">
+    <div class="modal-box">
+        <div class="modal-win-badge"><i class="fab fa-windows"></i> Windows only</div>
+        <h3 class="modal-title">Before you download</h3>
+        <p class="modal-body">This launcher runs on <strong>Windows 10 and 11</strong> only. Mac and Linux are not supported right now.</p>
+
+        <div class="modal-defender">
+            <div class="modal-def-icon"><i class="fas fa-shield-halved"></i></div>
+            <div>
+                <div class="modal-def-title">Windows Defender might flag it</div>
+                <p class="modal-def-body">That's a false positive. It happens because this is an unofficial launcher and isn't signed by a big publisher. The full source code is public on GitHub. If you're still not sure, head to the Discord server and check out the trust wall where real users have left reviews.</p>
+                <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="modal-def-link"><i class="fab fa-discord"></i> Check the Discord trust wall</a>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-primary" style="flex:1" onclick="proceedDownload()">
+                <i class="fas fa-arrow-down"></i> Got it, download anyway
+            </button>
+            <button class="btn-ghost" onclick="closeWinModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ORIGINAL SITE LOGIC (untouched)
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+    const GITHUB_REPO = "jogamerforgames2021/AmongUsLauncherNew";
+    let allVersions = [];
+    let selectedVersionData = null;
+
+    function openWinModal() {
+        document.getElementById('winModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeWinModal(e) {
+        if (!e || e.target === document.getElementById('winModal')) {
+            document.getElementById('winModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    function proceedDownload() {
+        document.getElementById('winModal').classList.remove('active');
+        document.body.style.overflow = '';
+        window.location.href = 'https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/AmongUsLauncher.exe';
+    }
+
+    fetch("https://raw.githubusercontent.com/jogamerforgames2021/AmongUsLauncherNew/refs/heads/main/LauncherVersion.txt")
+        .then(r => r.text())
+        .then(txt => {
+            const v = txt.trim();
+            document.getElementById('launcherVersion').textContent = v;
+            document.getElementById('heroVersion').textContent = v;
+        })
+        .catch(() => { document.getElementById('launcherVersion').textContent = 'unavailable'; });
+
+    fetch("https://raw.githubusercontent.com/jogamerforgames2021/BootstrapperTEST/refs/heads/main/AppDetail.json")
+        .then(r => r.json())
+        .then(data => {
+            const { repository_version, uploaded_version } = data;
+            document.getElementById('uploadedVersion').textContent = uploaded_version;
+            const badge = document.getElementById('statusBadge');
+            if (repository_version !== uploaded_version) {
+                badge.innerHTML = '<span class="status-badge bad"><span class="status-dot"></span> Outdated</span>';
+            } else {
+                badge.innerHTML = '<span class="status-badge ok"><span class="status-dot"></span> Up to date</span>';
+            }
+        })
+        .catch(() => { document.getElementById('uploadedVersion').textContent = 'unavailable'; });
+
+    async function fetchAllReleases() {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases`);
+            const releases = await res.json();
+            allVersions = [];
+            for (const r of releases) {
+                for (const a of r.assets) {
+                    if (a.name === "app.zip") {
+                        allVersions.push({ version: r.tag_name, url: a.browser_download_url });
+                        break;
+                    }
+                }
+            }
+            if (allVersions.length) {
+                selectedVersionData = allVersions[0];
+                document.getElementById('selectedVersion').textContent = allVersions[0].version;
+                populateDropdown();
+            }
+        } catch(e) {
+            document.getElementById('selectedVersion').textContent = 'error';
+        }
+    }
+
+    function populateDropdown() {
+        const dd = document.getElementById('vsDropdown');
+        dd.innerHTML = '';
+        allVersions.forEach((v, i) => {
+            const el = document.createElement('div');
+            el.className = 'vs-option';
+            el.innerHTML = `<span>${v.version}</span>${i === 0 ? '<span class="latest-tag">latest</span>' : ''}`;
+            el.onclick = () => {
+                selectedVersionData = v;
+                document.getElementById('selectedVersion').textContent = v.version;
+                dd.classList.remove('active');
+                document.getElementById('vsTrigger').classList.remove('open');
+            };
+            dd.appendChild(el);
+        });
+    }
+
+    document.getElementById('vsTrigger').addEventListener('click', e => {
+        e.stopPropagation();
+        document.getElementById('vsDropdown').classList.toggle('active');
+        document.getElementById('vsTrigger').classList.toggle('open');
+    });
+    document.addEventListener('click', () => {
+        document.getElementById('vsDropdown').classList.remove('active');
+        document.getElementById('vsTrigger').classList.remove('open');
+    });
+    document.getElementById('vsDropdown').addEventListener('click', e => e.stopPropagation());
+
+    document.getElementById('dlVersionBtn').addEventListener('click', () => {
+        if (selectedVersionData) window.location.href = selectedVersionData.url;
+    });
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    fetchAllReleases();
+
+    /* ── Glitch boot sequence ── */
+    (function() {
+        if (!location.search.includes('RedirectedGlitch')) return;
+        history.replaceState(null, '', location.pathname);
+        const boot = document.getElementById('glitch-boot');
+        if (!boot) return;
+        boot.style.display = 'flex';
+        document.documentElement.style.visibility = '';
+        sessionStorage.removeItem('splash_seen');
+        const show = (id, delay) => setTimeout(() => { const el = document.getElementById(id); if (el) el.classList.add('in'); }, delay);
+        show('gb-tag', 100); show('gb-headline', 300); show('gb-sub', 500);
+        show('gb-divider', 650); show('gb-log', 800); show('gb-progress-wrap', 1000);
+        setTimeout(() => {
+            const lines = boot.querySelectorAll('.gb-log-line');
+            lines.forEach(l => { l.dataset.full = l.innerHTML; l.innerHTML = ''; });
+            let li = 0;
+            function typeLine(line) {
+                const temp = document.createElement('div');
+                temp.innerHTML = line.dataset.full;
+                const txt = [...temp.textContent];
+                let ci = 0;
+                const iv = setInterval(() => {
+                    if (ci < txt.length) { line.textContent += txt[ci++]; }
+                    else { clearInterval(iv); line.innerHTML = line.dataset.full; li++; if (li < lines.length) setTimeout(() => typeLine(lines[li]), 180); }
+                }, 22);
+            }
+            if (lines.length) typeLine(lines[0]);
+        }, 850);
+        setTimeout(() => {
+            const bar = document.getElementById('gb-progress-bar');
+            const t0 = Date.now(), dur = 1400;
+            const tick = () => { const p = Math.min(100, ((Date.now()-t0)/dur)*100); if (bar) bar.style.width = p+'%'; if (p < 100) requestAnimationFrame(tick); };
+            requestAnimationFrame(tick);
+        }, 1000);
+        setTimeout(() => boot.classList.add('gb-shaking'), 1600);
+        setTimeout(() => boot.classList.remove('gb-shaking'), 2000);
+        const flash = () => {
+            const f = document.createElement('div');
+            f.style.cssText = 'position:fixed;inset:0;z-index:20000;background:#fff;pointer-events:none';
+            document.body.appendChild(f);
+            setTimeout(() => { f.style.transition = 'opacity .2s'; f.style.opacity = '0'; }, 60);
+            setTimeout(() => f.remove(), 280);
+        };
+        setTimeout(flash, 2150);
+        setTimeout(() => { boot.classList.add('out'); setTimeout(() => { boot.style.display = 'none'; }, 480); }, 2200);
+    })();
+
+    /* ── Splash: tween to nav ── */
+    (function() {
+        const overlayBg = document.getElementById('splash-overlay-bg');
+        const splash    = document.getElementById('site-splash');
+        const auEl      = document.getElementById('splash-au');
+        const accentEl  = document.getElementById('splash-accent');
+        const logoEl    = document.getElementById('splash-logo');
+        if (!splash) return;
+        if (sessionStorage.getItem('splash_seen')) {
+            splash.classList.add('hidden');
+            if (overlayBg) overlayBg.style.display = 'none';
+            const nl = document.getElementById('nav-logo');
+            if (nl) nl.style.opacity = '1';
+            document.documentElement.style.visibility = '';
+            return;
+        }
+        document.documentElement.style.visibility = '';
+        const VW = window.innerWidth;
+        const BIG = Math.min(VW * 0.08, 72);
+        [auEl, accentEl].forEach(el => { el.style.fontSize = BIG+'px'; el.style.letterSpacing = '-3px'; el.style.opacity = '0'; el.style.transition = 'none'; });
+        logoEl.style.left = '50%'; logoEl.style.top = '50%'; logoEl.style.transform = 'translate(-50%, -50%)';
+        setTimeout(() => {
+            auEl.style.transition = 'opacity .4s ease';
+            accentEl.style.transition = 'opacity .4s ease .15s';
+            auEl.style.opacity = '1'; accentEl.style.opacity = '1';
+        }, 60);
+        setTimeout(() => {
+            const navLogo = document.querySelector('.nav-logo');
+            if (!navLogo) { finish(); return; }
+            const navRect = navLogo.getBoundingClientRect();
+            const logoRect = logoEl.getBoundingClientRect();
+            const navPx = parseFloat(getComputedStyle(navLogo).fontSize);
+            const tx = navRect.left + navRect.width/2 - (logoRect.left + logoRect.width/2);
+            const ty = navRect.top  + navRect.height/2 - (logoRect.top + logoRect.height/2);
+            const transition = 'font-size .55s cubic-bezier(.4,0,.2,1), letter-spacing .45s ease, opacity .3s ease';
+            auEl.style.transition = transition; accentEl.style.transition = transition;
+            auEl.style.fontSize = navPx+'px'; accentEl.style.fontSize = navPx+'px';
+            auEl.style.letterSpacing = '-.5px'; accentEl.style.letterSpacing = '-.5px';
+            setTimeout(() => { auEl.textContent = 'AU'; }, 160);
+            logoEl.style.transition = 'transform .58s cubic-bezier(.4,0,.2,1)';
+            logoEl.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px))`;
+            setTimeout(() => { if (overlayBg) overlayBg.classList.add('fade'); }, 60);
+            setTimeout(finish, 640);
+        }, 900);
+        function finish() {
+            const nl = document.getElementById('nav-logo');
+            if (nl) { nl.style.transition = 'none'; nl.style.opacity = '1'; }
+            if (logoEl) { logoEl.style.transition = 'opacity .25s ease'; logoEl.style.opacity = '0'; }
+            setTimeout(() => { splash.classList.add('hidden'); if (overlayBg) overlayBg.style.display = 'none'; sessionStorage.setItem('splash_seen','1'); }, 260);
+        }
+    })();
+
+    /* ── Homepage news ── */
+    const NEWS_BASE_HP = '/news/';
+    function formatDateHP(d) { return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
+    function buildHNCard(post, size) {
+        const href = `post.html?slug=${post.slug}`;
+        const cover = post.cover ? `style="background-image:url('${post.cover}')"` : 'class="hn-no-cover"';
+        const cat   = post.category || 'Update';
+        return `<a class="hn-card" href="${href}">
+            <div class="hn-card-img" ${cover}></div>
+            <div class="hn-card-body">
+                <div class="hn-card-meta"><span class="hn-cat-badge ${cat}">${cat}</span><span class="hn-date">${formatDateHP(post.date)}</span></div>
+                <div class="hn-card-title ${size}">${post.title}</div>
+                <div class="hn-card-brief ${size}">${post.brief}</div>
+            </div>
+        </a>`;
+    }
+    async function loadHomepageNews() {
+        const grid = document.getElementById('homepage-news-grid');
+        if (!grid) return;
+        try {
+            const res   = await fetch(NEWS_BASE_HP + 'index.json');
+            const posts = await res.json();
+            const sorted = posts.sort((a,b) => new Date(b.date) - new Date(a.date));
+            const featured = sorted.find(p => p.priority === 'featured') || sorted[0];
+            const rest     = sorted.filter(p => p !== featured).slice(0, 2);
+            grid.innerHTML = buildHNCard(featured,'featured') + rest.map(p=>buildHNCard(p,'normal')).join('');
+        } catch(e) {
+            grid.innerHTML = `<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--muted);font-size:.9rem">News unavailable.</div>`;
+        }
+    }
+    loadHomepageNews();
+
+    /* ── Trust wall arc carousel ── */
+    const OWNER_ID = '798464378126467122';
+
+    function escHtml(s) {
+        return String(s)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Discord markdown → safe HTML
+    // Order matters: code first (protect contents), then block-level, then inline
+    function parseDiscordMarkdown(raw) {
+        // 1. Escape HTML in the raw string first
+        let s = escHtml(raw);
+
+        // 2. Spoiler ||text||
+        s = s.replace(/\|\|(.+?)\|\|/g, '<span class="tw-spoiler">$1</span>');
+
+        // 3. Inline code `code` (do before bold/italic so * inside code is safe)
+        s = s.replace(/`([^`]+)`/g, '<span class="tw-code">$1</span>');
+
+        // 4. Bold+italic ***text***
+        s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        // 5. Bold **text**
+        s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // 6. Italic *text* or _text_
+        s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        s = s.replace(/_([^_]+)_/g,   '<em>$1</em>');
+        // 7. Underline __text__
+        s = s.replace(/__(.+?)__/g, '<u>$1</u>');
+        // 8. Strikethrough ~~text~~
+        s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
+
+        // 9. Mentions (were escaped as &lt;@id&gt; — handle both forms)
+        s = s.replace(/&lt;@!?(\d+)&gt;/g, (_, id) => {
+            // mention_map injected via closure below
+            return `\x00MREF\x00${id}\x00`;
+        });
+
+        // 10. Newlines → <br>
+        s = s.replace(/\n/g, '<br>');
+
+        return s;
+    }
+
+    async function loadTrustWall() {
+        const wrap    = document.getElementById('tw-wrap');
+        const section = document.querySelector('.trustwall-section');
+        if (!wrap) return;
+
+        try {
+            const res  = await fetch('https://amongus-launcher.vercel.app/api/messages?channel=trustwall&limit=50');
+            const msgs = await res.json();
+
+            const good = msgs
+                .filter(m => m.author.id !== OWNER_ID && m.content && m.content.trim().length > 10)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 16);
+
+            if (!good.length) { if (section) section.style.display = 'none'; return; }
+
+            const cardEls = good.map(m => {
+                const name    = escHtml(m.author.display_name);
+                const initial = m.author.display_name.charAt(0).toUpperCase();
+                const avatarHtml = m.author.avatar
+                    ? `<img src="${m.author.avatar}" alt="${initial}" onerror="this.parentNode.innerHTML='${initial}'">`
+                    : initial;
+                const date = new Date(m.timestamp).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+
+                // Parse markdown then resolve mention placeholders
+                let content = parseDiscordMarkdown(m.content.slice(0, 300));
+                content = content.replace(/\x00MREF\x00(\d+)\x00/g, (_, id) => {
+                    const uname = m.mention_map?.[id];
+                    return uname
+                        ? `<span class="tw-mention">@${escHtml(uname)}</span>`
+                        : `<span class="tw-mention">@unknown</span>`;
+                });
+
+                const reactions = m.reactions?.length
+                    ? `<div class="tw-reactions">${m.reactions.slice(0,5).map(r =>
+                        `<span class="tw-reaction">${r.emoji} ${r.count}</span>`).join('')}</div>`
+                    : '';
+
+                const el = document.createElement('div');
+                el.className = 'tw-card';
+                el.innerHTML = `
+                    <div class="tw-card-header">
+                        <div class="tw-avatar">${avatarHtml}</div>
+                        <div class="tw-meta">
+                            <div class="tw-name">${name}</div>
+                            <div class="tw-time">${date}</div>
+                        </div>
+                        <i class="fab fa-discord tw-discord-icon"></i>
+                    </div>
+                    <div class="tw-content">${content}</div>
+                    ${reactions}`;
+
+                // Expand text on hover — remove clamp, wrap overflows freely (overflow-x:clip)
+                el.addEventListener('mouseenter', () => el.classList.add('tw-expanded'));
+                el.addEventListener('mouseleave', () => el.classList.remove('tw-expanded'));
+
+                wrap.appendChild(el);
+                return el;
+            });
+
+            // Two frames so offsetHeight is accurate
+            await new Promise(r => requestAnimationFrame(r));
+            await new Promise(r => requestAnimationFrame(r));
+
+            const CARD_W = 276, CARD_GAP = 18, STRIDE = CARD_W + CARD_GAP;
+            const N      = cardEls.length;
+            const SAG    = 38;
+
+            const CARD_H = Math.max(...cardEls.map(el => el.offsetHeight));
+            const baseH  = CARD_H + SAG + 40;
+            wrap.style.height = baseH + 'px';
+
+            const LOOP_W    = N * STRIDE;
+            const SPEED_MAX = 0.50;
+            const SPEED_HOV = 0.10;
+            let currentSpeed = SPEED_MAX;
+            let targetSpeed  = SPEED_MAX;
+
+            let offset = 0;
+
+            // ── Page-level mouse tracking — no getBoundingClientRect in rAF ──
+            // We cache the wrap's rect and only refresh it on scroll/resize.
+            let pageMouseX = 0, pageMouseY = 0;
+            let wrapRect   = wrap.getBoundingClientRect();
+
+            document.addEventListener('mousemove', e => {
+                pageMouseX = e.clientX;
+                pageMouseY = e.clientY;
+            }, { passive: true });
+
+            // Refresh rect cheaply outside the draw loop
+            const refreshWrapRect = () => { wrapRect = wrap.getBoundingClientRect(); };
+            window.addEventListener('scroll',  refreshWrapRect, { passive: true });
+            window.addEventListener('resize',  refreshWrapRect, { passive: true });
+            setTimeout(refreshWrapRect, 500); // after fonts/images settle
+
+            // Slow down when mouse is anywhere near the section
+            const section2 = document.querySelector('.trustwall-section');
+            if (section2) {
+                section2.addEventListener('mouseenter', () => { targetSpeed = SPEED_HOV; });
+                section2.addEventListener('mouseleave', () => { targetSpeed = SPEED_MAX; });
+            }
+
+            // Per-card glow state — only rebuild string when value changed enough
+            const glowState = cardEls.map(() => ({ glow: '', t: -1 }));
+
+            function frame() {
+                currentSpeed += (targetSpeed - currentSpeed) * 0.06;
+                offset += currentSpeed;
+
+                const wrapW = wrap.clientWidth;
+                const FADE  = CARD_W * 1.5;
+
+                // Mouse in wrap-local coords (using cached rect — zero layout reads)
+                const mouseWX = pageMouseX - wrapRect.left;
+                const mouseWY = pageMouseY - wrapRect.top + window.scrollY - (wrapRect.top + window.scrollY - wrapRect.top);
+                // Simpler: just use clientY vs cached rect (rect already in viewport coords)
+                const mwx = pageMouseX - wrapRect.left;
+                const mwy = pageMouseY - wrapRect.top;
+
+                cardEls.forEach((el, i) => {
+                    let x = ((i * STRIDE - offset) % LOOP_W + LOOP_W) % LOOP_W;
+                    if (x > wrapW + CARD_W) x -= LOOP_W;
+
+                    const cx          = x + CARD_W / 2;
+                    const norm        = (cx - wrapW / 2) / (wrapW / 2);
+                    const normClamped = Math.max(-1, Math.min(1, norm));
+                    const y           = SAG * (1 - normClamped * normClamped);
+                    const dydx        = -SAG * 2 * normClamped / (wrapW / 2);
+                    const tiltDeg     = Math.max(-7, Math.min(7, Math.atan(dydx) * 180 / Math.PI));
+
+                    el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${tiltDeg.toFixed(2)}deg)`;
+
+                    let alpha = 1;
+                    if (cx < FADE)         alpha = Math.max(0, cx / FADE);
+                    if (cx > wrapW - FADE) alpha = Math.max(0, (wrapW - cx) / FADE);
+                    el.style.opacity = alpha.toFixed(3);
+
+                    el.style.visibility = (x < -CARD_W - 20 || x > wrapW + CARD_W + 20) ? 'hidden' : 'visible';
+
+                    // ── Directional border glow via box-shadow ────────────
+                    // Ring 1: always-on dim outline (0 0 0 1px)
+                    // Ring 2: offset toward cursor, grows with proximity
+                    const cardPageCX = wrapRect.left + x + CARD_W / 2;
+                    const cardPageCY = wrapRect.top  + y + CARD_H / 2;
+                    const dx         = pageMouseX - cardPageCX;
+                    const dy         = pageMouseY - cardPageCY;
+                    const dist       = Math.hypot(dx, dy);
+                    const maxD       = 520;
+                    const t          = Math.max(0, 1 - dist / maxD);
+                    const gs         = glowState[i];
+
+                    if (Math.abs(t - gs.t) < 0.007) { gs.t = t; return; }
+                    gs.t = t;
+
+                    let shadow;
+                    if (t < 0.01) {
+                        shadow = '0 0 0 1px rgba(255,255,255,0.07)';
+                    } else {
+                        const len  = dist || 1;
+                        const nx   = dx / len;
+                        const ny   = dy / len;
+                        // Offset shadow toward cursor — peeks out on that side of the ring
+                        const ox   = (nx * 3 * t).toFixed(2);
+                        const oy   = (ny * 3 * t).toFixed(2);
+                        // Ring brightness & spread grow with proximity
+                        const a1   = (0.08 + 0.45 * t).toFixed(3);  // dim ring alpha
+                        const a2   = (0.35 + 0.50 * t).toFixed(3);  // glow alpha
+                        const blur = (4 + 8 * t).toFixed(1);
+                        const sprd = (0 + 1 * t).toFixed(2);
+                        shadow = [
+                            `0 0 0 1px rgba(123,97,255,${a1})`,                            // ring
+                            `${ox}px ${oy}px ${blur}px ${sprd}px rgba(123,97,255,${a2})`,  // directional glow
+                        ].join(', ');
+                    }
+
+                    if (shadow !== gs.glow) {
+                        gs.glow = shadow;
+                        el.style.boxShadow = shadow;
+                    }
+                });
+
+                requestAnimationFrame(frame);
+            }
+
+            function frame() {
+                // Smooth speed lerp
+                currentSpeed += (targetSpeed - currentSpeed) * 0.08;
+                offset += currentSpeed;
+
+                const wrapW = wrap.clientWidth;
+                const FADE  = CARD_W * 1.5;
+
+                cardEls.forEach((el, i) => {
+                    let x = ((i * STRIDE - offset) % LOOP_W + LOOP_W) % LOOP_W;
+                    if (x > wrapW + CARD_W) x -= LOOP_W;
+
+                    const cx = x + CARD_W / 2;
+
+                    const norm        = (cx - wrapW / 2) / (wrapW / 2);
+                    const normClamped = Math.max(-1, Math.min(1, norm));
+                    const y           = SAG * (1 - normClamped * normClamped);
+
+                    const dydx    = -SAG * 2 * normClamped / (wrapW / 2);
+                    const tiltDeg = Math.max(-7, Math.min(7, Math.atan(dydx) * 180 / Math.PI));
+
+                    el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${tiltDeg.toFixed(2)}deg)`;
+
+                    let alpha = 1;
+                    if (cx < FADE)         alpha = Math.max(0, cx / FADE);
+                    if (cx > wrapW - FADE) alpha = Math.max(0, (wrapW - cx) / FADE);
+                    el.style.opacity = alpha.toFixed(3);
+
+                    el.style.visibility = (x < -CARD_W - 20 || x > wrapW + CARD_W + 20)
+                        ? 'hidden' : 'visible';
+
+                });
+
+                requestAnimationFrame(frame);
+            }
+
+            requestAnimationFrame(frame);
+
+        } catch(e) {
+            console.error('trust wall:', e);
+            if (section) section.style.display = 'none';
+        }
+    }
+    loadTrustWall();
+
+    /* ── Holographic preview tilt ── */
+    (function() {
+        const preview = document.querySelector('.hero-preview');
+        const frame   = document.querySelector('.preview-frame');
+        if (!preview || !frame) return;
+        const MAX_TILT = 18;
+        let raf = null;
+        let targetRx = -12, targetRy = 4, targetMx = 50, targetMy = 50;
+        let currentRx = -12, currentRy = 4;
+        preview.addEventListener('mousemove', e => {
+            const r = preview.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width;
+            const y = (e.clientY - r.top)  / r.height;
+            targetRy = (x - 0.5) * MAX_TILT * 2; targetRx = (0.5 - y) * MAX_TILT;
+            targetMx = x * 100; targetMy = y * 100;
+            if (!raf) loop();
+        });
+        preview.addEventListener('mouseleave', () => { targetRx = 4; targetRy = -12; if (!raf) loop(); });
+        function loop() {
+            const lerp = 0.12;
+            currentRx += (targetRx - currentRx) * lerp;
+            currentRy += (targetRy - currentRy) * lerp;
+            frame.style.setProperty('--mx', targetMx.toFixed(1));
+            frame.style.setProperty('--my', targetMy.toFixed(1));
+            frame.style.transform = `perspective(1000px) rotateY(${currentRy.toFixed(2)}deg) rotateX(${currentRx.toFixed(2)}deg) translateY(-6px) scale(1.02)`;
+            const ox = ((targetMx/100)-0.5)*24, oy = ((targetMy/100)-0.5)*24;
+            const glowAlpha = preview.matches(':hover') ? 0.65 : 0;
+            frame.style.boxShadow = `${ox}px ${oy}px 40px rgba(123,97,255,${glowAlpha}), 0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(123,97,255,${preview.matches(':hover')?0.4:0.15}), inset 0 1px 0 rgba(255,255,255,.05)`;
+            const dx = Math.abs(currentRx-targetRx), dy = Math.abs(currentRy-targetRy);
+            if (dx > 0.05 || dy > 0.05) { raf = requestAnimationFrame(loop); }
+            else { if (targetRx===4 && targetRy===-12) { frame.style.transform=''; frame.style.boxShadow=''; } raf = null; }
+        }
+    })();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SPACE + BEAN UNIVERSE v4
+     - Pre-baked star/nebula sprites (no gradient in rAF)
+     - 5-layer parallax star field in world-space
+     - Nebula blobs + shooting stars
+     - BG_FAR: 20 small dim beans, deep parallax — feel distant
+     - BG_NEAR: 12 bigger brighter beans, shallow parallax — feel close
+     - Both layers span FULL page scroll depth (world-space Y)
+     - Zero drag/grab code — pure ambience
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+(function spaceScene() {
+    'use strict';
+
+    // ── Canvas (single BG canvas, no FG canvas needed) ────────────────────
+    const bgC = document.getElementById('bg-canvas');
+    const bgX = bgC.getContext('2d');
+    // Hide the unused fg-canvas
+    const fgC = document.getElementById('fg-canvas');
+    if (fgC) fgC.style.display = 'none';
+
+    let W = 0, H = 0, WORLD_H = 0;
+
+    function resize() {
+        W = bgC.width  = window.innerWidth;
+        H = bgC.height = window.innerHeight;
+        WORLD_H = Math.max(document.body.scrollHeight, H * 4);
+    }
+    resize();
+    window.addEventListener('resize', () => {
+        resize();
+        bakeStarSprites();
+        buildStars();
+        buildNebulae();
+        // beans keep their worldY — just re-clamp X into new width
+        for (const b of [...BEANS_FAR, ...BEANS_NEAR]) {
+            if (b.x > W) b.x = Math.random() * W;
+        }
+    });
+
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    function pick(a)   { return a[Math.floor(Math.random() * a.length)]; }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // PRE-BAKED STAR SPRITES
+    // ══════════════════════════════════════════════════════════════════════
+    const STAR_RADII   = [0.55, 0.95, 1.55, 2.40, 3.60];
+    const starSprites  = [];
+
+    function bakeStarSprites() {
+        starSprites.length = 0;
+        for (const r of STAR_RADII) {
+            const sz = Math.ceil(r * 2 + 8) | 1;
+            const c  = document.createElement('canvas');
+            c.width  = c.height = sz;
+            const cx = c.getContext('2d');
+            const half = sz / 2;
+            const g = cx.createRadialGradient(half, half, 0, half, half, half);
+            g.addColorStop(0,        'rgba(222,215,255,1)');
+            g.addColorStop(r / half, 'rgba(195,185,255,0.60)');
+            g.addColorStop(1,        'rgba(0,0,0,0)');
+            cx.fillStyle = g; cx.fillRect(0, 0, sz, sz);
+            starSprites.push(c);
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // STARS — 5 layers, world-space Y
+    // ══════════════════════════════════════════════════════════════════════
+    const STAR_LAYERS = [
+        { count:180, si:0, alpha:0.20, par:0.02, drift:0.006 },
+        { count:110, si:1, alpha:0.38, par:0.08, drift:0.018 },
+        { count: 65, si:2, alpha:0.60, par:0.20, drift:0.040 },
+        { count: 22, si:3, alpha:0.82, par:0.44, drift:0.085 },
+        { count:  7, si:4, alpha:1.00, par:0.72, drift:0.050 },
+    ];
+    const stars = [];
+
+    function buildStars() {
+        stars.length = 0;
+        for (const L of STAR_LAYERS) {
+            for (let i = 0; i < L.count; i++) {
+                stars.push({
+                    x:        rnd(0, W),
+                    worldY:   rnd(0, WORLD_H),
+                    si:       L.si,
+                    baseAlpha: L.alpha * rnd(0.5, 1.0),
+                    par:      L.par,
+                    drift:    rnd(-1, 1) * L.drift,
+                    tw:       rnd(0, Math.PI * 2),
+                    twS:      rnd(0.003, 0.016),
+                });
+            }
+        }
+    }
+
+    function drawStars(sy) {
+        for (const s of stars) {
+            s.x += s.drift;
+            if (s.x < -8)   s.x = W + 8;
+            if (s.x > W + 8) s.x = -8;
+            s.tw += s.twS;
+            const scy = s.worldY - sy * (1 - s.par);
+            const syw = ((scy % H) + H) % H;
+            const a   = s.baseAlpha * (0.55 + 0.45 * Math.sin(s.tw));
+            const sp  = starSprites[s.si];
+            if (!sp) continue;
+            bgX.globalAlpha = a;
+            bgX.drawImage(sp, s.x - sp.width * 0.5, syw - sp.height * 0.5);
+        }
+        bgX.globalAlpha = 1;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // NEBULAE — pre-baked sprites
+    // ══════════════════════════════════════════════════════════════════════
+    const NEBULA_COLORS = [
+        [74,45,204],[26,10,61],[0,28,90],
+        [90,16,55],[10,55,85],[55,0,100],
+    ];
+    const nebulae       = [];
+    const nebulaSprites = [];
+
+    function bakeNebula(rx, ry, col) {
+        const c  = document.createElement('canvas');
+        c.width  = rx * 2; c.height = ry * 2;
+        const cx = c.getContext('2d');
+        const [r, g2, b] = col;
+        const gr = cx.createRadialGradient(rx, ry, 0, rx, ry, rx);
+        gr.addColorStop(0,   `rgba(${r},${g2},${b},0.17)`);
+        gr.addColorStop(0.4, `rgba(${r},${g2},${b},0.055)`);
+        gr.addColorStop(1,   'rgba(0,0,0,0)');
+        cx.save(); cx.scale(1, ry / rx);
+        cx.beginPath(); cx.arc(rx, rx, rx, 0, 6.283);
+        cx.fillStyle = gr; cx.fill(); cx.restore();
+        return c;
+    }
+
+    function buildNebulae() {
+        nebulae.length = 0; nebulaSprites.length = 0;
+        for (let i = 0; i < 9; i++) {
+            const col = NEBULA_COLORS[i % NEBULA_COLORS.length];
+            const rx  = Math.ceil(rnd(200, 460));
+            const ry  = Math.ceil(rnd(130, 290));
+            nebulaSprites.push(bakeNebula(rx, ry, col));
+            nebulae.push({
+                x:      rnd(0, W),
+                worldY: rnd(0, WORLD_H),
+                rx, ry,
+                par:    rnd(0.04, 0.20),
+                drift:  rnd(-0.016, 0.016),
+                pulse:  rnd(0, Math.PI * 2),
+                pulseS: rnd(0.002, 0.005),
+                si:     i,
+            });
+        }
+    }
+
+    function drawNebulae(sy) {
+        for (let i = 0; i < nebulae.length; i++) {
+            const n  = nebulae[i];
+            n.x += n.drift;
+            if (n.x + n.rx < 0) n.x = W + n.rx;
+            if (n.x - n.rx > W) n.x = -n.rx;
+            n.pulse += n.pulseS;
+            const scy = n.worldY - sy * (1 - n.par);
+            const syw = ((scy % H) + H) % H;
+            const sp  = nebulaSprites[i];
+            if (!sp) continue;
+            bgX.globalAlpha = 0.78 + 0.22 * Math.sin(n.pulse);
+            bgX.drawImage(sp, n.x - n.rx, syw - n.ry);
+        }
+        bgX.globalAlpha = 1;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // SHOOTING STARS
+    // ══════════════════════════════════════════════════════════════════════
+    const shoots = [];
+    let nextShoot = performance.now() + rnd(2000, 6000);
+
+    function spawnShoot() {
+        const left = Math.random() < 0.5;
+        shoots.push({
+            x:     left ? rnd(-50, W * 0.3) : rnd(W * 0.7, W + 50),
+            y:     rnd(-30, H * 0.5),
+            vx:    (left ? 1 : -1) * rnd(9, 18),
+            vy:    rnd(3, 8),
+            len:   rnd(60, 145),
+            alpha: rnd(0.65, 1.0),
+            fade:  rnd(0.010, 0.022),
+            w:     rnd(1.0, 2.0),
+        });
+        nextShoot = performance.now() + rnd(3500, 11000);
+    }
+
+    function drawShoots(now) {
+        if (now > nextShoot) spawnShoot();
+        for (let i = shoots.length - 1; i >= 0; i--) {
+            const s = shoots[i];
+            s.x += s.vx; s.y += s.vy; s.alpha -= s.fade;
+            if (s.alpha <= 0 || s.y > H + 50) { shoots.splice(i, 1); continue; }
+            const mag = Math.hypot(s.vx, s.vy);
+            bgX.beginPath();
+            bgX.strokeStyle = `rgba(238,232,255,${s.alpha.toFixed(3)})`;
+            bgX.lineWidth = s.w;
+            bgX.moveTo(s.x, s.y);
+            bgX.lineTo(s.x - s.vx / mag * s.len, s.y - s.vy / mag * s.len);
+            bgX.stroke();
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // BEAN TEMPLATES
+    // ══════════════════════════════════════════════════════════════════════
+    const PALETTE = [
+        {body:[197,17,17],   shadow:[122,8,8],    outline:[30,0,0]   },
+        {body:[19,46,209],   shadow:[9,21,142],   outline:[0,10,50]  },
+        {body:[17,127,45],   shadow:[10,77,27],   outline:[0,20,0]   },
+        {body:[237,84,186],  shadow:[171,43,131], outline:[60,0,40]  },
+        {body:[239,125,13],  shadow:[180,62,21],  outline:[50,20,0]  },
+        {body:[245,245,87],  shadow:[194,135,34], outline:[60,40,0]  },
+        {body:[63,71,78],    shadow:[30,31,38],   outline:[10,10,10] },
+        {body:[214,224,240], shadow:[131,148,191],outline:[40,50,70] },
+        {body:[107,47,187],  shadow:[76,30,149],  outline:[20,0,40]  },
+        {body:[56,254,220],  shadow:[36,173,158], outline:[0,50,50]  },
+        {body:[80,239,57],   shadow:[21,167,38],  outline:[10,40,0]  },
+        {body:[236,192,211], shadow:[197,124,169],outline:[60,30,40] },
+    ];
+    const VM = [146,166,176], VS = [113,141,152];
+
+    function recolor(img, pal) {
+        const c = document.createElement('canvas');
+        c.width = img.width; c.height = img.height;
+        const cx = c.getContext('2d');
+        cx.drawImage(img, 0, 0);
+        const id = cx.getImageData(0, 0, c.width, c.height), d = id.data;
+        for (let i = 0; i < d.length; i += 4) {
+            if (d[i+3] < 10) continue;
+            const r = d[i], g = d[i+1], b = d[i+2];
+            if      (r>200&&g<50&&b<50)         { d[i]=pal.body[0];    d[i+1]=pal.body[1];    d[i+2]=pal.body[2];    }
+            else if (r<50&&g<50&&b>200)          { d[i]=pal.shadow[0];  d[i+1]=pal.shadow[1];  d[i+2]=pal.shadow[2];  }
+            else if (r<50&&g<50&&b<150)          { d[i]=pal.outline[0]; d[i+1]=pal.outline[1]; d[i+2]=pal.outline[2]; }
+            else if (g>200&&r<50&&b<50)          { d[i]=VM[0]; d[i+1]=VM[1]; d[i+2]=VM[2]; }
+            else if (g>100&&g<200&&r<50&&b<50)  { d[i]=VS[0]; d[i+1]=VS[1]; d[i+2]=VS[2]; }
+        }
+        cx.putImageData(id, 0, 0);
+        return c;
+    }
+
+    let templates = [], ready = false;
+    const beanImg = new Image();
+    beanImg.crossOrigin = 'anonymous';
+    beanImg.src = 'bean.png';
+    beanImg.onload = () => {
+        templates = [...PALETTE].sort(() => Math.random() - 0.5).map(p => recolor(beanImg, p));
+        ready = true;
+        buildBeans();
+    };
+
+    // ══════════════════════════════════════════════════════════════════════
+    // TWO BEAN LAYERS — both in full world-space Y
+    //
+    //  FAR layer:  small (25–55px), dim (alpha 0.08–0.18), par 0.10–0.28
+    //              20 beans — feel deep in space, barely visible
+    //
+    //  NEAR layer: bigger (80–140px), brighter (alpha 0.45–0.75), par 0.55–0.88
+    //              12 beans — feel like they're drifting right past you
+    //              subtle scale bob so they feel 3D
+    // ══════════════════════════════════════════════════════════════════════
+    const BEANS_FAR  = [], MAX_FAR  = 20;
+    const BEANS_NEAR = [], MAX_NEAR = 12;
+
+    function mkFar() {
+        const size = rnd(25, 55);
+        return {
+            x:      rnd(0, W),
+            worldY: rnd(0, WORLD_H),
+            vx:     rnd(-0.07, 0.07),
+            vy:     rnd(-0.03, 0.03),
+            rot:    rnd(0, Math.PI * 2),
+            vrot:   rnd(-0.002, 0.002),
+            size,
+            alpha:  rnd(0.08, 0.18),
+            par:    rnd(0.10, 0.28),
+            tmpl:   null,
+            wb:     rnd(0, Math.PI * 2),
+            wbS:    rnd(0.002, 0.008),
+            face:   Math.random() < 0.5 ? 1 : -1,
+        };
+    }
+
+    function mkNear() {
+        const size = rnd(80, 145);
+        return {
+            x:      rnd(0, W),
+            worldY: rnd(0, WORLD_H),
+            vx:     rnd(-0.14, 0.14),
+            vy:     rnd(-0.07, 0.07),
+            rot:    rnd(0, Math.PI * 2),
+            vrot:   rnd(-0.004, 0.004),
+            size,
+            alpha:  rnd(0.45, 0.75),
+            par:    rnd(0.55, 0.88),
+            tmpl:   null,
+            wb:     rnd(0, Math.PI * 2),
+            wbS:    rnd(0.006, 0.018),
+            // scale bob — makes them feel like they're slowly rotating in 3D
+            scalePh: rnd(0, Math.PI * 2),
+            scaleS:  rnd(0.004, 0.010),
+            face:    Math.random() < 0.5 ? 1 : -1,
+        };
+    }
+
+    function buildBeans() {
+        BEANS_FAR.length = 0; BEANS_NEAR.length = 0;
+        for (let i = 0; i < MAX_FAR;  i++) { const b = mkFar();  b.tmpl = pick(templates); BEANS_FAR.push(b);  }
+        for (let i = 0; i < MAX_NEAR; i++) { const b = mkNear(); b.tmpl = pick(templates); BEANS_NEAR.push(b); }
+    }
+
+    function updateDrawLayer(beans, sy) {
+        for (const b of beans) {
+            // drift
+            b.x      += b.vx;
+            b.worldY += b.vy;
+            b.rot    += b.vrot;
+            b.wb     += b.wbS;
+
+            // wrap X
+            if (b.x + b.size < 0)             b.x = W + b.size;
+            if (b.x - b.size > W)             b.x = -b.size;
+            // wrap world Y — seamless loop through full page depth
+            if (b.worldY > WORLD_H + b.size)  b.worldY = -b.size;
+            if (b.worldY < -b.size)            b.worldY = WORLD_H + b.size;
+
+            if (!b.tmpl) continue;
+
+            // world → screen via parallax
+            // par=1 → barely moves as you scroll (feels close / fixed)
+            // par=0 → moves fully with scroll (feels anchored to the page)
+            const screenY = b.worldY - sy * (1 - b.par);
+            // cull off-screen (with generous margin)
+            if (screenY < -b.size - 20 || screenY > H + b.size + 20) continue;
+
+            // scale bob (near layer only, else undefined → fine)
+            let scaleX = 1;
+            if (b.scalePh !== undefined) {
+                b.scalePh += b.scaleS;
+                scaleX = 0.80 + 0.20 * Math.abs(Math.sin(b.scalePh));
+            }
+
+            bgX.save();
+            bgX.globalAlpha = b.alpha;
+            bgX.translate(b.x, screenY);
+            bgX.rotate(b.rot + Math.sin(b.wb) * 0.06);
+            bgX.scale(b.face * scaleX, 1);
+            bgX.drawImage(b.tmpl, -b.size / 2, -b.size / 2, b.size, b.size);
+            bgX.restore();
+        }
+        bgX.globalAlpha = 1;
+    }
+
+    // ── Scroll ────────────────────────────────────────────────────────────
+    let scrollY = window.scrollY;
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+
+    // ── Main loop ─────────────────────────────────────────────────────────
+    function tick(now) {
+        bgX.clearRect(0, 0, W, H);
+
+        drawNebulae(scrollY);   // deepest layer
+        drawStars(scrollY);     // star field
+        drawShoots(now);        // occasional shooting stars
+
+        if (ready) {
+            updateDrawLayer(BEANS_FAR,  scrollY);  // distant beans
+            updateDrawLayer(BEANS_NEAR, scrollY);  // close beans
+        }
+
+        requestAnimationFrame(tick);
+    }
+
+    // ── Boot ──────────────────────────────────────────────────────────────
+    function boot() {
+        bakeStarSprites();
+        buildStars();
+        buildNebulae();
+        if (ready) buildBeans();
+    }
+
+    boot();
+    requestAnimationFrame(tick);
+
+})();
+</script>
+</body>
+</html>
