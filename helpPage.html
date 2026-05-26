@@ -465,6 +465,7 @@ body::after{
   <a class="nb" href="index.html">Home</a>
   <a class="nb active" href="helpPage.html">Docs</a>
   <a class="nb" href="news.html">News</a>
+  <a class="nb" href="developer.html">Dev</a>
   <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
 
   <!-- search bar -->
@@ -506,6 +507,12 @@ body::after{
       <button class="sb-item" onclick="nav('troubleshooting')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1A7 7 0 0 0 5 2C2.8 2 1 3.8 1 6c0 .8.2 1.5.6 2.1L5 4.7l1.4 1.4-3.4 3.4a5 5 0 0 0 7 7l3.4-3.4 1.4 1.4-3.4 3.4c.6.4 1.3.6 2.1.6 2.2 0 4-1.8 4-4 0-.8-.2-1.5-.6-2.1l9.3 9.3-1.5 1.3z"/></svg></span>Troubleshooting</button>
       <button class="sb-item" onclick="nav('redistributables')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a3 3 0 0 0-6 0c0 .12.1.56.18 1H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/></svg></span>Required Software</button>
       <button class="sb-item" onclick="nav('support')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/></svg></span>Support</button>
+    </div>
+    <div class="sb-group">
+      <span class="sb-group-label">// Developer</span>
+      <button class="sb-item" onclick="nav('dev-source')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg></span>Source Code</button>
+      <button class="sb-item" onclick="nav('dev-build-tool')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg></span>Build Your Own Tool</button>
+      <button class="sb-item" onclick="nav('dev-website')"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>Website Stack</button>
     </div>
   </aside>
 
@@ -730,6 +737,131 @@ body::after{
       <div class="doc-section" id="aunlocker"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">AUnlocker</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will cover the AUnlocker integration.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('shortcuts')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Desktop Shortcuts</span></button><button class="docnav-btn next" onclick="nav('settings')"><span class="docnav-dir">Next</span><span class="docnav-label">Launcher Settings &rsaquo;</span></button></div></div>
       <div class="doc-section" id="settings"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M19.1 12.9c0-.3 0-.6.1-.9s-.1-.6-.1-.9l1.9-1.5c.2-.2.2-.4.1-.6l-1.8-3.1a.5.5 0 0 0-.6-.2l-2.3.9a6.7 6.7 0 0 0-1.6-.9L14.4 4c0-.3-.3-.4-.5-.4h-3.6c-.3 0-.5.2-.5.4l-.3 2.4a6.9 6.9 0 0 0-1.6.9l-2.3-.9a.5.5 0 0 0-.6.2L3.2 9.7c-.1.2-.1.5.1.6l1.9 1.5c0 .3-.1.6-.1.9s.1.6.1.9L3.3 15c-.2.2-.2.4-.1.6l1.8 3.1c.1.2.4.3.6.2l2.3-.9c.5.4 1 .7 1.6.9l.3 2.4c0 .3.3.5.5.5h3.6c.3 0 .5-.2.5-.5l.3-2.4a6.9 6.9 0 0 0 1.6-.9l2.3.9c.3.1.5 0 .6-.2l1.8-3.1c.1-.2.1-.5-.1-.6z"/></svg></div><div><span class="ds-section-label">Using the Launcher</span><h2 class="ds-title">Launcher Settings</h2></div></div><div class="doc-prose"><p>Content coming soon. This page will document every setting and toggle in the launcher interface.</p></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('aunlocker')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; AUnlocker</span></button><button class="docnav-btn next" onclick="nav('troubleshooting')"><span class="docnav-dir">Next</span><span class="docnav-label">Troubleshooting &rsaquo;</span></button></div></div>
       <div class="doc-section" id="support"><div class="ds-header"><div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/></svg></div><div><span class="ds-section-label">Help</span><h2 class="ds-title">Support</h2></div></div><div class="doc-prose"><p>If nothing in this help center solved your problem, reach out directly.</p><ul><li><a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord #support</a> — fastest response, usually under an hour during active hours.</li><li><a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank">Feedback form</a> — for detailed bug reports without needing to join Discord.</li></ul></div><div class="doc-footnav"><button class="docnav-btn" onclick="nav('redistributables')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Required Software</span></button><button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button></div></div>
+
+
+      <!-- DEV: SOURCE CODE -->
+      <div class="doc-section" id="dev-source">
+        <div class="ds-header">
+          <div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg></div>
+          <div><span class="ds-section-label">Developer</span><h2 class="ds-title">Source Code</h2></div>
+        </div>
+        <div class="doc-prose">
+          <p>Everything is open source. The launcher, the website, and the API are all public on GitHub.</p>
+
+          <h3>Repositories</h3>
+          <ul>
+            <li><a href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank">AmongUsLauncherNew</a> — the launcher itself (C#/.NET), release pipeline, and game file management</li>
+            <li><a href="https://github.com/jogamerforgames2021/AmongUsLauncherWebsite" target="_blank">AmongUsLauncherWebsite</a> — this site (vanilla HTML/CSS/JS, deployed on Vercel)</li>
+          </ul>
+
+          <h3>License</h3>
+          <p>The launcher source is unlicensed — you can read it, fork it, and learn from it. If you ship something based on it, crediting the original is appreciated but not required.</p>
+
+          <h3>Contributing</h3>
+          <p>Open an issue on GitHub for bugs or feature requests. Pull requests are welcome — keep changes focused and explain what they fix or add.</p>
+
+          <div class="callout info">
+            <span class="callout-label">Note</span>
+            Don't open issues asking for help with Among Us gameplay or itch.io account problems — those go in <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord #support</a>.
+          </div>
+        </div>
+        <div class="doc-footnav">
+          <button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button>
+          <button class="docnav-btn next" onclick="nav('dev-build-tool')"><span class="docnav-dir">Next</span><span class="docnav-label">Build Your Own Tool &rsaquo;</span></button>
+        </div>
+      </div>
+
+      <!-- DEV: BUILD YOUR OWN TOOL -->
+      <div class="doc-section" id="dev-build-tool">
+        <div class="ds-header">
+          <div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg></div>
+          <div><span class="ds-section-label">Developer</span><h2 class="ds-title">Build Your Own Tool</h2></div>
+        </div>
+        <div class="doc-prose">
+          <p>Want to build your own launcher, updater, or game tool? Here's exactly how the Among Us Launcher works under the hood so you can do the same or better.</p>
+
+          <h3>Core concepts</h3>
+          <ul>
+            <li><strong>GitHub Releases as a CDN</strong> — game files and launcher updates are stored as release assets on GitHub. The launcher checks the releases API at startup, compares the latest tag against the installed version, and downloads the zip if they differ. No custom server needed.</li>
+            <li><strong>Version pinning</strong> — the installed version tag is written to a local file alongside the game directory. On next launch, the launcher reads this file and skips the update if the tag matches.</li>
+            <li><strong>Extraction in place</strong> — the downloaded <code>app.zip</code> is extracted directly into the game folder, overwriting only changed files. The zip structure mirrors the game directory tree.</li>
+          </ul>
+
+          <h3>The update loop</h3>
+        </div>
+        <div class="steps">
+          <div class="step"><span class="step-num"></span><div class="step-body">Fetch <code>https://api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/releases/latest</code></div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">Compare <code>tag_name</code> from the response against the locally stored version string.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">If different: find the asset named <code>app.zip</code> in <code>assets[]</code>, download it via <code>browser_download_url</code>.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">Extract the zip into the game directory, write the new tag to the version file.</div></div>
+          <div class="step"><span class="step-num"></span><div class="step-body">Launch the game executable.</div></div>
+        </div>
+        <div class="doc-prose">
+          <h3>itch.io auth</h3>
+          <p>The <code>itch</code> file in <code>%USERPROFILE%\AppData\LocalLow\Innersloth\Among Us\</code> holds the OAuth token that Among Us reads to verify itch.io ownership. Writing a valid token there bypasses the ownership check — this is what the Itch Login Fixer does via itch.io's implicit OAuth flow.</p>
+
+          <h3>Discord Rich Presence</h3>
+          <p>The launcher connects to the local Discord client over named pipe <code>\\.\pipe\discord-ipc-0</code> using the Discord Game SDK RPC protocol. It sends activity payloads with the current game state — map name, lobby size, role. The <code>client_id</code> in the source maps to the registered Discord application.</p>
+
+          <div class="callout tip">
+            <span class="callout-label">Tip</span>
+            If you're building a similar tool for a different game, the GitHub Releases pattern works for any game distributed as a zip. Swap the repo URL and the executable name — everything else stays the same.
+          </div>
+        </div>
+        <div class="doc-footnav">
+          <button class="docnav-btn" onclick="nav('dev-source')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Source Code</span></button>
+          <button class="docnav-btn next" onclick="nav('dev-website')"><span class="docnav-dir">Next</span><span class="docnav-label">Website Stack &rsaquo;</span></button>
+        </div>
+      </div>
+
+      <!-- DEV: WEBSITE STACK -->
+      <div class="doc-section" id="dev-website">
+        <div class="ds-header">
+          <div class="ds-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+          <div><span class="ds-section-label">Developer</span><h2 class="ds-title">Website Stack</h2></div>
+        </div>
+        <div class="doc-prose">
+          <p>The site is intentionally zero-framework. No React, no bundler, no build step. Just HTML, CSS, and vanilla JS deployed on Vercel.</p>
+
+          <h3>Why no framework</h3>
+          <p>The pages are mostly static with a few dynamic fetches. A framework would add hundreds of kilobytes of JS for no meaningful gain. The current site loads under 50KB of actual code (not counting fonts and images).</p>
+
+          <h3>Stack breakdown</h3>
+          <ul>
+            <li><strong>HTML/CSS/JS</strong> — no preprocessors, no transpilation, no build</li>
+            <li><strong>Share Tech Mono</strong> (Google Fonts) — the only external font, loaded once</li>
+            <li><strong>Plyr</strong> (cdnjs) — video player used for the Itch Login Fixer tutorial</li>
+            <li><strong>marked.js</strong> (cdnjs) — markdown rendering on <code>post.html</code></li>
+            <li><strong>Vercel</strong> — deployment, serverless functions live in <code>/api/</code></li>
+            <li><strong>GitHub Releases API</strong> — launcher version and game zip discovery</li>
+            <li><strong>Custom messages API</strong> — <code>https://amongus-launcher.vercel.app/api/messages</code> proxies Discord messages for the trust wall</li>
+          </ul>
+
+          <h3>Canvas background</h3>
+          <p>The star field and beans are rendered on a <code>&lt;canvas&gt;</code> element fixed behind all content. Stars use pre-baked sprite canvases (one per radius class) to avoid per-frame gradient recalculation. Beans use pixel-level colour recolouring from a single <code>bean.png</code> source image — each colour variant is stamped once into a cached canvas on load.</p>
+
+          <h3>Design tokens</h3>
+          <ul>
+            <li><strong>Background</strong> — <code>#090909</code></li>
+            <li><strong>Accent</strong> — <code>#c8151b</code> (red only, no gradients, no secondary accent)</li>
+            <li><strong>Text</strong> — <code>#f0f0f2</code></li>
+            <li><strong>Font</strong> — Share Tech Mono throughout, zero Inter, zero Rubik</li>
+            <li><strong>Spacing principle</strong> — absolute positioning over flex grids where possible, intentional asymmetry</li>
+          </ul>
+
+          <h3>Adding a page</h3>
+          <p>Copy <code>post.html</code> as a base. It has the nav, canvas, hub drawer, and bean toggle already wired up. Swap the content and update the <code>&lt;title&gt;</code> and the <code>active</code> class on the right nav item.</p>
+
+          <div class="callout tip">
+            <span class="callout-label">Tip</span>
+            The bean state persists via <code>localStorage</code> under the key <code>'beans'</code>. Any new page you add should read it with <code>localStorage.getItem('beans') !== 'off'</code> and set <code>window.__beansEnabled</code> before the canvas loop starts.
+          </div>
+        </div>
+        <div class="doc-footnav">
+          <button class="docnav-btn" onclick="nav('dev-build-tool')"><span class="docnav-dir">Previous</span><span class="docnav-label">&lsaquo; Build Your Own Tool</span></button>
+          <button class="docnav-btn" onclick="goHome()"><span class="docnav-dir">Back</span><span class="docnav-label">&lsaquo; Help Center</span></button>
+        </div>
+      </div>
 
     </div><!-- #doc-page -->
   </div><!-- #content-wrap -->

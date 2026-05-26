@@ -222,6 +222,41 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 
+/* param controls */
+.playground-params{
+  display:flex;align-items:center;gap:.7rem;
+  border-bottom:1px solid var(--dim);
+  padding:.55rem .9rem;
+  flex-wrap:wrap;
+}
+.pg-param{display:flex;align-items:center;gap:.45rem;}
+.pg-param-label{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,240,242,.28);}
+.pg-param-input{
+  font-family:var(--f);font-size:.64rem;
+  background:rgba(240,240,242,.05);border:1px solid var(--dim);
+  color:var(--text);padding:.22rem .55rem;width:60px;outline:none;
+  transition:border-color .12s;-moz-appearance:textfield;
+}
+.pg-param-input::-webkit-outer-spin-button,.pg-param-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.pg-param-input:focus{border-color:rgba(200,21,27,.4);}
+.pg-param-sep{width:1px;height:1.1rem;background:var(--dim);}
+/* toggle */
+.pg-toggle{display:flex;align-items:center;gap:.4rem;cursor:pointer;user-select:none;}
+.pg-toggle-box{
+  width:28px;height:14px;border:1px solid var(--dim);
+  position:relative;transition:background .15s,border-color .15s;flex-shrink:0;
+}
+.pg-toggle-box::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:8px;height:8px;background:rgba(240,240,242,.22);
+  transition:transform .15s,background .15s;
+}
+.pg-toggle.on .pg-toggle-box{background:rgba(200,21,27,.12);border-color:rgba(200,21,27,.4);}
+.pg-toggle.on .pg-toggle-box::after{transform:translateX(14px);background:var(--red);}
+/* hide API-only params in normal mode */
+.api-only-param{display:flex;}
+.params-normal .api-only-param{display:none !important;}
+
 .playground-response{
   padding:1rem;
   min-height:120px;
@@ -309,7 +344,7 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
   <a class="nb" href="news.html">News</a>
   <a class="nb active" href="developer.html">Dev</a>
   <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
-  <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()">&#9711; beans</button>
+  <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()">◉ beans</button>
 </div>
 
 <div class="page">
@@ -392,6 +427,29 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
       <span class="playground-method">GET</span>
       <span class="playground-endpoint" id="pg-url"></span>
     </div>
+
+    <!-- param controls — API mode shows all, Normal mode hides API-only -->
+    <div class="playground-params params-normal" id="pg-params">
+
+      <!-- limit (both modes) -->
+      <div class="pg-param">
+        <span class="pg-param-label">limit</span>
+        <input class="pg-param-input" id="pg-limit" type="number" min="1" max="100" placeholder="all"
+               oninput="updatePgUrl()">
+      </div>
+
+      <div class="pg-param-sep"></div>
+
+      <!-- latest=true (API only) -->
+      <div class="pg-param api-only-param" id="pg-latest-wrap">
+        <span class="pg-param-label">latest only</span>
+        <div class="pg-toggle" id="pg-latest-toggle" onclick="toggleLatest()">
+          <div class="pg-toggle-box"></div>
+        </div>
+      </div>
+
+    </div>
+
     <div class="playground-response" id="pg-response">
       <span class="pr-empty">// Hit Run to see the response</span>
     </div>
@@ -571,14 +629,53 @@ const PLAYGROUND_URLS = {
 function renderCode() {
   document.getElementById('code-body').innerHTML = CODES[currentMode][currentLang];
   document.getElementById('code-note').textContent = NOTES[currentMode];
-  document.getElementById('pg-url').textContent = PLAYGROUND_URLS[currentMode];
-  document.getElementById('pg-response').innerHTML = '<span class="pr-empty">// Hit Run to see the response</span>';
+  updatePgUrl();
+}
+
+let latestOnly = false;
+
+function buildUrl() {
+  const base    = PLAYGROUND_URLS[currentMode];
+  const limit   = document.getElementById('pg-limit').value;
+  const params  = new URLSearchParams();
+  if (currentMode === 'api' && latestOnly) {
+    params.set('latest', 'true');
+  } else if (limit) {
+    params.set('limit', limit);
+  }
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+
+function updatePgUrl() {
+  document.getElementById('pg-url').textContent = buildUrl();
+}
+
+function toggleLatest() {
+  latestOnly = !latestOnly;
+  const tog = document.getElementById('pg-latest-toggle');
+  tog.classList.toggle('on', latestOnly);
+  // limit is irrelevant when latest=true
+  document.getElementById('pg-limit').disabled = latestOnly;
+  document.getElementById('pg-limit').style.opacity = latestOnly ? '.3' : '1';
+  updatePgUrl();
 }
 
 function setMode(mode) {
   currentMode = mode;
   document.getElementById('mode-normal').classList.toggle('active', mode === 'normal');
   document.getElementById('mode-api').classList.toggle('active', mode === 'api');
+  // show/hide API-only params
+  const paramsEl = document.getElementById('pg-params');
+  paramsEl.classList.toggle('params-normal', mode === 'normal');
+  // reset latest toggle when switching to normal (doesn't apply)
+  if (mode === 'normal' && latestOnly) {
+    latestOnly = false;
+    document.getElementById('pg-latest-toggle').classList.remove('on');
+    document.getElementById('pg-limit').disabled = false;
+    document.getElementById('pg-limit').style.opacity = '1';
+  }
+  updatePgUrl();
   renderCode();
 }
 
@@ -607,13 +704,14 @@ async function runPlayground() {
   out.innerHTML = '<span class="pr-loading">// Fetching</span>';
 
   try {
-    const url      = PLAYGROUND_URLS[currentMode];
-    const res      = await fetch(url);
-    const data     = await res.json();
+    const url  = buildUrl();
+    const res  = await fetch(url);
+    const data = await res.json();
 
     if (currentMode === 'normal') {
       // GitHub returns full release objects — shape to our spec
       const releases = Array.isArray(data) ? data : [data];
+      const limit    = parseInt(document.getElementById('pg-limit').value) || 0;
       const versions = releases
         .map(r => {
           const asset = (r.assets || []).find(a => a.name === 'app.zip');
@@ -625,11 +723,13 @@ async function runPlayground() {
             size_mb:  parseFloat((asset.size / 1048576).toFixed(2)),
           };
         })
-        .filter(Boolean)
-        .slice(0, 6); // show first 6 in playground
-      out.innerHTML = prettyJson(versions);
+        .filter(Boolean);
+      const sliced = limit > 0 ? versions.slice(0, limit) : versions.slice(0, 6);
+      out.innerHTML = prettyJson(sliced);
     } else {
-      out.innerHTML = prettyJson(Array.isArray(data) ? data.slice(0, 6) : data);
+      // API response — already shaped correctly
+      const result = Array.isArray(data) ? data : data;
+      out.innerHTML = prettyJson(result);
     }
   } catch (e) {
     out.innerHTML = `<span class="pr-error">// Error: ${e.message}</span>`;

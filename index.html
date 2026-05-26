@@ -91,6 +91,7 @@ body::after{
 .nb:nth-child(2){transform:translateY(7px);}
 .nb:nth-child(3){transform:translateY(-4px);}
 .nb:nth-child(4){transform:translateY(9px);}
+.nb:nth-child(5){transform:translateY(-2px);}
 
 /* bean toggle far right */
 .bean-toggle-btn{
@@ -115,10 +116,12 @@ body::after{
 .nb:nth-child(2).glitch{animation:nb-glitch2 .25s steps(1);}
 .nb:nth-child(3).glitch{animation:nb-glitch3 .25s steps(1);}
 .nb:nth-child(4).glitch{animation:nb-glitch4 .25s steps(1);}
+.nb:nth-child(5).glitch{animation:nb-glitch5 .25s steps(1);}
 @keyframes nb-glitch1{0%,100%{opacity:1;transform:translateY(0px) translateX(0);}33%{opacity:.4;transform:translateY(0px) translateX(-1px);}66%{opacity:.8;transform:translateY(0px) translateX(1px);}}
 @keyframes nb-glitch2{0%,100%{opacity:1;transform:translateY(7px) translateX(0);}33%{opacity:.4;transform:translateY(7px) translateX(-1px);}66%{opacity:.8;transform:translateY(7px) translateX(1px);}}
 @keyframes nb-glitch3{0%,100%{opacity:1;transform:translateY(-4px) translateX(0);}33%{opacity:.4;transform:translateY(-4px) translateX(-1px);}66%{opacity:.8;transform:translateY(-4px) translateX(1px);}}
 @keyframes nb-glitch4{0%,100%{opacity:1;transform:translateY(9px) translateX(0);}33%{opacity:.4;transform:translateY(9px) translateX(-1px);}66%{opacity:.8;transform:translateY(9px) translateX(1px);}}
+@keyframes nb-glitch5{0%,100%{opacity:1;transform:translateY(-2px) translateX(0);}33%{opacity:.4;transform:translateY(-2px) translateX(-1px);}66%{opacity:.8;transform:translateY(-2px) translateX(1px);}}
 
 /* ── PILLAR ───────────────────────────────── */
 #pillar{
@@ -1077,6 +1080,7 @@ main{position:relative;z-index:1;}
   <a class="nb active" href="index.html">Home</a>
   <a class="nb" href="helpPage.html">Docs</a>
   <a class="nb" href="news.html">News</a>
+  <a class="nb" href="developer.html">Dev</a>
   <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
   <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()" title="toggle beans">◉ beans</button>
 </div>
