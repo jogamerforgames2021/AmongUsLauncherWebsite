@@ -463,6 +463,7 @@ function chip(text, icon = 'bi-person-badge') {
 }
 
 function getOauthRedirect() {
+  console.log('Redirect URI:', location.origin + location.pathname);
   return location.origin + location.pathname;
 }
 
