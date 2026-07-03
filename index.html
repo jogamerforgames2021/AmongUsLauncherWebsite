@@ -496,24 +496,6 @@ main{position:relative;z-index:1;}
 .sup-desc{font-size:.65rem;color:var(--muted);line-height:1.65;}
 .sup-arrow{font-size:.58rem;color:rgba(240,240,242,.2);letter-spacing:.06em;transition:color .15s,transform .18s;display:inline-block;}
 
-/* status strip */
-.sup-status{
-  display:flex;align-items:center;gap:.7rem;
-  margin-top:1.6rem;
-  max-width:580px;
-  padding:.55rem .9rem;
-  border:1px solid var(--dim);
-  font-size:.6rem;letter-spacing:.08em;
-  color:var(--muted);
-}
-.sup-status-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:#00c896;
-  flex-shrink:0;
-  box-shadow:0 0 6px rgba(0,200,150,.5);
-}
-.sup-status-label{color:rgba(240,240,242,.35);}
-.sup-status-label span{color:#00c896;}
 .trust-label{
   font-size:.6rem;letter-spacing:.2em;
   text-transform:uppercase;color:var(--red);
@@ -1019,6 +1001,15 @@ main{position:relative;z-index:1;}
   white-space:nowrap;
 }
 .itch-fixer-how:hover{color:var(--text);border-color:rgba(240,240,242,.18);}
+.itch-fixer-web{
+  font-family:var(--f);font-size:.7rem;letter-spacing:.08em;
+  background:transparent;color:var(--text);
+  border:1px solid rgba(200,21,27,.45);padding:.55rem .95rem;
+  cursor:pointer;text-decoration:none;
+  transition:color .12s,border-color .12s,background .12s;
+  white-space:nowrap;
+}
+.itch-fixer-web:hover{color:#fff;border-color:var(--red);background:rgba(200,21,27,.08);}
 
 
 /* ── VIDEO MODAL (Plyr) ── */
@@ -1201,6 +1192,7 @@ main{position:relative;z-index:1;}
         [ Itch_Login_Fixer.exe ]
       </a>
       <button class="itch-fixer-how" onclick="openFixerModal()">How to use it</button>
+      <a class="itch-fixer-web" href="/tools/accountManagement/">Web version</a>
     </div>
   </div>
 </section>
@@ -1306,15 +1298,6 @@ main{position:relative;z-index:1;}
 <section class="s" id="s-support">
   <div class="feat-label">// Support</div>
   <p class="h-sub" style="margin-bottom:.4rem;max-width:420px;">Something broken or need a hand?<br>We're in Discord, usually fast.</p>
-
-  <div class="sup-status">
-    <span class="sup-status-dot"></span>
-    <span class="sup-status-label">SYSTEM: <span>STABLE</span></span>
-    <span style="opacity:.2;margin:0 .2rem;">·</span>
-    <span class="sup-status-label">ORIGIN: <span>ALEX_EGY</span></span>
-    <span style="opacity:.2;margin:0 .2rem;">·</span>
-    <span class="sup-status-label">BUILD: <span>2026.05</span></span>
-  </div>
 
   <div class="support-grid">
     <a class="sup-card" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">

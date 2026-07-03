@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Web version of the Among Us Launcher itch.io account fixer.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<title>Account Management | Among Us Launcher</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#090909;
+  --panel:#0e0e10;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.65);
+  --dim:rgba(240,240,242,.09);
+  --line:rgba(240,240,242,.14);
+  --ok:#00c896;
+  --warn:#f59e0b;
+  --f:'Share Tech Mono',monospace;
+}
+html{min-height:100%;background:var(--bg);}
+body{
+  font-family:var(--f);
+  background:
+    radial-gradient(circle at 18% 8%,rgba(200,21,27,.12),transparent 26rem),
+    linear-gradient(180deg,#090909,#070707 58%,#0b0b0c);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:100;
+}
+#nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:20;
+  padding:1.5rem 2.5rem;
+  display:flex;gap:2.8rem;
+  pointer-events:none;
+}
+.nb{
+  font-family:var(--f);
+  font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  background:none;border:none;cursor:pointer;
+  pointer-events:all;
+  transition:color .1s;
+  position:relative;
+}
+.nb:hover{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0);}
+.nb:nth-child(2){transform:translateY(7px);}
+.nb:nth-child(3){transform:translateY(-4px);}
+@keyframes nb-glitch{0%,100%{opacity:1;transform:translateX(0);}20%{opacity:.5;transform:translateX(-1px);}40%{opacity:1;transform:translateX(1px);}60%{opacity:.7;}80%{opacity:1;}}
+.nb:hover{animation:nb-glitch .25s steps(1);}
+main{
+  width:min(1120px,calc(100% - 42px));
+  margin:0 auto;
+  padding:7.5rem 0 4rem;
+  position:relative;
+  z-index:1;
+}
+.hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 360px;
+  gap:3rem;
+  align-items:end;
+  margin-bottom:2.4rem;
+}
+.tag{
+  font-size:.82rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--red);
+  margin-bottom:1.8rem;
+  font-weight:bold;
+}
+h1{
+  font-size:clamp(3.6rem,8vw,7.8rem);
+  line-height:.88;
+  letter-spacing:-.03em;
+  max-width:760px;
+}
+h1 span{color:var(--red);display:block;}
+.sub{
+  color:var(--muted);
+  font-size:1rem;
+  line-height:1.8;
+  max-width:560px;
+  margin-top:1.5rem;
+}
+.status-box{
+  border:1px solid var(--dim);
+  border-left:2px solid rgba(200,21,27,.45);
+  padding:1.1rem 1.25rem;
+  background:rgba(9,9,9,.55);
+}
+.status-k{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:.8rem;}
+.status-v{font-size:.72rem;color:var(--muted);line-height:1.8;}
+.status-v strong{color:var(--text);font-weight:normal;}
+.grid{
+  display:grid;
+  grid-template-columns:minmax(320px,.9fr) minmax(360px,1.1fr);
+  gap:1.1rem;
+  align-items:start;
+}
+.panel{
+  border:1px solid var(--dim);
+  background:rgba(10,10,12,.78);
+  padding:1.25rem;
+}
+.panel.redline{border-left:2px solid rgba(200,21,27,.45);}
+.stack{display:flex;flex-direction:column;gap:1rem;}
+.panel-title{
+  font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text);
+  margin-bottom:.9rem;
+}
+.notice{
+  border-left:1px solid rgba(245,158,11,.35);
+  color:rgba(245,158,11,.68);
+  font-size:.67rem;
+  line-height:1.75;
+  padding-left:.9rem;
+}
+.profile-card{
+  display:grid;
+  grid-template-columns:96px 1fr;
+  gap:1rem;
+  align-items:center;
+}
+.avatar{
+  width:96px;height:96px;
+  border:1px solid rgba(200,21,27,.5);
+  background:#050505;
+  object-fit:cover;
+}
+.identity{min-width:0;}
+.name{font-size:1.15rem;color:var(--text);overflow-wrap:anywhere;}
+.meta{font-size:.68rem;color:var(--muted);line-height:1.7;margin-top:.35rem;overflow-wrap:anywhere;}
+.field{
+  display:flex;
+  gap:.55rem;
+  align-items:stretch;
+}
+.token{
+  flex:1;
+  min-width:0;
+  border:1px solid var(--dim);
+  background:#070708;
+  color:rgba(240,240,242,.78);
+  font-family:var(--f);
+  font-size:.7rem;
+  padding:.7rem .8rem;
+  outline:none;
+}
+.token[readonly]{cursor:default;}
+.btn{
+  font-family:var(--f);
+  font-size:.68rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--line);
+  padding:.72rem 1rem;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.45rem;
+  transition:border-color .12s,color .12s,background .12s;
+  white-space:nowrap;
+}
+.btn:hover{border-color:var(--red);color:var(--red);}
+.btn.primary{border-color:rgba(200,21,27,.55);background:rgba(200,21,27,.08);}
+.btn.primary:hover{background:rgba(200,21,27,.15);color:#fff;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn:disabled:hover{border-color:var(--line);color:var(--text);background:transparent;}
+.actions{display:flex;gap:.65rem;flex-wrap:wrap;}
+.steps{
+  counter-reset:step;
+  display:grid;
+  gap:.7rem;
+  list-style:none;
+}
+.steps li{
+  counter-increment:step;
+  display:grid;
+  grid-template-columns:2.4rem 1fr;
+  gap:.85rem;
+  align-items:start;
+  color:var(--muted);
+  font-size:.72rem;
+  line-height:1.75;
+}
+.steps li::before{
+  content:counter(step,decimal-leading-zero);
+  color:var(--red);
+  border:1px solid rgba(200,21,27,.3);
+  padding:.25rem 0;
+  text-align:center;
+  font-size:.62rem;
+}
+code{
+  color:var(--text);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.06);
+  padding:.08rem .32rem;
+}
+.account-head{
+  display:grid;
+  grid-template-columns:74px 1fr;
+  gap:1rem;
+  align-items:center;
+}
+.au-avatar{
+  width:74px;height:74px;
+  border:1px solid rgba(200,21,27,.45);
+  object-fit:cover;
+  background:#050505;
+}
+.friend{font-size:1.2rem;overflow-wrap:anywhere;}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.7rem;
+}
+.mini{
+  border:1px solid var(--dim);
+  background:rgba(255,255,255,.018);
+  padding:.85rem;
+  min-height:74px;
+}
+.mini-k{
+  color:var(--red);
+  font-size:.58rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-bottom:.45rem;
+}
+.mini-v{
+  color:var(--text);
+  font-size:.82rem;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+.chips{display:flex;flex-wrap:wrap;gap:.55rem;}
+.chip{
+  display:inline-flex;
+  gap:.45rem;
+  align-items:center;
+  border:1px solid var(--dim);
+  background:rgba(255,255,255,.018);
+  color:var(--muted);
+  padding:.5rem .65rem;
+  font-size:.68rem;
+}
+.chip i{color:var(--red);}
+.log{
+  border:1px solid var(--dim);
+  background:#060607;
+  color:rgba(240,240,242,.65);
+  min-height:86px;
+  max-height:260px;
+  overflow:auto;
+  padding:.8rem;
+  font-size:.67rem;
+  line-height:1.65;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.ok{color:var(--ok);}
+.bad{color:#ff5a5f;}
+.link{color:rgba(92,158,255,.75);text-decoration:none;}
+.link:hover{color:rgba(92,158,255,1);}
+@media (max-width:900px){
+  #nav{position:absolute;padding:1.1rem 1.3rem;gap:1.4rem;flex-wrap:wrap;}
+  main{width:min(100% - 28px,1120px);padding-top:6rem;}
+  .hero,.grid{grid-template-columns:1fr;}
+  .hero{gap:1.2rem;}
+  h1{font-size:clamp(3.2rem,16vw,5.5rem);}
+}
+@media (max-width:560px){
+  .profile-card,.account-head{grid-template-columns:1fr;}
+  .cards{grid-template-columns:1fr;}
+  .field{flex-direction:column;}
+  .btn{width:100%;}
+}
+</style>
+</head>
+<body>
+<nav id="nav">
+  <a class="nb" href="/">Home</a>
+  <a class="nb" href="/#s-download">Fixer</a>
+  <a class="nb" href="https://accounts.innersloth.com/account-management?store=itchio" target="_blank" rel="noopener">Innersloth</a>
+</nav>
+
+<main>
+  <section class="hero">
+    <div>
+      <div class="tag">// Itch.io Login Fixer</div>
+      <h1>Account<span>Management</span></h1>
+      <p class="sub">Log in with itch.io, grab the token Among Us expects, download the extensionless <code>itch</code> file, then open Innersloth's account management page for merging.</p>
+    </div>
+    <div class="status-box">
+      <div class="status-k">Web fixer status</div>
+      <div class="status-v" id="pageStatus">Waiting for itch.io login. If the browser blocks a request, the manual steps below still work.</div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="stack">
+      <section class="panel redline stack">
+        <div class="panel-title">Itch.io Auth</div>
+        <div class="profile-card">
+          <img class="avatar" id="itchAvatar" alt="itch.io profile picture" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23050505'/%3E%3Cpath d='M20 36h56v24H20z' fill='%23c8151b' opacity='.25'/%3E%3Cpath d='M28 44h40v8H28z' fill='%23f0f0f2' opacity='.55'/%3E%3C/svg%3E">
+          <div class="identity">
+            <div class="name" id="itchName">Not logged in</div>
+            <div class="meta">ID: <span id="itchId">Unavailable</span></div>
+            <div class="meta">Profile: <a class="link" id="itchProfile" href="#" target="_blank" rel="noopener">Unavailable</a></div>
+          </div>
+        </div>
+        <div class="field">
+          <input class="token" id="itchToken" readonly value="" placeholder="itch token appears here after login">
+          <button class="btn" id="copyToken" type="button"><i class="bi bi-copy"></i>Copy</button>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="loginBtn" type="button"><i class="bi bi-box-arrow-in-right"></i>Login with itch.io</button>
+          <a class="btn" id="viewProfile" href="#" target="_blank" rel="noopener"><i class="bi bi-person-vcard"></i>View profile</a>
+        </div>
+      </section>
+
+      <section class="panel stack">
+        <div class="panel-title">Among Us itch file</div>
+        <div class="notice">Step 1: Download the file below. Step 2: Drag and drop it into <code>C:\Users\%USERNAME%\AppData\LocalLow\Innersloth\Among Us</code>.</div>
+        <div class="actions">
+          <button class="btn primary" id="downloadItch" type="button"><i class="bi bi-download"></i>Download itch file</button>
+          <button class="btn" id="openMerge" type="button"><i class="bi bi-intersect"></i>Open account management</button>
+        </div>
+        <ol class="steps">
+          <li><span>If the download fails, open this folder: <code>C:\Users\%USERNAME%\AppData\LocalLow\Innersloth\Among Us</code>.</span></li>
+          <li><span>Create a new file named exactly <code>itch</code>. It must have no extension: no <code>.txt</code>, no <code>.png</code>, no <code>.exe</code>, nothing.</span></li>
+          <li><span>Paste your itch token into that file, save it, then delete any file named <code>itchverify</code> in the same folder.</span></li>
+        </ol>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="panel redline stack">
+        <div class="panel-title">Official Among Us Account</div>
+        <div class="account-head">
+          <img class="au-avatar" src="https://static.wikia.nocookie.net/among-us-wiki/images/e/e9/Friends.png/revision/latest?cb=20260522051925" alt="Among Us friends icon">
+          <div>
+            <div class="friend" id="friendCode">Not loaded</div>
+            <div class="meta">Friend code / username from Innersloth</div>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="mini">
+            <div class="mini-k">PUID</div>
+            <div class="mini-v" id="puid">Unavailable</div>
+          </div>
+          <div class="mini">
+            <div class="mini-k">Current platform</div>
+            <div class="mini-v" id="platform">Unavailable</div>
+          </div>
+          <div class="mini">
+            <div class="mini-k">Last username update</div>
+            <div class="mini-v" id="lastUpdated">Unavailable</div>
+          </div>
+          <div class="mini">
+            <div class="mini-k">Merge state</div>
+            <div class="mini-v" id="mergeState">Waiting</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel stack">
+        <div>
+          <div class="panel-title">Connected platforms</div>
+          <div class="chips" id="platforms"><span class="chip"><i class="bi bi-hourglass-split"></i>Waiting for token</span></div>
+        </div>
+        <div>
+          <div class="panel-title">Permissions</div>
+          <div class="chips" id="permissions"><span class="chip"><i class="bi bi-hourglass-split"></i>Waiting for token</span></div>
+        </div>
+        <button class="btn primary" id="loadAccount" type="button"><i class="bi bi-arrow-repeat"></i>Load Among Us account</button>
+        <pre class="log" id="log">Ready.</pre>
+      </section>
+    </div>
+  </section>
+</main>
+
+<script>
+'use strict';
+
+const CLIENT_ID = '1ba9b4bfa1ac7759e8420eed4ec863ba';
+const DEFAULT_AVATAR = document.getElementById('itchAvatar').src;
+const state = { token: localStorage.getItem('au:itchToken') || '' };
+
+const el = {
+  status: document.getElementById('pageStatus'),
+  itchAvatar: document.getElementById('itchAvatar'),
+  itchName: document.getElementById('itchName'),
+  itchId: document.getElementById('itchId'),
+  itchProfile: document.getElementById('itchProfile'),
+  itchToken: document.getElementById('itchToken'),
+  viewProfile: document.getElementById('viewProfile'),
+  copyToken: document.getElementById('copyToken'),
+  loginBtn: document.getElementById('loginBtn'),
+  downloadItch: document.getElementById('downloadItch'),
+  openMerge: document.getElementById('openMerge'),
+  loadAccount: document.getElementById('loadAccount'),
+  friendCode: document.getElementById('friendCode'),
+  puid: document.getElementById('puid'),
+  platform: document.getElementById('platform'),
+  lastUpdated: document.getElementById('lastUpdated'),
+  mergeState: document.getElementById('mergeState'),
+  platforms: document.getElementById('platforms'),
+  permissions: document.getElementById('permissions'),
+  log: document.getElementById('log')
+};
+
+function setStatus(message, ok = false) {
+  el.status.innerHTML = ok ? `<strong>${message}</strong>` : message;
+}
+
+function setLog(value, isError = false) {
+  el.log.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+  el.log.classList.toggle('bad', isError);
+}
+
+function setToken(token) {
+  state.token = token.trim();
+  el.itchToken.value = state.token;
+  if (state.token) localStorage.setItem('au:itchToken', state.token);
+}
+
+function platformIcon(platform) {
+  const key = String(platform || '').toLowerCase();
+  if (key.includes('steam')) return 'bi-steam';
+  if (key.includes('xbox') || key.includes('microsoft')) return 'bi-xbox';
+  if (key.includes('playstation') || key.includes('psn')) return 'bi-playstation';
+  if (key.includes('switch') || key.includes('nintendo')) return 'bi-nintendo-switch';
+  if (key.includes('apple') || key.includes('ios')) return 'bi-apple';
+  if (key.includes('google') || key.includes('android')) return 'bi-google-play';
+  if (key.includes('epic')) return 'bi-controller';
+  if (key.includes('itch')) return 'bi-shop';
+  return 'bi-person-badge';
+}
+
+function chip(text, icon = 'bi-person-badge') {
+  const node = document.createElement('span');
+  node.className = 'chip';
+  node.innerHTML = `<i class="bi ${icon}"></i>${text}`;
+  return node;
+}
+
+function getOauthRedirect() {
+  return location.origin + location.pathname;
+}
+
+function loginWithItch() {
+  const url = new URL('https://itch.io/user/oauth');
+  url.searchParams.set('client_id', CLIENT_ID);
+  url.searchParams.set('scope', 'profile:me');
+  url.searchParams.set('redirect_uri', getOauthRedirect());
+  url.searchParams.set('response_type', 'token');
+  location.href = url.toString();
+}
+
+function parseTokenFromHash() {
+  const params = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const token = params.get('access_token');
+  if (!token) return false;
+  setToken(token);
+  history.replaceState(null, '', location.pathname);
+  setStatus('itch.io token captured. You can download the itch file now.', true);
+  return true;
+}
+
+async function fetchItchProfile() {
+  if (!state.token) return;
+  try {
+    const response = await fetch('https://itch.io/api/1/key/me', {
+      headers: { Authorization: state.token }
+    });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    const data = await response.json();
+    const user = data.user || {};
+    el.itchName.textContent = user.username || 'itch.io user';
+    el.itchId.textContent = user.id || 'Unavailable';
+    const profileUrl = user.url || (user.username ? `https://${user.username}.itch.io/` : '#');
+    el.itchProfile.href = profileUrl;
+    el.itchProfile.textContent = profileUrl === '#' ? 'Unavailable' : profileUrl;
+    el.viewProfile.href = profileUrl;
+    if (user.cover_url) el.itchAvatar.src = user.cover_url;
+    setStatus('Logged in with itch.io.', true);
+  } catch (error) {
+    el.itchName.textContent = 'Token ready';
+    el.itchId.textContent = 'Profile lookup blocked';
+    el.itchProfile.textContent = 'Unavailable';
+    el.itchProfile.removeAttribute('href');
+    el.viewProfile.removeAttribute('href');
+    setStatus('Token captured. itch.io profile lookup was blocked by the browser, but the file download still works.');
+    setLog(`itch.io profile lookup failed: ${error.message || error}`, true);
+  }
+}
+
+function downloadItchFile() {
+  if (!state.token) {
+    setLog('Login with itch.io first so the token can be written into the itch file.', true);
+    return;
+  }
+  const blob = new Blob([state.token], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'itch';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setLog('Downloaded extensionless file named itch. Move it into the Among Us folder from Step 2.');
+}
+
+function openAccountManagement() {
+  if (!state.token) {
+    setLog('Login with itch.io first, then account management can open with your token.', true);
+    return;
+  }
+  const url = `https://accounts.innersloth.com/account-management?store=itchio&token=${encodeURIComponent(state.token)}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+async function readJson(response) {
+  const text = await response.text();
+  try { return text ? JSON.parse(text) : null; }
+  catch { return { raw: text }; }
+}
+
+async function fetchJson(url, options) {
+  const response = await fetch(url, options);
+  const body = await readJson(response);
+  if (!response.ok) {
+    const message = body ? JSON.stringify(body, null, 2) : response.statusText;
+    throw new Error(`${response.status} ${response.statusText}\n${message}`);
+  }
+  return body;
+}
+
+function renderAccount({ tokenData, mergeData, usernameData }) {
+  const merge = mergeData?.data || {};
+  const username = usernameData?.data?.attributes || {};
+  const friendCode = username.username && username.discriminator
+    ? `${username.username}#${username.discriminator}`
+    : 'Unavailable';
+
+  el.friendCode.textContent = friendCode;
+  el.puid.textContent = merge.puid || tokenData.product_user_id || 'Unavailable';
+  el.platform.textContent = merge.platform || tokenData.account?.idp || 'Unavailable';
+  el.lastUpdated.textContent = username.last_updated || 'Unavailable';
+  el.mergeState.textContent = merge.puid ? 'Loaded' : 'Partial';
+
+  el.platforms.replaceChildren();
+  for (const platform of merge.platforms || []) {
+    el.platforms.appendChild(chip(platform, platformIcon(platform)));
+  }
+  if (!merge.platforms?.length) el.platforms.appendChild(chip('No platforms returned', 'bi-dash-circle'));
+
+  el.permissions.replaceChildren();
+  const permissions = merge.kws_permissions || {};
+  for (const [key, value] of Object.entries(permissions)) {
+    el.permissions.appendChild(chip(`${key}: ${value}`, value === 'GRANTED' || value === false ? 'bi-check-circle' : 'bi-exclamation-triangle'));
+  }
+  if (!Object.keys(permissions).length) el.permissions.appendChild(chip('No permissions returned', 'bi-dash-circle'));
+}
+
+async function loadAmongUsAccount() {
+  if (!state.token) {
+    setLog('Login with itch.io first or paste a token into local storage from the OAuth return.', true);
+    return;
+  }
+  el.loadAccount.disabled = true;
+  setLog('Requesting EOS token from Innersloth...');
+  try {
+    const authUrl = new URL('https://accounts.innersloth.com/eos-auth');
+    authUrl.searchParams.set('store', 'itchio');
+    authUrl.searchParams.set('token', state.token);
+
+    const tokenData = await fetchJson(authUrl.toString(), {
+      method: 'GET',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' }
+    });
+
+    setLog('EOS token received. Querying merged accounts...');
+    const mergeUrl = new URL('https://backend.innersloth.com/api/user/query-primary-before-merge');
+    mergeUrl.searchParams.set('access_token', tokenData.token);
+
+    const mergeData = await fetchJson(mergeUrl.toString(), {
+      method: 'GET',
+      headers: {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+        Authorization: `Bearer ${tokenData.id_token}`
+      }
+    });
+
+    setLog('Merged accounts received. Querying username...');
+    const usernameData = await fetchJson('https://backend.innersloth.com/api/user/username', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+        Authorization: `Bearer ${tokenData.id_token}`
+      }
+    });
+
+    renderAccount({ tokenData, mergeData, usernameData });
+    setLog({
+      friendCode: el.friendCode.textContent,
+      connectedPlatforms: Array.from(el.platforms.children).map(node => node.textContent),
+      note: 'Raw Innersloth auth tokens hidden from this summary.'
+    });
+  } catch (error) {
+    const corsHint = String(error.message || error).includes('Failed to fetch')
+      ? '\n\nBrowser fetch failed. This is usually CORS. The account-management button still opens the official Innersloth page with your itch token.'
+      : '';
+    el.mergeState.textContent = 'Blocked';
+    setLog(`${error.message || error}${corsHint}`, true);
+  } finally {
+    el.loadAccount.disabled = false;
+  }
+}
+
+el.loginBtn.addEventListener('click', loginWithItch);
+el.copyToken.addEventListener('click', async () => {
+  if (!state.token) return setLog('No token to copy yet.', true);
+  await navigator.clipboard.writeText(state.token);
+  setLog('itch token copied.');
+});
+el.downloadItch.addEventListener('click', downloadItchFile);
+el.openMerge.addEventListener('click', openAccountManagement);
+el.loadAccount.addEventListener('click', loadAmongUsAccount);
+
+if (state.token) {
+  setToken(state.token);
+  setStatus('Saved itch token found in this browser.', true);
+}
+const hadHashToken = parseTokenFromHash();
+if (state.token) {
+  fetchItchProfile();
+  if (hadHashToken) loadAmongUsAccount();
+}
+</script>
+</body>
+</html>
