@@ -45,6 +45,8 @@ body{
   min-height:100vh;
   padding:3rem 1.25rem 4rem;
 }
+@media (min-width:641px){ body{ padding-left:6rem; } }
+@media (max-width:640px){ body{ padding-top:5rem; } }
 
 main{ width:min(760px,100%); margin:0 auto; }
 
@@ -379,6 +381,59 @@ kbd.key-win i{ font-size:0.85em; line-height:1; }
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
+/* ---------- Home dock ---------- */
+.home-dock{
+  position:fixed;
+  left:1.5rem; top:50%;
+  transform:translateY(-50%);
+  z-index:200;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.5rem;
+  padding:0.9rem 0.6rem;
+  border:1px solid var(--line-strong);
+  background:var(--panel);
+  color:var(--muted);
+  text-decoration:none;
+  transition:border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.home-dock:hover{
+  border-color:var(--red-line);
+  color:var(--red);
+  background:var(--red-dim);
+  transform:translateY(-50%) translateX(3px);
+}
+.home-dock i{ font-size:1.05rem; }
+.home-dock-label{
+  font-family:var(--mono);
+  font-size:0.63rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+}
+
+@media (max-width:640px){
+  .home-dock{
+    left:0; right:0; top:0;
+    transform:none;
+    flex-direction:row;
+    justify-content:flex-start;
+    width:100%;
+    padding:0.85rem 1.25rem;
+    gap:0.6rem;
+    border:none;
+    border-bottom:1px solid var(--line-strong);
+    background:var(--bg);
+  }
+  .home-dock:hover{ transform:none; }
+  .home-dock-label{
+    writing-mode:horizontal-tb;
+    transform:none;
+  }
+}
+
 @media (max-width:480px){
   .profile-row{ flex-direction:column; align-items:flex-start; }
   .status-block{ text-align:left; }
@@ -388,6 +443,11 @@ kbd.key-win i{ font-size:0.85em; line-height:1; }
 </style>
 </head>
 <body class="auth-gate-logged-out" id="authGate">
+
+<a class="home-dock" href="https://amongus-launcher.vercel.app/" aria-label="Back to Among Us Launcher home">
+  <i class="bi bi-arrow-left" aria-hidden="true"></i>
+  <span class="home-dock-label">Home</span>
+</a>
 
 <div class="loading-overlay" id="loadingOverlay" role="status" aria-live="polite">
   <div class="spinner" aria-hidden="true"></div>
