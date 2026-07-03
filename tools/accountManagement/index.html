@@ -142,12 +142,14 @@ button{ font:inherit; }
   background:transparent;
   color:var(--faint);
   border:1px solid var(--line);
-  width:28px; height:28px;
+  width:1.7em; height:1.7em;
   flex:none;
   display:inline-flex; align-items:center; justify-content:center;
   cursor:pointer;
+  vertical-align:-0.45em;
   transition:border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
 }
+.icon-btn i{ font-size:0.85em; }
 .icon-btn:hover{ border-color:var(--red-line); color:var(--red); background:var(--red-dim); }
 
 .disclaimer{
@@ -295,27 +297,39 @@ button{ font:inherit; }
   display:flex; align-items:center; justify-content:center;
   margin-top:0.1rem;
 }
-code,kbd{
+code{
   color:var(--text);
   background:var(--panel-2);
   border:1px solid var(--line);
-  padding:0.1rem 0.35rem;
+  padding:0.05rem 0.35rem;
   font-family:var(--mono);
   font-size:0.78rem;
+  line-height:1.4;
+  display:inline;
 }
-kbd.key-win{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:1.6em; height:1.4em;
-  padding:0;
-  vertical-align:-0.25em;
+kbd{
+  color:var(--text);
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  font-family:var(--mono);
+  font-size:0.78rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:1.9em;
+  height:1.7em;
+  padding:0 0.5em;
+  line-height:1;
+  vertical-align:-0.45em;
 }
-kbd.key-win i{ font-size:0.85em; }
+kbd.key-win{ padding:0; width:1.9em; }
+kbd.key-win i{ font-size:0.85em; line-height:1; }
 
 .path-row{
-  display:inline-flex; align-items:center; gap:0.4rem;
-  vertical-align:-0.3em;
+  display:inline-flex; align-items:center; gap:0.35rem;
+  vertical-align:middle;
 }
-.path-row code{ padding:0.1rem 0.35rem; }
+.path-row code{ padding:0.05rem 0.35rem; }
 
 .token-ref{
   background:transparent;
@@ -696,11 +710,10 @@ function initListeners() {
   });
 
   document.querySelectorAll('.token-ref').forEach(ref => {
-    ref.addEventListener('mouseenter', () => highlightToken(true));
-    ref.addEventListener('mouseleave', () => highlightToken(false));
     ref.addEventListener('click', () => {
       highlightToken(true);
       if (el.itchToken) el.itchToken.focus();
+      setTimeout(() => highlightToken(false), 1800);
     });
   });
 }
