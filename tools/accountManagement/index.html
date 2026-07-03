@@ -6,7 +6,7 @@
 <meta name="description" content="Web version of the Among Us Launcher itch.io account fixer.">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<title>Account Management | Among Us Launcher</title>
+<title>Itch Login Fixer</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -17,7 +17,6 @@
   --red-dim:rgba(229,27,36,0.15);
   --text:#f5f5f7;
   --muted:rgba(245,245,247,0.6);
-  --dim:rgba(245,245,247,0.06);
   --line:rgba(245,245,247,0.1);
   --f:'Share Tech Mono',monospace;
 }
@@ -29,79 +28,47 @@ body{
     linear-gradient(180deg,#050506,#08080a 100%);
   color:var(--text);
   min-height:100vh;
-  overflow-x:hidden;
-  padding:4rem 1rem;
+  padding:2rem 1rem;
+  position:relative;
 }
-body::after{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:100;
-}
+
 main{
-  width:min(680px,100%);
+  width:min(650px,100%);
   margin:0 auto;
   position:relative;
   z-index:1;
 }
 
-/* Auth Gate States */
-.auth-gate-logged-out .initial-login-view { display: flex; }
+/* Auth Logic View Toggles */
+.auth-gate-logged-out .initial-login-view { display: block; }
 .auth-gate-logged-out .dashboard-view { display: none; }
 .auth-gate-logged-in .initial-login-view { display: none; }
-.auth-gate-logged-in .dashboard-view { display: flex; }
+.auth-gate-logged-in .dashboard-view { display: flex; flex-direction: column; gap: 1.5rem; }
 
-.initial-login-view {
-  min-height: 50vh;
-  align-items: center;
-  justify-content: center;
-}
-.login-card-center {
-  width: 100%;
-  max-width: 480px;
-  text-align: center;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  padding: 3.5rem 2rem;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-}
-
-.dashboard-view {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
 .panel {
   border: 1px solid var(--line);
   background: var(--panel);
   padding: 1.5rem;
+  margin-bottom: 1.5rem;
 }
-.panel.accent-header {
-  border-top: 3px solid var(--red);
-}
+.panel.accent-header { border-top: 3px solid var(--red); }
 .stack { display: flex; flex-direction: column; gap: 1.25rem; }
 
-/* Identity block */
+/* Simple User Block */
 .profile-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
-  border-bottom: 1px solid var(--dim);
-  padding-bottom: 1.25rem;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
 }
-.user-meta-group { display: flex; align-items: center; gap: 1rem; }
-.avatar-frame {
-  width: 52px;
-  height: 52px;
-  border: 1px solid var(--red);
-  padding: 2px;
-  background: #000;
-}
-.avatar { width: 100%; height: 100%; object-fit: cover; }
-.username-text { font-size: 1.25rem; color: var(--text); }
-.id-subtext { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+.user-info { display: flex; align-items: center; gap: 1rem; }
+.avatar { width: 48px; height: 48px; border: 1px solid var(--red); object-fit: cover; background: #000; }
+.username-text { font-size: 1.2rem; color: var(--text); }
+.subtext { font-size: 0.75rem; color: var(--muted); }
 
-/* Form inputs & buttons */
+/* Field & Inputs */
 .field { display: flex; gap: 0.5rem; }
 .token {
   flex: 1;
@@ -110,13 +77,14 @@ main{
   color: var(--text);
   font-family: var(--f);
   font-size: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem;
   outline: none;
 }
+
+/* Buttons */
 .btn {
   font-family: var(--f);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
   text-transform: uppercase;
   background: transparent;
   color: var(--text);
@@ -130,88 +98,64 @@ main{
   transition: all 0.15s ease;
 }
 .btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
-.btn.primary { border-color: var(--red); background: rgba(229,27,36,0.08); color: var(--text); }
+.btn.primary { border-color: var(--red); background: rgba(229,27,36,0.08); }
 .btn.primary:hover { background: var(--red); color: #fff; }
-.btn.danger-link { border: none; color: var(--muted); padding: 0.5rem; font-size: 0.68rem; }
+.btn.danger-link { border: none; color: var(--muted); font-size: 0.7rem; padding: 0.25rem; }
 .btn.danger-link:hover { color: var(--red); background: transparent; text-decoration: underline; }
 
-/* Tabs implementation */
-.tabs-nav {
-  display: flex;
-  border-bottom: 1px solid var(--line);
-  gap: 0.25rem;
-}
+/* Tabs system */
+.tabs-nav { display: flex; border-bottom: 1px solid var(--line); gap: 0.25rem; }
 .tab-trigger {
   background: transparent;
   border: 1px solid transparent;
-  border-bottom: none;
   color: var(--muted);
   font-family: var(--f);
   font-size: 0.75rem;
-  padding: 0.75rem 125rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transform: translateY(1px);
-  padding: 0.75rem 1.25rem;
 }
 .tab-trigger.active {
   color: var(--red);
   background: var(--panel);
   border-color: var(--line);
-  border-top: 2px solid var(--red);
+  border-bottom-color: var(--panel);
+  transform: translateY(1px);
 }
 .tab-content { display: none; padding-top: 1.25rem; }
 .tab-content.active { display: block; }
 
 /* Clean Lists */
-.steps { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
-.steps li {
-  font-size: 0.78rem;
-  line-height: 1.6;
-  color: var(--muted);
-  display: flex;
-  gap: 0.75rem;
-}
-.steps li::before {
-  content: "»";
-  color: var(--red);
-  font-weight: bold;
-}
+.steps { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.steps li { font-size: 0.8rem; line-height: 1.5; color: var(--muted); display: flex; gap: 0.5rem; }
+.steps li::before { content: "»"; color: var(--red); }
+code, kbd { color: #fff; background: var(--panel-light); border: 1px solid var(--line); padding: 0.1rem 0.3rem; font-size: 0.75rem; }
 
-code, kbd {
-  color: #fff;
-  background: var(--panel-light);
-  border: 1px solid var(--line);
-  padding: 0.1rem 0.4rem;
-  font-size: 0.75rem;
-}
-kbd { box-shadow: 0 1.5px 0 rgba(255,255,255,0.15); font-family: var(--f); }
+.banner { background: var(--panel-light); border-left: 2px solid var(--red); padding: 0.85rem; font-size: 0.8rem; line-height: 1.5; }
+.quote-box { border-left: 2px solid var(--muted); padding-left: 0.75rem; color: var(--muted); font-style: italic; font-size: 0.8rem; }
 
-.notice-banner {
-  background: var(--panel-light);
-  border-left: 2px solid var(--red);
-  padding: 1rem;
-  font-size: 0.78rem;
-  line-height: 1.6;
-}
-
-.platforms-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.25rem;
-}
-.chip {
-  display: inline-flex;
+/* Loading Animation Overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,5,6,0.85);
+  z-index: 1000;
+  display: none;
   align-items: center;
-  gap: 0.5rem;
-  background: var(--panel-light);
-  border: 1px solid var(--line);
-  padding: 0.4rem 0.75rem;
-  font-size: 0.72rem;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
 }
-.chip i { color: var(--red); }
+.loading-overlay.active { display: flex; }
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--line);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 @media(max-width: 500px) {
   .profile-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
@@ -222,93 +166,102 @@ kbd { box-shadow: 0 1.5px 0 rgba(255,255,255,0.15); font-family: var(--f); }
 </head>
 <body class="auth-gate-logged-out" id="authGate">
 
+<!-- LOADING ANIMATION SCREEN -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div style="font-size: 0.85rem; letter-spacing: 0.1em; color: var(--red);">FETCHING ACCOUNT PAYLOAD...</div>
+</div>
+
 <main>
-  <!-- STATE A: GATEWAY GATE -->
+  <!-- STATE A: SIMPLE LOGIN VIEW -->
   <div class="initial-login-view">
-    <div class="panel login-card-center stack">
-      <div style="font-size: 0.7rem; letter-spacing: 0.2em; color: var(--red); text-transform: uppercase;">System Override</div>
-      <h2 style="font-size: 2rem; font-weight: normal; letter-spacing: -0.02em;">Authentication Gate</h2>
-      <p style="color: var(--muted); font-size: 0.8rem; line-height: 1.6;">Authorize your developer credentials via itch.io to force account parameters, lift client execution restrictions, and fetch network wrappers.</p>
-      <button class="btn primary" id="loginBtn" type="button" style="padding: 1rem; font-size: 0.75rem;"><i class="bi bi-box-arrow-in-right"></i>Authorize / Force Login</button>
+    <div class="panel accent-header stack" style="margin-top: 4rem; text-align: center;">
+      <h2 style="font-size: 1.5rem; font-weight: normal; color: var(--red);"><i class="bi bi-tools"></i> ITCH LOGIN FIXER [v1.4]</h2>
+      
+      <div class="quote-box">
+        "This is a temporary fix, so do not expect it to always work."<br>
+        <strong>v1.4 | 7.3.2026</strong>
+      </div>
+      
+      <p style="font-size: 0.85rem; line-height: 1.5; color: var(--muted);">
+        If you are getting the error that says you do not own Among Us on itch.io, this web app will fix it. It puts a special file in your among us app data folder so the game loads without checking if you own the game or not.
+      </p>
+      
+      <button class="btn primary" id="loginBtn" type="button" style="padding: 1rem; font-size: 0.8rem;"><i class="bi bi-box-arrow-in-right"></i>Authorize / Force Login</button>
     </div>
   </div>
 
-  <!-- STATE B: STREAMLINED ACCOUNT FIXER CONSOLE -->
+  <!-- STATE B: SIMPLE WORKBENCH -->
   <div class="dashboard-view">
     
-    <!-- SECTION 1: IDENTITIES -->
+    <!-- SECTION 1: SYSTEM DETAILS -->
     <section class="panel accent-header stack">
       <div class="profile-row">
-        <div class="user-meta-group">
-          <div class="avatar-frame">
-            <img class="avatar" id="itchAvatar" alt="itch" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23050505'/%3E%3Cpath d='M20 36h56v24H20z' fill='%23e51b24' opacity='.15'/%3E%3C/svg%3E">
-          </div>
+        <div class="user-info">
+          <img class="avatar" id="itchAvatar" alt="itch profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%230a0a0c'/%3E%3C/svg%3E">
           <div>
-            <div class="username-text" id="itchName">Resolving Target...</div>
-            <div class="id-subtext">Itch ID: <span id="itchId">-</span></div>
+            <div class="username-text" id="itchName">Loading profile...</div>
+            <div class="subtext">Itch ID: <span id="itchId">-</span></div>
           </div>
         </div>
         <div style="text-align: right;">
-          <div class="username-text" id="friendCode" style="font-size: 1.1rem; color: var(--red);">Payload Cache Offline</div>
-          <div class="id-subtext">Among Us Core Account</div>
+          <div class="username-text" id="friendCode" style="color: var(--red);">Connecting...</div>
+          <div class="subtext">Among Us Account</div>
         </div>
       </div>
 
       <div class="field">
-        <input class="token" id="itchToken" readonly value="" placeholder="Matrix Structural Payload String">
+        <input class="token" id="itchToken" readonly value="" placeholder="Your login token code will show up here">
         <button class="btn" id="copyToken" type="button"><i class="bi bi-copy"></i>Copy</button>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="platforms-box" id="platforms"></div>
+      <div style="display: flex; justify-content: flex-end;">
         <button class="btn danger-link" id="logoutBtn" type="button"><i class="bi bi-box-arrow-left"></i>Disconnect Session</button>
       </div>
     </section>
 
-    <!-- SECTION 2: TABS REWORKED MANIFEST DEPLOYMENT -->
+    <!-- SECTION 2: THE TWO FIX ROUTES (TABS) -->
     <section class="panel stack">
       <div class="tabs-nav">
-        <button class="tab-trigger active" onclick="switchTab('tab-auto')">Automated Route</button>
-        <button class="tab-trigger" onclick="switchTab('tab-manual')">Manual Injected Route</button>
+        <button class="tab-trigger active" onclick="switchTab('tab-auto')">Automated Method</button>
+        <button class="tab-trigger" onclick="switchTab('tab-manual')">Manual Method</button>
       </div>
 
-      <!-- TAB 1: DOWNLOAD -->
+      <!-- AUTOMATED ROUTE -->
       <div id="tab-auto" class="tab-content active stack">
-        <div class="notice-banner">
-          <strong>Validation Requirement:</strong> You must own Among Us on itch.io for this structural override file configuration to authorize correctly within your local sandbox directory environment.
+        <div class="banner">
+          <strong>Validation Requirement:</strong> You must own Among Us on itch.io for this local file trick to work inside your computer folder.
         </div>
-        <div style="text-align: center; padding: 0.5rem 0;">
-          <button class="btn primary" id="downloadItch" type="button" style="width: 100%; padding: 0.9rem;"><i class="bi bi-download"></i>Download Local Verification Override</button>
-        </div>
+        <button class="btn primary" id="downloadItch" type="button" style="width: 100%; padding: 0.85rem;"><i class="bi bi-download"></i>Download Local Verification Override (itch file)</button>
         <ol class="steps">
-          <li><span>Hold down <kbd>Win</kbd> and press <kbd>R</kbd> to unlock your runtime system prompt window utility execution box.</span></li>
-          <li><span>Copy and insert this exact directory line verbatim, then hit enter: <code>%localappdata%low\Innersloth\Among Us</code></span></li>
-          <li><span>Drop the extensionless downloaded <code>itch</code> document block right into the opened file manager folder structure.</span></li>
-          <li><span>Instantly drop, unlink, or wipe out any asset named <code>itchverify</code> remaining inside that target folder.</span></li>
+          <li><span>On your keyboard, hold down <kbd>Win</kbd> and press the <kbd>R</kbd> key to open the Windows Run box.</span></li>
+          <li><span>Copy and paste this folder path inside the box, then press Enter: <code>%localappdata%low\Innersloth\Among Us</code></span></li>
+          <li><span>Drop your downloaded extensionless <code>itch</code> file directly into that folder.</span></li>
+          <li><span>If you see a file named <code>itchverify</code> in that same folder, delete it completely.</span></li>
         </ol>
       </div>
 
-      <!-- TAB 2: MANUAL CREATION -->
+      <!-- MANUAL ROUTE -->
       <div id="tab-manual" class="tab-content stack">
-        <div class="notice-banner" style="border-left-color: var(--muted);">
-          Use this pipeline route if your browser security scripts blocks downloading unknown configuration binaries or file objects.
+        <div class="banner">
+          Use this way if your internet browser blocks downloading unknown custom script configurations or setup files.
         </div>
         <ol class="steps">
-          <li><span>Press <kbd>Win</kbd> + <kbd>R</kbd> on your mechanical keyboard arrays to bring up the Windows native system Run window executor.</span></li>
-          <li><span>Type or paste the directory root string precisely: <code>%localappdata%low\Innersloth\Among Us</code> and press enter.</span></li>
-          <li><span>Right click empty workspace space inside that directory context -> select <strong>New</strong> -> <strong>Text Document</strong>.</span></li>
-          <li><span>Name it strictly <code>itch</code> and delete its extension tag (ensure it is NOT titled <code>itch.txt</code>, it must have no suffix extension).</span></li>
-          <li><span>Open it, paste your unique string token copied above into it, save configurations, and destroy any <code>itchverify</code> file there.</span></li>
+          <li><span>Press <kbd>Win</kbd> + <kbd>R</kbd> keys at the same time on your keyboard to open the Windows Run executor.</span></li>
+          <li><span>Paste this directory path code exactly and press Enter: <code>%localappdata%low\Innersloth\Among Us</code></span></li>
+          <li><span>Right-click an empty space inside that folder, go to <strong>New</strong>, and click <strong>Text Document</strong>.</span></li>
+          <li><span>Name the file exactly <code>itch</code>. Clear out the <code>.txt</code> piece from the name so it has no extension suffix.</span></li>
+          <li><span>Open that file, paste your unique login token code string you copied above into it, save it, and erase any <code>itchverify</code> file.</span></li>
         </ol>
       </div>
     </section>
 
-    <!-- SECTION 3: MERGING -->
+    <!-- SECTION 3: EXTRA FIXES -->
     <section class="panel stack" style="border-left: 2px solid var(--red);">
-      <p style="font-size: 0.78rem; line-height: 1.6; color: var(--muted);">
-        This process lets you bridge your itch.io infrastructure accounts directly with foreign platforms, bypass third party restrictions, and clear up existing restrictions across your account arrays.
+      <p class="subtext" style="line-height: 1.5;">
+        Want to link your itch.io accounts together with other gaming platforms or fix existing profile and network restrictions across your account arrays?
       </p>
-      <button class="btn primary" id="openMerge" type="button" style="padding: 0.85rem;"><i class="bi bi-intersect"></i>Initialize Official Profile Account Consolidation Wrapper</button>
+      <button class="btn primary" id="openMerge" type="button" style="padding: 0.85rem;"><i class="bi bi-intersect"></i>Open Account Management Wrapper</button>
     </section>
 
   </div>
@@ -331,8 +284,18 @@ const el = {
   downloadItch: document.getElementById('downloadItch'),
   openMerge: document.getElementById('openMerge'),
   friendCode: document.getElementById('friendCode'),
-  platforms: document.getElementById('platforms')
+  loadingOverlay: document.getElementById('loadingOverlay'),
+  copyToken: document.getElementById('copyToken')
 };
+
+function toggleLoading(show) {
+  if (!el.loadingOverlay) return;
+  if (show) {
+    el.loadingOverlay.classList.add('active');
+  } else {
+    el.loadingOverlay.classList.remove('active');
+  }
+}
 
 function switchTab(id) {
   document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
@@ -356,26 +319,6 @@ function setToken(token) {
     localStorage.removeItem('au:itchToken');
     if (el.authGate) el.authGate.className = "auth-gate-logged-out";
   }
-}
-
-function platformIcon(platform) {
-  const key = String(platform || '').toLowerCase();
-  if (key.includes('steam')) return 'bi-steam';
-  if (key.includes('xbox') || key.includes('microsoft')) return 'bi-xbox';
-  if (key.includes('playstation') || key.includes('psn')) return 'bi-playstation';
-  if (key.includes('switch') || key.includes('nintendo')) return 'bi-nintendo-switch';
-  if (key.includes('apple') || key.includes('ios')) return 'bi-apple';
-  if (key.includes('google') || key.includes('android')) return 'bi-google-play';
-  if (key.includes('epic')) return 'bi-controller';
-  if (key.includes('itch')) return 'bi-shop';
-  return 'bi-person-badge';
-}
-
-function chip(text, icon = 'bi-person-badge') {
-  const node = document.createElement('span');
-  node.className = 'chip';
-  node.innerHTML = `<i class="bi ${icon}"></i>${text}`;
-  return node;
 }
 
 function loginWithItch() {
@@ -403,6 +346,7 @@ function parseTokenFromHash() {
 
 async function fetchItchProfile() {
   if (!state.token) return;
+  toggleLoading(true);
   try {
     const response = await fetch('/api/profile', {
       headers: { Authorization: state.token }
@@ -414,8 +358,10 @@ async function fetchItchProfile() {
     if (el.itchId) el.itchId.textContent = user.id || '-';
     if (user.cover_url && el.itchAvatar) el.itchAvatar.src = user.cover_url;
   } catch (error) {
-    if (el.itchName) el.itchName.textContent = 'Token Secure';
-    if (el.itchId) el.itchId.textContent = 'Verified Sandbox';
+    if (el.itchName) el.itchName.textContent = 'Token Loaded';
+    if (el.itchId) el.itchId.textContent = 'Active Fix';
+  } finally {
+    toggleLoading(false);
   }
 }
 
@@ -446,6 +392,7 @@ async function fetchJson(url, options) {
 
 async function loadAmongUsAccount() {
   if (!state.token) return;
+  toggleLoading(true);
   try {
     const authUrl = new URL('https://accounts.innersloth.com/eos-auth');
     authUrl.searchParams.set('store', 'itchio');
@@ -453,45 +400,24 @@ async function loadAmongUsAccount() {
 
     const tokenData = await fetchJson(authUrl.toString());
 
-    const mergeUrl = new URL('https://backend.innersloth.com/api/user/query-primary-before-merge');
-    mergeUrl.searchParams.set('access_token', tokenData.token);
-
-    const mergeData = await fetchJson(mergeUrl.toString(), {
-      headers: { Authorization: `Bearer ${tokenData.id_token}`, Accept: 'application/vnd.api+json' }
-    });
-
     const usernameData = await fetchJson('https://backend.innersloth.com/api/user/username', {
       headers: { Authorization: `Bearer ${tokenData.id_token}`, Accept: 'application/vnd.api+json' }
     });
 
-    const merge = mergeData?.data || {};
     const username = usernameData?.data?.attributes || {};
     
     if (el.friendCode) {
       el.friendCode.textContent = username.username && username.discriminator
         ? `${username.username}#${username.discriminator}`
-        : 'User Synced';
-    }
-
-    if (el.platforms) {
-      el.platforms.replaceChildren();
-      for (const platform of merge.platforms || []) {
-        el.platforms.appendChild(chip(platform, platformIcon(platform)));
-      }
-      if (!merge.platforms?.length) {
-        el.platforms.appendChild(chip('Itch.io Account Linked', 'bi-shop'));
-      }
+        : 'Logged In';
     }
   } catch (error) {
-    if (el.friendCode) el.friendCode.textContent = "Identity Cache Active";
-    if (el.platforms) {
-      el.platforms.replaceChildren();
-      el.platforms.appendChild(chip('Itch.io Override Configuration', 'bi-shop'));
-    }
+    if (el.friendCode) el.friendCode.textContent = "Login Ready!";
+  } finally {
+    toggleLoading(false);
   }
 }
 
-// Wire events safely inside initialization script block
 function initListeners() {
   if (el.loginBtn) el.loginBtn.addEventListener('click', loginWithItch);
   if (el.logoutBtn) el.logoutBtn.addEventListener('click', logout);
@@ -509,20 +435,19 @@ function initListeners() {
   }
 }
 
-// Execution block
 document.addEventListener('DOMContentLoaded', () => {
   initListeners();
+  
+  if (state.token) {
+    setToken(state.token);
+  }
+  parseTokenFromHash();
+
+  if (state.token) {
+    fetchItchProfile();
+    loadAmongUsAccount();
+  }
 });
-
-if (state.token) {
-  setToken(state.token);
-}
-parseTokenFromHash();
-
-if (state.token) {
-  fetchItchProfile();
-  loadAmongUsAccount();
-}
 </script>
 </body>
 </html>
