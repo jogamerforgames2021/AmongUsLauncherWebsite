@@ -3,265 +3,432 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Web version of the Among Us Launcher itch.io account fixer.">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<meta name="description" content="Fixes the itch.io login error in Among Us by writing a local verification file.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<title>Itch Login Fixer</title>
+<title>Itch Login Fixer — Among Us</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
 :root{
-  --bg:#050506;
-  --panel:#0a0a0c;
-  --panel-light:#111115;
-  --red:#e51b24;
-  --red-dim:rgba(229,27,36,0.15);
-  --text:#f5f5f7;
-  --muted:rgba(245,245,247,0.6);
-  --line:rgba(245,245,247,0.1);
-  --f:'Share Tech Mono',monospace;
+  /* Tinted neutrals, warm toward the accent hue */
+  --bg:         oklch(14% 0.006 25);
+  --panel:      oklch(17% 0.008 25);
+  --panel-2:    oklch(21% 0.010 25);
+  --line:       oklch(90% 0.006 25 / 0.10);
+  --line-strong:oklch(90% 0.006 25 / 0.18);
+
+  --text:       oklch(94% 0.004 25);
+  --muted:      oklch(94% 0.004 25 / 0.58);
+  --faint:      oklch(94% 0.004 25 / 0.36);
+
+  /* Single committed accent, used deliberately */
+  --red:        oklch(58% 0.20 25);
+  --red-dim:    oklch(58% 0.20 25 / 0.14);
+  --red-line:   oklch(58% 0.20 25 / 0.4);
+
+  --ok:         oklch(70% 0.15 150);
+
+  --mono:'Share Tech Mono',monospace;
+  --sans:'Inter',system-ui,sans-serif;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
-html{min-height:100%;background:var(--bg);}
+
+html{background:var(--bg);}
 body{
-  font-family:var(--f);
+  font-family:var(--sans);
   background:
-    radial-gradient(circle at 50% 0%,rgba(229,27,36,0.12),transparent 40rem),
-    linear-gradient(180deg,#050506,#08080a 100%);
+    radial-gradient(circle at 50% -10%, oklch(58% 0.20 25 / 0.10), transparent 45rem),
+    var(--bg);
   color:var(--text);
   min-height:100vh;
-  padding:2rem 1rem;
+  padding:3rem 1.25rem 4rem;
+}
+
+main{ width:min(600px,100%); margin:0 auto; }
+
+a{ color:inherit; }
+button{ font:inherit; }
+::selection{ background:var(--red-dim); color:var(--text); }
+:focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+/* ---------- Visibility gates ---------- */
+.auth-gate-logged-out .initial-login-view{ display:block; }
+.auth-gate-logged-out .dashboard-view{ display:none; }
+.auth-gate-logged-in .initial-login-view{ display:none; }
+.auth-gate-logged-in .dashboard-view{ display:flex; flex-direction:column; gap:2rem; }
+
+/* ---------- Eyebrow / labels ---------- */
+.eyebrow{
+  font-family:var(--mono);
+  font-size:0.7rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--red);
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+}
+.eyebrow::before{
+  content:"";
+  width:6px; height:6px;
+  background:var(--red);
+  display:inline-block;
+  flex:none;
+}
+
+/* ---------- Login view ---------- */
+.login-panel{
+  padding-top:2.5rem;
+  display:flex;
+  flex-direction:column;
+  gap:1.25rem;
+}
+.login-panel h1{
+  font-size:1.9rem;
+  font-weight:700;
+  line-height:1.2;
+  letter-spacing:-0.01em;
+}
+.login-panel .lede{
+  font-size:0.95rem;
+  line-height:1.6;
+  color:var(--muted);
+  max-width:52ch;
+}
+.login-panel .lede strong{ color:var(--text); font-weight:600; }
+
+.btn{
+  font-family:var(--mono);
+  font-size:0.78rem;
+  letter-spacing:0.03em;
+  text-transform:uppercase;
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--line-strong);
+  padding:0.9rem 1.4rem;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.6rem;
+  transition:border-color 0.2s var(--ease), background 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
+}
+.btn:hover{ border-color:var(--red-line); background:var(--red-dim); }
+.btn:active{ transform:scale(0.98); }
+.btn.primary{ border-color:var(--red); background:var(--red); color:oklch(99% 0 0); }
+.btn.primary:hover{ background:oklch(63% 0.20 25); border-color:oklch(63% 0.20 25); }
+.btn.full{ width:100%; }
+.btn:disabled{ opacity:0.4; cursor:not-allowed; }
+.btn:disabled:hover{ border-color:var(--line-strong); background:transparent; }
+.btn.ghost{
+  border:none;
+  color:var(--faint);
+  font-size:0.72rem;
+  padding:0.3rem 0;
+  text-decoration:underline;
+  text-decoration-color:transparent;
+}
+.btn.ghost:hover{ background:transparent; color:var(--muted); text-decoration-color:currentColor; }
+
+.disclaimer{
+  font-size:0.72rem;
+  line-height:1.6;
+  color:var(--faint);
+  border-top:1px solid var(--line);
+  padding-top:1rem;
+  margin-top:0.5rem;
+}
+.disclaimer .ver{ color:var(--muted); }
+
+/* ---------- Panels (dashboard) ---------- */
+.panel{
+  border:1px solid var(--line);
+  background:var(--panel);
+  padding:1.5rem;
+}
+.stack{ display:flex; flex-direction:column; gap:1.25rem; }
+
+/* ---------- Account strip ---------- */
+.account-strip{ display:flex; flex-direction:column; gap:1.25rem; }
+.profile-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+.user-info{ display:flex; align-items:center; gap:0.85rem; }
+.avatar{ width:44px; height:44px; border:1px solid var(--line-strong); object-fit:cover; background:var(--panel-2); flex:none; }
+.username-text{ font-size:1.05rem; font-weight:600; color:var(--text); line-height:1.3; }
+.subtext{ font-size:0.72rem; color:var(--faint); font-family:var(--mono); }
+
+.status-block{ text-align:right; }
+.status-line{
+  display:inline-flex; align-items:center; gap:0.4rem;
+  font-size:0.85rem; font-weight:600; color:var(--text);
+  font-family:var(--mono);
+}
+.status-dot{ width:7px; height:7px; border-radius:50%; background:var(--faint); flex:none; }
+.status-dot.ok{ background:var(--ok); }
+.status-dot.pending{ background:var(--red); animation:pulse 1.4s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+/* ---------- Token field ---------- */
+.field-label{
+  font-family:var(--mono);
+  font-size:0.68rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--faint);
+  display:block;
+  margin-bottom:0.5rem;
+}
+.field{ display:flex; gap:0.5rem; }
+.token{
+  flex:1;
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-family:var(--mono);
+  font-size:0.72rem;
+  padding:0.8rem;
+  outline:none;
+  min-width:0;
+}
+.token:focus{ border-color:var(--red-line); color:var(--text); }
+
+.strip-footer{
+  display:flex; justify-content:flex-end;
+  border-top:1px solid var(--line);
+  padding-top:0.85rem;
+}
+
+/* ---------- Tabs ---------- */
+.tabs-nav{ display:flex; gap:1.75rem; border-bottom:1px solid var(--line); }
+.tab-trigger{
+  background:transparent;
+  border:none;
+  color:var(--faint);
+  font-family:var(--mono);
+  font-size:0.75rem;
+  letter-spacing:0.03em;
+  text-transform:uppercase;
+  padding:0 0 0.85rem;
+  cursor:pointer;
   position:relative;
 }
+.tab-trigger::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:-1px;
+  height:2px; background:var(--red);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform 0.25s var(--ease);
+}
+.tab-trigger.active{ color:var(--text); }
+.tab-trigger.active::after{ transform:scaleX(1); }
+.tab-trigger:hover{ color:var(--text); }
 
-main{
-  width:min(650px,100%);
-  margin:0 auto;
-  position:relative;
-  z-index:1;
+.tab-content{ display:none; padding-top:1.4rem; }
+.tab-content.active{ display:block; }
+
+/* ---------- Callouts (no side stripes) ---------- */
+.callout{
+  border:1px solid var(--line-strong);
+  background:var(--panel-2);
+  padding:0.9rem 1rem;
+  font-size:0.8rem;
+  line-height:1.55;
+  color:var(--muted);
+  display:flex;
+  gap:0.65rem;
+  align-items:flex-start;
+}
+.callout i{ color:var(--red); font-size:0.95rem; margin-top:0.15rem; flex:none; }
+.callout strong{ color:var(--text); }
+
+/* ---------- Steps ---------- */
+.steps{ list-style:none; counter-reset:step; display:flex; flex-direction:column; gap:0.9rem; margin-top:1.1rem; }
+.steps li{
+  counter-increment:step;
+  font-size:0.83rem;
+  line-height:1.6;
+  color:var(--muted);
+  display:flex;
+  gap:0.75rem;
+}
+.steps li::before{
+  content:counter(step);
+  font-family:var(--mono);
+  font-size:0.7rem;
+  color:var(--red);
+  border:1px solid var(--red-line);
+  width:20px; height:20px;
+  flex:none;
+  display:flex; align-items:center; justify-content:center;
+  margin-top:0.1rem;
+}
+code,kbd{
+  color:var(--text);
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  padding:0.1rem 0.35rem;
+  font-family:var(--mono);
+  font-size:0.78rem;
 }
 
-/* Auth Logic View Toggles */
-.auth-gate-logged-out .initial-login-view { display: block; }
-.auth-gate-logged-out .dashboard-view { display: none; }
-.auth-gate-logged-in .initial-login-view { display: none; }
-.auth-gate-logged-in .dashboard-view { display: flex; flex-direction: column; gap: 1.5rem; }
+/* ---------- Extra fixes ---------- */
+.extra-fixes p{ font-size:0.83rem; line-height:1.6; color:var(--muted); max-width:48ch; }
 
-.panel {
-  border: 1px solid var(--line);
-  background: var(--panel);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+/* ---------- Loading overlay ---------- */
+.loading-overlay{
+  position:fixed; inset:0;
+  background:oklch(14% 0.006 25 / 0.9);
+  z-index:1000;
+  display:none;
+  align-items:center; justify-content:center;
+  flex-direction:column; gap:1rem;
 }
-.panel.accent-header { border-top: 3px solid var(--red); }
-.stack { display: flex; flex-direction: column; gap: 1.25rem; }
-
-/* Simple User Block */
-.profile-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 1rem;
+.loading-overlay.active{ display:flex; }
+.spinner{
+  width:32px; height:32px;
+  border:2px solid var(--line-strong);
+  border-top-color:var(--red);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
 }
-.user-info { display: flex; align-items: center; gap: 1rem; }
-.avatar { width: 48px; height: 48px; border: 1px solid var(--red); object-fit: cover; background: #000; }
-.username-text { font-size: 1.2rem; color: var(--text); }
-.subtext { font-size: 0.75rem; color: var(--muted); }
-
-/* Field & Inputs */
-.field { display: flex; gap: 0.5rem; }
-.token {
-  flex: 1;
-  background: var(--panel-light);
-  border: 1px solid var(--line);
-  color: var(--text);
-  font-family: var(--f);
-  font-size: 0.75rem;
-  padding: 0.75rem;
-  outline: none;
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.loading-overlay span{
+  font-family:var(--mono); font-size:0.75rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--muted);
 }
 
-/* Buttons */
-.btn {
-  font-family: var(--f);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--line);
-  padding: 0.75rem 1.25rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.15s ease;
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
-.btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
-.btn.primary { border-color: var(--red); background: rgba(229,27,36,0.08); }
-.btn.primary:hover { background: var(--red); color: #fff; }
-.btn.danger-link { border: none; color: var(--muted); font-size: 0.7rem; padding: 0.25rem; }
-.btn.danger-link:hover { color: var(--red); background: transparent; text-decoration: underline; }
 
-/* Tabs system */
-.tabs-nav { display: flex; border-bottom: 1px solid var(--line); gap: 0.25rem; }
-.tab-trigger {
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--muted);
-  font-family: var(--f);
-  font-size: 0.75rem;
-  padding: 0.6rem 1rem;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-.tab-trigger.active {
-  color: var(--red);
-  background: var(--panel);
-  border-color: var(--line);
-  border-bottom-color: var(--panel);
-  transform: translateY(1px);
-}
-.tab-content { display: none; padding-top: 1.25rem; }
-.tab-content.active { display: block; }
-
-/* Clean Lists */
-.steps { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-.steps li { font-size: 0.8rem; line-height: 1.5; color: var(--muted); display: flex; gap: 0.5rem; }
-.steps li::before { content: "»"; color: var(--red); }
-code, kbd { color: #fff; background: var(--panel-light); border: 1px solid var(--line); padding: 0.1rem 0.3rem; font-size: 0.75rem; }
-
-.banner { background: var(--panel-light); border-left: 2px solid var(--red); padding: 0.85rem; font-size: 0.8rem; line-height: 1.5; }
-.quote-box { border-left: 2px solid var(--muted); padding-left: 0.75rem; color: var(--muted); font-style: italic; font-size: 0.8rem; }
-
-/* Loading Animation Overlay */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(5,5,6,0.85);
-  z-index: 1000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 1rem;
-}
-.loading-overlay.active { display: flex; }
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--line);
-  border-top-color: var(--red);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-@media(max-width: 500px) {
-  .profile-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .field { flex-direction: column; }
-  .btn { width: 100%; }
+@media (max-width:480px){
+  .profile-row{ flex-direction:column; align-items:flex-start; }
+  .status-block{ text-align:left; }
+  .field{ flex-direction:column; }
+  .tabs-nav{ gap:1.25rem; }
 }
 </style>
 </head>
 <body class="auth-gate-logged-out" id="authGate">
 
-<!-- LOADING ANIMATION SCREEN -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div style="font-size: 0.85rem; letter-spacing: 0.1em; color: var(--red);">FETCHING ACCOUNT PAYLOAD...</div>
+<div class="loading-overlay" id="loadingOverlay" role="status" aria-live="polite">
+  <div class="spinner" aria-hidden="true"></div>
+  <span id="loadingLabel">Fetching account details…</span>
 </div>
 
 <main>
-  <!-- STATE A: SIMPLE LOGIN VIEW -->
+
+  <!-- LOGGED OUT -->
   <div class="initial-login-view">
-    <div class="panel accent-header stack" style="margin-top: 4rem; text-align: center;">
-      <h2 style="font-size: 1.5rem; font-weight: normal; color: var(--red);"><i class="bi bi-tools"></i> ITCH LOGIN FIXER [v1.4]</h2>
-      
-      <div class="quote-box">
-        "This is a temporary fix, so do not expect it to always work."<br>
-        <strong>v1.4 | 7.3.2026</strong>
-      </div>
-      
-      <p style="font-size: 0.85rem; line-height: 1.5; color: var(--muted);">
-        If you are getting the error that says you do not own Among Us on itch.io, this web app will fix it. It puts a special file in your among us app data folder so the game loads without checking if you own the game or not.
+    <div class="login-panel">
+      <span class="eyebrow">Among Us &middot; itch.io</span>
+      <h1>Fix the itch.io login error</h1>
+      <p class="lede">
+        If Among Us won't log in through itch.io, this writes a small verification file to your
+        game's local data folder so it stops asking. You'll need to <strong>own Among Us on itch.io</strong>
+        for it to work.
       </p>
-      
-      <button class="btn primary" id="loginBtn" type="button" style="padding: 1rem; font-size: 0.8rem;"><i class="bi bi-box-arrow-in-right"></i>Authorize / Force Login</button>
+      <button class="btn primary full" id="loginBtn" type="button">
+        <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+        Connect itch.io account
+      </button>
+      <p class="disclaimer">
+        This is a workaround, not an official patch, so it can stop working after an itch.io or Among Us update.
+        <span class="ver">v1.4 · Jul 2026</span>
+      </p>
     </div>
   </div>
 
-  <!-- STATE B: SIMPLE WORKBENCH -->
+  <!-- LOGGED IN -->
   <div class="dashboard-view">
-    
-    <!-- SECTION 1: SYSTEM DETAILS -->
-    <section class="panel accent-header stack">
+
+    <section class="panel account-strip" aria-labelledby="acct-heading">
+      <span class="eyebrow" id="acct-heading">Connected account</span>
+
       <div class="profile-row">
         <div class="user-info">
-          <img class="avatar" id="itchAvatar" alt="itch profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%230a0a0c'/%3E%3C/svg%3E">
+          <img class="avatar" id="itchAvatar" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23111'/%3E%3C/svg%3E">
           <div>
-            <div class="username-text" id="itchName">Loading profile...</div>
-            <div class="subtext">Itch ID: <span id="itchId">-</span></div>
+            <div class="username-text" id="itchName">Loading profile…</div>
+            <div class="subtext">itch.io ID <span id="itchId">—</span></div>
           </div>
         </div>
-        <div style="text-align: right;">
-          <div class="username-text" id="friendCode" style="color: var(--red);">Connecting...</div>
-          <div class="subtext">Among Us Account</div>
+        <div class="status-block">
+          <span class="status-line"><span class="status-dot pending" id="statusDot" aria-hidden="true"></span><span id="friendCode">Connecting…</span></span>
+          <div class="subtext">Innersloth account</div>
         </div>
       </div>
 
-      <div class="field">
-        <input class="token" id="itchToken" readonly value="" placeholder="Your login token code will show up here">
-        <button class="btn" id="copyToken" type="button"><i class="bi bi-copy"></i>Copy</button>
+      <div>
+        <label class="field-label" for="itchToken">Verification token</label>
+        <div class="field">
+          <input class="token" id="itchToken" readonly value="" aria-describedby="tokenHelp">
+          <button class="btn" id="copyToken" type="button"><i class="bi bi-copy" aria-hidden="true"></i>Copy</button>
+        </div>
+        <p id="tokenHelp" class="sr-only">This token goes into a local file that Among Us reads to verify your itch.io purchase. Keep it private.</p>
       </div>
 
-      <div style="display: flex; justify-content: flex-end;">
-        <button class="btn danger-link" id="logoutBtn" type="button"><i class="bi bi-box-arrow-left"></i>Disconnect Session</button>
+      <div class="strip-footer">
+        <button class="btn ghost" id="logoutBtn" type="button">Disconnect session</button>
       </div>
     </section>
 
-    <!-- SECTION 2: THE TWO FIX ROUTES (TABS) -->
-    <section class="panel stack">
-      <div class="tabs-nav">
-        <button class="tab-trigger active" onclick="switchTab('tab-auto')">Automated Method</button>
-        <button class="tab-trigger" onclick="switchTab('tab-manual')">Manual Method</button>
+    <section class="panel" aria-labelledby="fix-heading">
+      <span class="eyebrow" id="fix-heading" style="margin-bottom:1.1rem;">Apply the fix</span>
+
+      <div class="tabs-nav" role="tablist">
+        <button class="tab-trigger active" role="tab" aria-selected="true" aria-controls="tab-auto" id="tab-auto-btn" onclick="switchTab('tab-auto', this)" type="button">Automated</button>
+        <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="tab-manual" id="tab-manual-btn" onclick="switchTab('tab-manual', this)" type="button">Manual</button>
       </div>
 
-      <!-- AUTOMATED ROUTE -->
-      <div id="tab-auto" class="tab-content active stack">
-        <div class="banner">
-          <strong>Validation Requirement:</strong> You must own Among Us on itch.io for this local file trick to work inside your computer folder.
+      <div id="tab-auto" class="tab-content active" role="tabpanel" aria-labelledby="tab-auto-btn">
+        <div class="callout">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          <span>Downloads a file named <strong>itch</strong> with your token already inside it. You just move it into place.</span>
         </div>
-        <button class="btn primary" id="downloadItch" type="button" style="width: 100%; padding: 0.85rem;"><i class="bi bi-download"></i>Download Local Verification Override (itch file)</button>
+        <button class="btn primary full" id="downloadItch" type="button" style="margin-top:1rem;">
+          <i class="bi bi-download" aria-hidden="true"></i>
+          Download verification file
+        </button>
         <ol class="steps">
-          <li><span>On your keyboard, hold down <kbd>Win</kbd> and press the <kbd>R</kbd> key to open the Windows Run box.</span></li>
-          <li><span>Copy and paste this folder path inside the box, then press Enter: <code>%localappdata%low\Innersloth\Among Us</code></span></li>
-          <li><span>Drop your downloaded extensionless <code>itch</code> file directly into that folder.</span></li>
-          <li><span>If you see a file named <code>itchverify</code> in that same folder, delete it completely.</span></li>
+          <li>Press <kbd>Win</kbd> + <kbd>R</kbd> to open the Run dialog.</li>
+          <li>Paste <code>%localappdata%low\Innersloth\Among Us</code> and press Enter.</li>
+          <li>Move the downloaded <code>itch</code> file into that folder.</li>
+          <li>If a file named <code>itchverify</code> already exists there, delete it.</li>
         </ol>
       </div>
 
-      <!-- MANUAL ROUTE -->
-      <div id="tab-manual" class="tab-content stack">
-        <div class="banner">
-          Use this way if your internet browser blocks downloading unknown custom script configurations or setup files.
+      <div id="tab-manual" class="tab-content" role="tabpanel" aria-labelledby="tab-manual-btn">
+        <div class="callout">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          <span>Use this if your browser blocks downloading files with no extension.</span>
         </div>
         <ol class="steps">
-          <li><span>Press <kbd>Win</kbd> + <kbd>R</kbd> keys at the same time on your keyboard to open the Windows Run executor.</span></li>
-          <li><span>Paste this directory path code exactly and press Enter: <code>%localappdata%low\Innersloth\Among Us</code></span></li>
-          <li><span>Right-click an empty space inside that folder, go to <strong>New</strong>, and click <strong>Text Document</strong>.</span></li>
-          <li><span>Name the file exactly <code>itch</code>. Clear out the <code>.txt</code> piece from the name so it has no extension suffix.</span></li>
-          <li><span>Open that file, paste your unique login token code string you copied above into it, save it, and erase any <code>itchverify</code> file.</span></li>
+          <li>Press <kbd>Win</kbd> + <kbd>R</kbd> to open the Run dialog.</li>
+          <li>Paste <code>%localappdata%low\Innersloth\Among Us</code> and press Enter.</li>
+          <li>Right-click an empty space, choose <strong>New &rarr; Text Document</strong>.</li>
+          <li>Rename it to <code>itch</code>, removing the <code>.txt</code> extension entirely.</li>
+          <li>Open it, paste in the token copied above, save, and delete any <code>itchverify</code> file.</li>
         </ol>
       </div>
     </section>
 
-    <!-- SECTION 3: EXTRA FIXES -->
-    <section class="panel stack" style="border-left: 2px solid var(--red);">
-      <p class="subtext" style="line-height: 1.5;">
-        Want to link your itch.io accounts together with other gaming platforms or fix existing profile and network restrictions across your account arrays?
-      </p>
-      <button class="btn primary" id="openMerge" type="button" style="padding: 0.85rem;"><i class="bi bi-intersect"></i>Open Account Management Wrapper</button>
+    <section class="panel extra-fixes stack" aria-labelledby="extra-heading">
+      <span class="eyebrow" id="extra-heading">Linking other platforms</span>
+      <p>Merge this itch.io account with other stores, or clear up conflicting Innersloth account links.</p>
+      <button class="btn" id="openMerge" type="button">
+        <i class="bi bi-intersect" aria-hidden="true"></i>
+        Open account management
+      </button>
     </section>
 
   </div>
@@ -284,40 +451,43 @@ const el = {
   downloadItch: document.getElementById('downloadItch'),
   openMerge: document.getElementById('openMerge'),
   friendCode: document.getElementById('friendCode'),
+  statusDot: document.getElementById('statusDot'),
   loadingOverlay: document.getElementById('loadingOverlay'),
+  loadingLabel: document.getElementById('loadingLabel'),
   copyToken: document.getElementById('copyToken')
 };
 
-function toggleLoading(show) {
+function toggleLoading(show, label) {
   if (!el.loadingOverlay) return;
-  if (show) {
-    el.loadingOverlay.classList.add('active');
-  } else {
-    el.loadingOverlay.classList.remove('active');
-  }
+  if (label && el.loadingLabel) el.loadingLabel.textContent = label;
+  el.loadingOverlay.classList.toggle('active', !!show);
 }
 
-function switchTab(id) {
-  document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-trigger').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-selected', 'false');
+  });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  
-  const targetBtn = Array.from(document.querySelectorAll('.tab-trigger')).find(b => b.getAttribute('onclick').includes(id));
-  if(targetBtn) targetBtn.classList.add('active');
-  
+
+  if (btn) {
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+  }
   const targetContent = document.getElementById(id);
-  if(targetContent) targetContent.classList.add('active');
+  if (targetContent) targetContent.classList.add('active');
 }
 
 function setToken(token) {
   state.token = token.trim();
   if (el.itchToken) el.itchToken.value = state.token;
-  
+
   if (state.token) {
     localStorage.setItem('au:itchToken', state.token);
-    if (el.authGate) el.authGate.className = "auth-gate-logged-in";
+    if (el.authGate) el.authGate.className = 'auth-gate-logged-in';
   } else {
     localStorage.removeItem('au:itchToken');
-    if (el.authGate) el.authGate.className = "auth-gate-logged-out";
+    if (el.authGate) el.authGate.className = 'auth-gate-logged-out';
   }
 }
 
@@ -346,20 +516,18 @@ function parseTokenFromHash() {
 
 async function fetchItchProfile() {
   if (!state.token) return;
-  toggleLoading(true);
+  toggleLoading(true, 'Fetching itch.io profile…');
   try {
-    const response = await fetch('/api/profile', {
-      headers: { Authorization: state.token }
-    });
-    if (!response.ok) throw new Error(`${response.status}`);
+    const response = await fetch('/api/profile', { headers: { Authorization: state.token } });
+    if (!response.ok) throw new Error(String(response.status));
     const data = await response.json();
     const user = data.user || {};
     if (el.itchName) el.itchName.textContent = user.username || 'itch.io user';
-    if (el.itchId) el.itchId.textContent = user.id || '-';
+    if (el.itchId) el.itchId.textContent = user.id || '—';
     if (user.cover_url && el.itchAvatar) el.itchAvatar.src = user.cover_url;
   } catch (error) {
-    if (el.itchName) el.itchName.textContent = 'Token Loaded';
-    if (el.itchId) el.itchId.textContent = 'Active Fix';
+    if (el.itchName) el.itchName.textContent = 'Token loaded';
+    if (el.itchId) el.itchId.textContent = 'active';
   } finally {
     toggleLoading(false);
   }
@@ -386,13 +554,14 @@ function openAccountManagement() {
 
 async function fetchJson(url, options) {
   const response = await fetch(url, options);
-  if (!response.ok) throw new Error(`${response.status}`);
+  if (!response.ok) throw new Error(String(response.status));
   return await response.json();
 }
 
 async function loadAmongUsAccount() {
   if (!state.token) return;
-  toggleLoading(true);
+  toggleLoading(true, 'Linking Innersloth account…');
+  if (el.statusDot) { el.statusDot.classList.remove('ok'); el.statusDot.classList.add('pending'); }
   try {
     const authUrl = new URL('https://accounts.innersloth.com/eos-auth');
     authUrl.searchParams.set('store', 'itchio');
@@ -405,14 +574,16 @@ async function loadAmongUsAccount() {
     });
 
     const username = usernameData?.data?.attributes || {};
-    
+
     if (el.friendCode) {
       el.friendCode.textContent = username.username && username.discriminator
         ? `${username.username}#${username.discriminator}`
-        : 'Logged In';
+        : 'Logged in';
     }
+    if (el.statusDot) { el.statusDot.classList.remove('pending'); el.statusDot.classList.add('ok'); }
   } catch (error) {
-    if (el.friendCode) el.friendCode.textContent = "Login Ready!";
+    if (el.friendCode) el.friendCode.textContent = 'Ready to fix';
+    if (el.statusDot) { el.statusDot.classList.remove('pending'); }
   } finally {
     toggleLoading(false);
   }
@@ -423,24 +594,22 @@ function initListeners() {
   if (el.logoutBtn) el.logoutBtn.addEventListener('click', logout);
   if (el.downloadItch) el.downloadItch.addEventListener('click', downloadItchFile);
   if (el.openMerge) el.openMerge.addEventListener('click', openAccountManagement);
-  
+
   if (el.copyToken) {
     el.copyToken.addEventListener('click', async () => {
       if (!state.token) return;
       await navigator.clipboard.writeText(state.token);
-      const origText = el.copyToken.innerHTML;
-      el.copyToken.innerHTML = '<i class="bi bi-check"></i>Copied';
-      setTimeout(() => el.copyToken.innerHTML = origText, 1500);
+      const origHTML = el.copyToken.innerHTML;
+      el.copyToken.innerHTML = '<i class="bi bi-check" aria-hidden="true"></i>Copied';
+      setTimeout(() => { el.copyToken.innerHTML = origHTML; }, 1500);
     });
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   initListeners();
-  
-  if (state.token) {
-    setToken(state.token);
-  }
+
+  if (state.token) setToken(state.token);
   parseTokenFromHash();
 
   if (state.token) {
