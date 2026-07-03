@@ -10,288 +10,308 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#090909;
-  --panel:#0e0e10;
-  --red:#c8151b;
-  --text:#f0f0f2;
-  --muted:rgba(240,240,242,.65);
-  --dim:rgba(240,240,242,.09);
-  --line:rgba(240,240,242,.14);
-  --ok:#00c896;
-  --warn:#f59e0b;
+  --bg:#050506;
+  --panel:#0a0a0c;
+  --panel-light:#111115;
+  --red:#e51b24;
+  --red-dim:rgba(229,27,36,0.15);
+  --text:#f5f5f7;
+  --muted:rgba(245,245,247,0.6);
+  --dim:rgba(245,245,247,0.06);
+  --line:rgba(245,245,247,0.1);
   --f:'Share Tech Mono',monospace;
 }
 html{min-height:100%;background:var(--bg);}
 body{
   font-family:var(--f);
   background:
-    radial-gradient(circle at 18% 8%,rgba(200,21,27,.12),transparent 26rem),
-    linear-gradient(180deg,#090909,#070707 58%,#0b0b0c);
+    radial-gradient(circle at 50% 0%,rgba(229,27,36,0.12),transparent 40rem),
+    linear-gradient(180deg,#050506,#08080a 100%);
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
+  padding:4rem 1rem;
 }
 body::after{
   content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
   pointer-events:none;z-index:100;
 }
 main{
-  width:min(1120px,calc(100% - 42px));
+  width:min(680px,100%);
   margin:0 auto;
-  padding:3rem 0 4rem;
   position:relative;
   z-index:1;
 }
 
 /* Auth Gate States */
-.auth-gate-logged-out .initial-login-view { display: block; }
+.auth-gate-logged-out .initial-login-view { display: flex; }
 .auth-gate-logged-out .dashboard-view { display: none; }
 .auth-gate-logged-in .initial-login-view { display: none; }
-.auth-gate-logged-in .dashboard-view { display: grid; }
+.auth-gate-logged-in .dashboard-view { display: flex; }
 
+.initial-login-view {
+  min-height: 50vh;
+  align-items: center;
+  justify-content: center;
+}
 .login-card-center {
-  max-width: 500px;
-  margin: 6rem auto;
+  width: 100%;
+  max-width: 480px;
   text-align: center;
-  border: 1px solid var(--dim);
-  background: rgba(10,10,12,.78);
-  padding: 3rem 2rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 3.5rem 2rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:minmax(320px,.9fr) minmax(360px,1.1fr);
-  gap:1.1rem;
-  align-items:start;
+.dashboard-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
-.panel{
-  border:1px solid var(--dim);
-  background:rgba(10,10,12,.78);
-  padding:1.25rem;
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 1.5rem;
 }
-.panel.redline{border-left:2px solid rgba(200,21,27,.45);}
-.stack{display:flex;flex-direction:column;gap:1rem;}
-.panel-title{
-  font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--text);
-  margin-bottom:.9rem;
+.panel.accent-header {
+  border-top: 3px solid var(--red);
 }
-.notice{
-  border-left:1px solid rgba(245,158,11,.35);
-  color:var(--text);
-  font-size:.72rem;
-  line-height:1.75;
-  padding-left:.9rem;
+.stack { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* Identity block */
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--dim);
+  padding-bottom: 1.25rem;
 }
-.notice.danger-alert {
-  border-left-color: var(--red);
+.user-meta-group { display: flex; align-items: center; gap: 1rem; }
+.avatar-frame {
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--red);
+  padding: 2px;
+  background: #000;
 }
-.profile-card{
-  display:grid;
-  grid-template-columns:96px 1fr;
-  gap:1rem;
-  align-items:center;
-}
-.avatar{
-  width:96px;height:96px;
-  border:1px solid rgba(200,21,27,.5);
-  background:#050505;
-  object-fit:cover;
-}
-.identity{min-width:0;}
-.name{font-size:1.15rem;color:var(--text);overflow-wrap:anywhere;}
-.meta{font-size:.68rem;color:var(--muted);line-height:1.7;margin-top:.35rem;overflow-wrap:anywhere;}
-.field{
-  display:flex;
-  gap:.55rem;
-  align-items:stretch;
-}
-.token{
-  flex:1;
-  min-width:0;
-  border:1px solid var(--dim);
-  background:#070708;
-  color:rgba(240,240,242,.78);
-  font-family:var(--f);
-  font-size:.7rem;
-  padding:.7rem .8rem;
-  outline:none;
-}
-.token[readonly]{cursor:default;}
-.btn{
-  font-family:var(--f);
-  font-size:.68rem;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-  background:transparent;
-  color:var(--text);
-  border:1px solid var(--line);
-  padding:.72rem 1rem;
-  cursor:pointer;
-  text-decoration:none;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:.45rem;
-  transition:border-color .12s,color .12s,background .12s;
-  white-space:nowrap;
-}
-.btn:hover{border-color:var(--red);color:var(--red);}
-.btn.primary{border-color:rgba(200,21,27,.55);background:rgba(200,21,27,.08);}
-.btn.primary:hover{background:rgba(200,21,27,.15);color:#fff;}
-.btn.danger{border-color:rgba(200,21,27,.4);color:var(--muted);}
-.btn.danger:hover{background:rgba(200,21,27,.2);color:#fff;border-color:var(--red);}
-.btn:disabled{opacity:.45;cursor:not-allowed;}
-.btn:disabled:hover{border-color:var(--line);color:var(--text);background:transparent;}
-.actions{display:flex;gap:.65rem;flex-wrap:wrap;}
-.steps{
-  counter-reset:step;
-  display:grid;
-  gap:.7rem;
-  list-style:none;
-}
-.steps li{
-  counter-increment:step;
-  display:grid;
-  grid-template-columns:2.4rem 1fr;
-  gap:.85rem;
-  align-items:start;
-  color:var(--muted);
-  font-size:.72rem;
-  line-height:1.75;
-}
-.steps li::before{
-  content:counter(step,decimal-leading-zero);
-  color:var(--red);
-  border:1px solid rgba(200,21,27,.3);
-  padding:.25rem 0;
-  text-align:center;
-  font-size:.62rem;
-}
-code, kbd{
-  color:var(--text);
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.06);
-  padding:.08rem .32rem;
-}
-kbd{
+.avatar { width: 100%; height: 100%; object-fit: cover; }
+.username-text { font-size: 1.25rem; color: var(--text); }
+.id-subtext { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+
+/* Form inputs & buttons */
+.field { display: flex; gap: 0.5rem; }
+.token {
+  flex: 1;
+  background: var(--panel-light);
+  border: 1px solid var(--line);
+  color: var(--text);
   font-family: var(--f);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.2);
+  font-size: 0.75rem;
+  padding: 0.75rem 1rem;
+  outline: none;
 }
-.account-head{
-  display:grid;
-  grid-template-columns:74px 1fr;
-  gap:1rem;
-  align-items:center;
+.btn {
+  font-family: var(--f);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
 }
-.au-avatar{
-  width:74px;height:74px;
-  border:1px solid rgba(200,21,27,.45);
-  object-fit:cover;
-  background:#050505;
+.btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+.btn.primary { border-color: var(--red); background: rgba(229,27,36,0.08); color: var(--text); }
+.btn.primary:hover { background: var(--red); color: #fff; }
+.btn.danger-link { border: none; color: var(--muted); padding: 0.5rem; font-size: 0.68rem; }
+.btn.danger-link:hover { color: var(--red); background: transparent; text-decoration: underline; }
+
+/* Tabs implementation */
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  gap: 0.25rem;
 }
-.friend{font-size:1.2rem;overflow-wrap:anywhere;}
-.chips{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:0.4rem;}
-.chip{
-  display:inline-flex;
-  gap:.45rem;
-  align-items:center;
-  border:1px solid var(--dim);
-  background:rgba(255,255,255,.018);
-  color:var(--text);
-  padding:.5rem .65rem;
-  font-size:.72rem;
+.tab-trigger {
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: var(--muted);
+  font-family: var(--f);
+  font-size: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: translateY(1px);
 }
-.chip i{color:var(--red);font-size:.85rem;}
-@media (max-width:900px){
-  main{width:min(100% - 28px,1120px);padding-top:2rem;}
-  .grid{grid-template-columns:1fr;}
+.tab-trigger.active {
+  color: var(--red);
+  background: var(--panel);
+  border-color: var(--line);
+  border-top: 2px solid var(--red);
 }
-@media (max-width:560px){
-  .profile-card,.account-head{grid-template-columns:1fr;}
-  .field{flex-direction:column;}
-  .btn{width:100%;}
+.tab-content { display: none; padding-top: 1.25rem; }
+.tab-content.active { display: block; }
+
+/* Clean Lists */
+.steps { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+.steps li {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--muted);
+  display: flex;
+  gap: 0.75rem;
+}
+.steps li::before {
+  content: "»";
+  color: var(--red);
+  font-weight: bold;
+}
+
+code, kbd {
+  color: #fff;
+  background: var(--panel-light);
+  border: 1px solid var(--line);
+  padding: 0.1rem 0.4rem;
+  font-size: 0.75rem;
+}
+kbd { box-shadow: 0 1.5px 0 rgba(255,255,255,0.15); font-family: var(--f); }
+
+.notice-banner {
+  background: var(--panel-light);
+  border-left: 2px solid var(--red);
+  padding: 1rem;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.platforms-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--panel-light);
+  border: 1px solid var(--line);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.72rem;
+}
+.chip i { color: var(--red); }
+
+@media(max-width: 500px) {
+  .profile-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .field { flex-direction: column; }
+  .btn { width: 100%; }
 }
 </style>
 </head>
 <body class="auth-gate-logged-out" id="authGate">
 
 <main>
-  <!-- STATE A: ONLY INITIAL AUTH REQUIREMENT SEEN -->
+  <!-- STATE A: GATEWAY GATE -->
   <div class="initial-login-view">
     <div class="panel login-card-center stack">
-      <div class="panel-title" style="margin-bottom: 0.5rem;">Authentication Proxy Gate</div>
-      <p style="color: var(--muted); font-size: 0.8rem; margin-bottom: 1.5rem;">You must authorize via itch.io to force account verification options and initialize structural modifications.</p>
-      <button class="btn primary" id="loginBtn" type="button" style="padding: 1rem;"><i class="bi bi-box-arrow-in-right"></i>Authorize / Force Login</button>
+      <div style="font-size: 0.7rem; letter-spacing: 0.2em; color: var(--red); text-transform: uppercase;">System Override</div>
+      <h2 style="font-size: 2rem; font-weight: normal; letter-spacing: -0.02em;">Authentication Gate</h2>
+      <p style="color: var(--muted); font-size: 0.8rem; line-height: 1.6;">Authorize your developer credentials via itch.io to force account parameters, lift client execution restrictions, and fetch network wrappers.</p>
+      <button class="btn primary" id="loginBtn" type="button" style="padding: 1rem; font-size: 0.75rem;"><i class="bi bi-box-arrow-in-right"></i>Authorize / Force Login</button>
     </div>
   </div>
 
-  <!-- STATE B: CLEAN OPERATIONAL WORKBENCH -->
-  <div class="grid dashboard-view">
-    <div class="stack">
-      <section class="panel redline stack">
-        <div class="panel-title">Itch.io Identity</div>
-        <div class="profile-card">
-          <img class="avatar" id="itchAvatar" alt="itch.io profile picture" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23050505'/%3E%3Cpath d='M20 36h56v24H20z' fill='%23c8151b' opacity='.25'/%3E%3Cpath d='M28 44h40v8H28z' fill='%23f0f0f2' opacity='.55'/%3E%3C/svg%3E">
-          <div class="identity">
-            <div class="name" id="itchName">Resolving Profile...</div>
-            <div class="meta">ID: <span id="itchId">Unavailable</span></div>
-            <div class="meta">Profile: <a class="link" id="itchProfile" href="#" target="_blank" rel="noopener">Unavailable</a></div>
+  <!-- STATE B: STREAMLINED ACCOUNT FIXER CONSOLE -->
+  <div class="dashboard-view">
+    
+    <!-- SECTION 1: IDENTITIES -->
+    <section class="panel accent-header stack">
+      <div class="profile-row">
+        <div class="user-meta-group">
+          <div class="avatar-frame">
+            <img class="avatar" id="itchAvatar" alt="itch" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23050505'/%3E%3Cpath d='M20 36h56v24H20z' fill='%23e51b24' opacity='.15'/%3E%3C/svg%3E">
+          </div>
+          <div>
+            <div class="username-text" id="itchName">Resolving Target...</div>
+            <div class="id-subtext">Itch ID: <span id="itchId">-</span></div>
           </div>
         </div>
-        <div class="field">
-          <input class="token" id="itchToken" readonly value="" placeholder="Token structural array">
-          <button class="btn" id="copyToken" type="button"><i class="bi bi-copy"></i>Copy</button>
+        <div style="text-align: right;">
+          <div class="username-text" id="friendCode" style="font-size: 1.1rem; color: var(--red);">Payload Cache Offline</div>
+          <div class="id-subtext">Among Us Core Account</div>
         </div>
-        <div class="actions">
-          <a class="btn" id="viewProfile" href="#" target="_blank" rel="noopener"><i class="bi bi-person-vcard"></i>View profile</a>
-          <button class="btn danger" id="logoutBtn" type="button"><i class="bi bi-box-arrow-left"></i>Log Out</button>
-        </div>
-      </section>
+      </div>
 
-      <section class="panel stack">
-        <div class="panel-title">Asset Deployment Framework</div>
-        <div class="notice">
-          <strong>Notice:</strong> You must legally own Among Us on itch.io for this structural override validation file to properly authorize your launcher pipeline configuration.
+      <div class="field">
+        <input class="token" id="itchToken" readonly value="" placeholder="Matrix Structural Payload String">
+        <button class="btn" id="copyToken" type="button"><i class="bi bi-copy"></i>Copy</button>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="platforms-box" id="platforms">
+          <!-- Dynamic clean platform icons spawn here -->
         </div>
-        <div class="actions">
-          <button class="btn primary" id="downloadItch" type="button"><i class="bi bi-download"></i>Download itch file</button>
+        <button class="btn danger-link" id="logoutBtn" type="button"><i class="bi bi-box-arrow-left"></i>Disconnect Session</button>
+      </div>
+    </section>
+
+    <!-- SECTION 2: TABS REWORKED MANIFEST DEPLOYMENT -->
+    <section class="panel stack">
+      <div class="tabs-nav">
+        <button class="tab-trigger active" onclick="switchTab('tab-auto')">Automated Route</button>
+        <button class="tab-trigger" onclick="switchTab('tab-manual')">Manual Injected Route</button>
+      </div>
+
+      <!-- TAB 1: DOWNLOAD -->
+      <div id="tab-auto" class="tab-content active stack">
+        <div class="notice-banner">
+          <strong>Validation Requirement:</strong> You must own Among Us on itch.io for this structural override file configuration to authorize correctly within your local sandbox directory environment.
+        </div>
+        <div style="text-align: center; padding: 0.5rem 0;">
+          <button class="btn primary" id="downloadItch" type="button" style="width: 100%; padding: 0.9rem;"><i class="bi bi-download"></i>Download Local Verification Override</button>
         </div>
         <ol class="steps">
-          <li><span>Press <kbd>Win</kbd> + <kbd>R</kbd> on your keyboard to initialize the Windows Run dialog utility box.</span></li>
-          <li><span>Paste the following string verbatim and hit Enter: <code>%AppData%\..\LocalLow\Innersloth\Among Us</code></span></li>
-          <li><span>Drop the extensionless downloaded <code>itch</code> configuration file directly into this target directory.</span></li>
-          <li><span>Completely delete any file structurally identified as <code>itchverify</code> within this sandbox folder context.</span></li>
+          <li><span>Hold down <kbd>Win</kbd> and press <kbd>R</kbd> to unlock your runtime system prompt window utility execution box.</span></li>
+          <li><span>Copy and insert this exact directory line verbatim, then hit enter: <code>%localappdata%low\Innersloth\Among Us</code></span></li>
+          <li><span>Drop the extensionless downloaded <code>itch</code> document block right into the opened file manager folder structure.</span></li>
+          <li><span>Instantly drop, unlink, or wipe out any asset named <code>itchverify</code> remaining inside that target folder.</span></li>
         </ol>
-      </section>
-    </div>
+      </div>
 
-    <div class="stack">
-      <section class="panel redline stack">
-        <div class="panel-title">Among Us Client</div>
-        <div class="account-head">
-          <img class="au-avatar" src="https://static.wikia.nocookie.net/among-us-wiki/images/e/e9/Friends.png/revision/latest?cb=20260522051925" alt="Among Us friends icon">
-          <div>
-            <div class="friend" id="friendCode">Loading internal payload...</div>
-            <div class="meta">Assigned unique friend identity string</div>
-          </div>
+      <!-- TAB 2: MANUAL CREATION -->
+      <div id="tab-manual" class="tab-content stack">
+        <div class="notice-banner" style="border-left-color: var(--muted);">
+          Use this pipeline route if your browser security scripts blocks downloading unknown configuration binaries or file objects.
         </div>
-        
-        <div style="margin-top: 0.5rem;">
-          <div style="font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--red); margin-bottom: 0.5rem;">Assigned Platforms</div>
-          <div class="chips" id="platforms"></div>
-        </div>
-      </section>
+        <ol class="steps">
+          <li><span>Press <kbd>Win</kbd> + <kbd>R</kbd> on your mechanical keyboard arrays to bring up the Windows native system Run window executor.</span></li>
+          <li><span>Type or paste the directory root string precisely: <code>%localappdata%low\Innersloth\Among Us</code> and press enter.</span></li>
+          <li><span>Right click empty workspace space inside that directory context -> select <strong>New</strong> -> <strong>Text Document</strong>.</span></li>
+          <li><span>Name it strictly <code>itch</code> and delete its extension tag (ensure it is NOT titled <code>itch.txt</code>, it must have no suffix extension).</span></li>
+          <li><span>Open it, paste your unique string token copied above into it, save configurations, and destroy any <code>itchverify</code> file there.</span></li>
+        </ol>
+      </div>
+    </section>
 
-      <section class="panel stack">
-        <div class="panel-title">Account Merge Options</div>
-        <div class="notice danger-alert">
-          This is if you want to merge your itch.io among us account with other ones. And also fix niko's itch.io restriction.
-        </div>
-        <button class="btn primary" id="openMerge" type="button" style="padding: 0.85rem;"><i class="bi bi-intersect"></i>Open Account Management Wrapper</button>
-      </section>
-    </div>
+    <!-- SECTION 3: MERGING -->
+    <section class="panel stack" style="border-left: 2px solid var(--red);">
+      <p style="font-size: 0.78rem; line-height: 1.6; color: var(--muted);">
+        This process lets you bridge your itch.io infrastructure accounts directly with foreign platforms, bypass third party restrictions, and clear up existing restrictions across your account arrays.
+      </p>
+      <button class="btn primary" id="openMerge" type="button" style="padding: 0.85rem;"><i class="bi bi-intersect"></i>Initialize Official Profile Account Consolidation Wrapper</button>
+    </section>
+
   </div>
 </main>
 
@@ -306,10 +326,7 @@ const el = {
   itchAvatar: document.getElementById('itchAvatar'),
   itchName: document.getElementById('itchName'),
   itchId: document.getElementById('itchId'),
-  itchProfile: document.getElementById('itchProfile'),
   itchToken: document.getElementById('itchToken'),
-  viewProfile: document.getElementById('viewProfile'),
-  copyToken: document.getElementById('copyToken'),
   loginBtn: document.getElementById('loginBtn'),
   logoutBtn: document.getElementById('logoutBtn'),
   downloadItch: document.getElementById('downloadItch'),
@@ -317,6 +334,15 @@ const el = {
   friendCode: document.getElementById('friendCode'),
   platforms: document.getElementById('platforms')
 };
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  const targetBtn = Array.from(document.querySelectorAll('.tab-trigger')).find(b => b.getAttribute('onclick').includes(id));
+  if(targetBtn) targetBtn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
 
 function setToken(token) {
   state.token = token.trim();
@@ -383,16 +409,11 @@ async function fetchItchProfile() {
     const data = await response.json();
     const user = data.user || {};
     el.itchName.textContent = user.username || 'itch.io user';
-    el.itchId.textContent = user.id || 'Unavailable';
-    const profileUrl = user.url || (user.username ? `https://${user.username}.itch.io/` : '#');
-    el.itchProfile.href = profileUrl;
-    el.itchProfile.textContent = profileUrl === '#' ? 'Unavailable' : profileUrl;
-    el.viewProfile.href = profileUrl;
+    el.itchId.textContent = user.id || '-';
     if (user.cover_url) el.itchAvatar.src = user.cover_url;
   } catch (error) {
-    el.itchName.textContent = 'Token Verified';
-    el.itchId.textContent = 'Active Sandbox';
-    el.itchProfile.textContent = 'Unavailable';
+    el.itchName.textContent = 'Token Secure';
+    el.itchId.textContent = 'Verified Sandbox';
   }
 }
 
@@ -474,7 +495,6 @@ el.copyToken.addEventListener('click', async () => {
 el.downloadItch.addEventListener('click', downloadItchFile);
 el.openMerge.addEventListener('click', openAccountManagement);
 
-// Execution Sequence
 if (state.token) {
   setToken(state.token);
 }
