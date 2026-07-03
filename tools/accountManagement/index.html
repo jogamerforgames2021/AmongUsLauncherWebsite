@@ -131,6 +131,24 @@ button{ font:inherit; }
   text-decoration-color:transparent;
 }
 .btn.ghost:hover{ background:transparent; color:var(--muted); text-decoration-color:currentColor; }
+.btn.logout{
+  border-color:var(--red-line);
+  color:var(--red);
+}
+.btn.logout:hover{ background:var(--red); border-color:var(--red); color:oklch(99% 0 0); }
+
+.icon-btn{
+  font-family:var(--mono);
+  background:transparent;
+  color:var(--faint);
+  border:1px solid var(--line);
+  width:28px; height:28px;
+  flex:none;
+  display:inline-flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.icon-btn:hover{ border-color:var(--red-line); color:var(--red); background:var(--red-dim); }
 
 .disclaimer{
   font-size:0.72rem;
@@ -198,11 +216,18 @@ button{ font:inherit; }
   min-width:0;
 }
 .token:focus{ border-color:var(--red-line); color:var(--text); }
+.token.highlighted{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px var(--red-dim);
+  color:var(--text);
+}
 
 .strip-footer{
-  display:flex; justify-content:flex-end;
+  display:flex; justify-content:space-between; align-items:center;
   border-top:1px solid var(--line);
   padding-top:0.85rem;
+  gap:0.75rem;
+  flex-wrap:wrap;
 }
 
 /* ---------- Tabs ---------- */
@@ -278,6 +303,33 @@ code,kbd{
   font-family:var(--mono);
   font-size:0.78rem;
 }
+kbd.key-win{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:1.6em; height:1.4em;
+  padding:0;
+  vertical-align:-0.25em;
+}
+kbd.key-win i{ font-size:0.85em; }
+
+.path-row{
+  display:inline-flex; align-items:center; gap:0.4rem;
+  vertical-align:-0.3em;
+}
+.path-row code{ padding:0.1rem 0.35rem; }
+
+.token-ref{
+  background:transparent;
+  border:none;
+  color:var(--red);
+  font-family:inherit;
+  font-size:inherit;
+  text-decoration:underline;
+  text-decoration-style:dotted;
+  text-underline-offset:2px;
+  cursor:pointer;
+  padding:0;
+}
+.token-ref:hover{ text-decoration-style:solid; }
 
 /* ---------- Extra fixes ---------- */
 .extra-fixes p{ font-size:0.83rem; line-height:1.6; color:var(--muted); max-width:48ch; }
@@ -378,7 +430,14 @@ code,kbd{
       </div>
 
       <div class="strip-footer">
-        <button class="btn ghost" id="logoutBtn" type="button">Disconnect session</button>
+        <button class="btn" id="openItchProfile" type="button">
+          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+          Open itch.io account
+        </button>
+        <button class="btn logout" id="logoutBtn" type="button">
+          <i class="bi bi-box-arrow-left" aria-hidden="true"></i>
+          Log out
+        </button>
       </div>
     </section>
 
@@ -397,11 +456,11 @@ code,kbd{
         </div>
         <button class="btn primary full" id="downloadItch" type="button" style="margin-top:1rem;">
           <i class="bi bi-download" aria-hidden="true"></i>
-          Download verification file
+          Download the "itch" file
         </button>
         <ol class="steps">
-          <li>Press <kbd>Win</kbd> + <kbd>R</kbd> to open the Run dialog.</li>
-          <li>Paste <code>%localappdata%low\Innersloth\Among Us</code> and press Enter.</li>
+          <li>Press <kbd class="key-win" aria-label="Windows key"><i class="bi bi-windows" aria-hidden="true"></i></kbd> + <kbd>R</kbd> to open the Run dialog.</li>
+          <li>Paste in <span class="path-row"><code>%localappdata%low\Innersloth\Among Us</code><button class="icon-btn copy-path" type="button" data-copy="%localappdata%low\Innersloth\Among Us" aria-label="Copy folder path"><i class="bi bi-copy" aria-hidden="true"></i></button></span> and press Enter.</li>
           <li>Move the downloaded <code>itch</code> file into that folder.</li>
           <li>If a file named <code>itchverify</code> already exists there, delete it.</li>
         </ol>
@@ -413,11 +472,11 @@ code,kbd{
           <span>Use this if your browser blocks downloading files with no extension.</span>
         </div>
         <ol class="steps">
-          <li>Press <kbd>Win</kbd> + <kbd>R</kbd> to open the Run dialog.</li>
-          <li>Paste <code>%localappdata%low\Innersloth\Among Us</code> and press Enter.</li>
+          <li>Press <kbd class="key-win" aria-label="Windows key"><i class="bi bi-windows" aria-hidden="true"></i></kbd> + <kbd>R</kbd> to open the Run dialog.</li>
+          <li>Paste in <span class="path-row"><code>%localappdata%low\Innersloth\Among Us</code><button class="icon-btn copy-path" type="button" data-copy="%localappdata%low\Innersloth\Among Us" aria-label="Copy folder path"><i class="bi bi-copy" aria-hidden="true"></i></button></span> and press Enter.</li>
           <li>Right-click an empty space, choose <strong>New &rarr; Text Document</strong>.</li>
-          <li>Rename it to <code>itch</code>, removing the <code>.txt</code> extension entirely.</li>
-          <li>Open it, paste in the token copied above, save, and delete any <code>itchverify</code> file.</li>
+          <li>Rename it to <code>itch</code> and delete the <code>.txt</code> extension so nothing is left after the name.</li>
+          <li>Open it, paste in the <button class="token-ref" type="button" aria-describedby="itchToken">token</button> copied above, save, and delete any <code>itchverify</code> file.</li>
         </ol>
       </div>
     </section>
@@ -454,8 +513,11 @@ const el = {
   statusDot: document.getElementById('statusDot'),
   loadingOverlay: document.getElementById('loadingOverlay'),
   loadingLabel: document.getElementById('loadingLabel'),
-  copyToken: document.getElementById('copyToken')
+  copyToken: document.getElementById('copyToken'),
+  openItchProfile: document.getElementById('openItchProfile')
 };
+
+state.profileUrl = '';
 
 function toggleLoading(show, label) {
   if (!el.loadingOverlay) return;
@@ -525,6 +587,7 @@ async function fetchItchProfile() {
     if (el.itchName) el.itchName.textContent = user.username || 'itch.io user';
     if (el.itchId) el.itchId.textContent = user.id || '—';
     if (user.cover_url && el.itchAvatar) el.itchAvatar.src = user.cover_url;
+    state.profileUrl = user.url || '';
   } catch (error) {
     if (el.itchName) el.itchName.textContent = 'Token loaded';
     if (el.itchId) el.itchId.textContent = 'active';
@@ -550,6 +613,28 @@ function openAccountManagement() {
   if (!state.token) return;
   const url = `https://accounts.innersloth.com/account-management?store=itchio&token=${encodeURIComponent(state.token)}`;
   window.open(url, '_blank', 'noopener');
+}
+
+function openItchProfile() {
+  window.open(state.profileUrl || 'https://itch.io/my-feed', '_blank', 'noopener');
+}
+
+function highlightToken(on) {
+  if (!el.itchToken) return;
+  el.itchToken.classList.toggle('highlighted', on);
+  if (on) el.itchToken.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function copyToClipboard(text, triggerBtn) {
+  try {
+    await navigator.clipboard.writeText(text);
+    if (!triggerBtn) return;
+    const origHTML = triggerBtn.innerHTML;
+    triggerBtn.innerHTML = '<i class="bi bi-check" aria-hidden="true"></i>';
+    setTimeout(() => { triggerBtn.innerHTML = origHTML; }, 1200);
+  } catch (error) {
+    /* clipboard unavailable, silently ignore */
+  }
 }
 
 async function fetchJson(url, options) {
@@ -594,6 +679,7 @@ function initListeners() {
   if (el.logoutBtn) el.logoutBtn.addEventListener('click', logout);
   if (el.downloadItch) el.downloadItch.addEventListener('click', downloadItchFile);
   if (el.openMerge) el.openMerge.addEventListener('click', openAccountManagement);
+  if (el.openItchProfile) el.openItchProfile.addEventListener('click', openItchProfile);
 
   if (el.copyToken) {
     el.copyToken.addEventListener('click', async () => {
@@ -604,6 +690,19 @@ function initListeners() {
       setTimeout(() => { el.copyToken.innerHTML = origHTML; }, 1500);
     });
   }
+
+  document.querySelectorAll('.copy-path').forEach(btn => {
+    btn.addEventListener('click', () => copyToClipboard(btn.dataset.copy, btn));
+  });
+
+  document.querySelectorAll('.token-ref').forEach(ref => {
+    ref.addEventListener('mouseenter', () => highlightToken(true));
+    ref.addEventListener('mouseleave', () => highlightToken(false));
+    ref.addEventListener('click', () => {
+      highlightToken(true);
+      if (el.itchToken) el.itchToken.focus();
+    });
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
