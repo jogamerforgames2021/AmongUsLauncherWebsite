@@ -148,11 +148,12 @@ main{
   color: var(--muted);
   font-family: var(--f);
   font-size: 0.75rem;
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 125rem;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transform: translateY(1px);
+  padding: 0.75rem 1.25rem;
 }
 .tab-trigger.active {
   color: var(--red);
@@ -259,9 +260,7 @@ kbd { box-shadow: 0 1.5px 0 rgba(255,255,255,0.15); font-family: var(--f); }
       </div>
 
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="platforms-box" id="platforms">
-          <!-- Dynamic clean platform icons spawn here -->
-        </div>
+        <div class="platforms-box" id="platforms"></div>
         <button class="btn danger-link" id="logoutBtn" type="button"><i class="bi bi-box-arrow-left"></i>Disconnect Session</button>
       </div>
     </section>
@@ -341,18 +340,21 @@ function switchTab(id) {
   
   const targetBtn = Array.from(document.querySelectorAll('.tab-trigger')).find(b => b.getAttribute('onclick').includes(id));
   if(targetBtn) targetBtn.classList.add('active');
-  document.getElementById(id).classList.add('active');
+  
+  const targetContent = document.getElementById(id);
+  if(targetContent) targetContent.classList.add('active');
 }
 
 function setToken(token) {
   state.token = token.trim();
-  el.itchToken.value = state.token;
+  if (el.itchToken) el.itchToken.value = state.token;
+  
   if (state.token) {
     localStorage.setItem('au:itchToken', state.token);
-    el.authGate.className = "auth-gate-logged-in";
+    if (el.authGate) el.authGate.className = "auth-gate-logged-in";
   } else {
     localStorage.removeItem('au:itchToken');
-    el.authGate.className = "auth-gate-logged-out";
+    if (el.authGate) el.authGate.className = "auth-gate-logged-out";
   }
 }
 
@@ -408,12 +410,12 @@ async function fetchItchProfile() {
     if (!response.ok) throw new Error(`${response.status}`);
     const data = await response.json();
     const user = data.user || {};
-    el.itchName.textContent = user.username || 'itch.io user';
-    el.itchId.textContent = user.id || '-';
-    if (user.cover_url) el.itchAvatar.src = user.cover_url;
+    if (el.itchName) el.itchName.textContent = user.username || 'itch.io user';
+    if (el.itchId) el.itchId.textContent = user.id || '-';
+    if (user.cover_url && el.itchAvatar) el.itchAvatar.src = user.cover_url;
   } catch (error) {
-    el.itchName.textContent = 'Token Secure';
-    el.itchId.textContent = 'Verified Sandbox';
+    if (el.itchName) el.itchName.textContent = 'Token Secure';
+    if (el.itchId) el.itchId.textContent = 'Verified Sandbox';
   }
 }
 
@@ -465,40 +467,58 @@ async function loadAmongUsAccount() {
     const merge = mergeData?.data || {};
     const username = usernameData?.data?.attributes || {};
     
-    el.friendCode.textContent = username.username && username.discriminator
-      ? `${username.username}#${username.discriminator}`
-      : 'User Synced';
-
-    el.platforms.replaceChildren();
-    for (const platform of merge.platforms || []) {
-      el.platforms.appendChild(chip(platform, platformIcon(platform)));
+    if (el.friendCode) {
+      el.friendCode.textContent = username.username && username.discriminator
+        ? `${username.username}#${username.discriminator}`
+        : 'User Synced';
     }
-    if (!merge.platforms?.length) {
-      el.platforms.appendChild(chip('Itch.io Account Linked', 'bi-shop'));
+
+    if (el.platforms) {
+      el.platforms.replaceChildren();
+      for (const platform of merge.platforms || []) {
+        el.platforms.appendChild(chip(platform, platformIcon(platform)));
+      }
+      if (!merge.platforms?.length) {
+        el.platforms.appendChild(chip('Itch.io Account Linked', 'bi-shop'));
+      }
     }
   } catch (error) {
-    el.friendCode.textContent = "Identity Cache Active";
-    el.platforms.replaceChildren();
-    el.platforms.appendChild(chip('Itch.io Override Configuration', 'bi-shop'));
+    if (el.friendCode) el.friendCode.textContent = "Identity Cache Active";
+    if (el.platforms) {
+      el.platforms.replaceChildren();
+      el.platforms.appendChild(chip('Itch.io Override Configuration', 'bi-shop'));
+    }
   }
 }
 
-el.loginBtn.addEventListener('click', loginWithItch);
-el.logoutBtn.addEventListener('click', logout);
-el.copyToken.addEventListener('click', async () => {
-  if (!state.token) return;
-  await navigator.clipboard.writeText(state.token);
-  const origText = el.copyToken.innerHTML;
-  el.copyToken.innerHTML = '<i class="bi bi-check"></i>Copied';
-  setTimeout(() => el.copyToken.innerHTML = origText, 1500);
+// Wire events safely inside initialization script block
+function initListeners() {
+  if (el.loginBtn) el.loginBtn.addEventListener('click', loginWithItch);
+  if (el.logoutBtn) el.logoutBtn.addEventListener('click', logout);
+  if (el.downloadItch) el.downloadItch.addEventListener('click', downloadItchFile);
+  if (el.openMerge) el.openMerge.addEventListener('click', openAccountManagement);
+  
+  if (el.copyToken) {
+    el.copyToken.addEventListener('click', async () => {
+      if (!state.token) return;
+      await navigator.clipboard.writeText(state.token);
+      const origText = el.copyToken.innerHTML;
+      el.copyToken.innerHTML = '<i class="bi bi-check"></i>Copied';
+      setTimeout(() => el.copyToken.innerHTML = origText, 1500);
+    });
+  }
+}
+
+// Execution block
+document.addEventListener('DOMContentLoaded', () => {
+  initListeners();
 });
-el.downloadItch.addEventListener('click', downloadItchFile);
-el.openMerge.addEventListener('click', openAccountManagement);
 
 if (state.token) {
   setToken(state.token);
 }
-const hadHashToken = parseTokenFromHash();
+parseTokenFromHash();
+
 if (state.token) {
   fetchItchProfile();
   loadAmongUsAccount();
