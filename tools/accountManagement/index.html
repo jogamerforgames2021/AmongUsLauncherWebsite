@@ -286,6 +286,7 @@ button{ font:inherit; }
   display:flex;
   gap:0.75rem;
 }
+.steps li .step-text{ flex:1; min-width:0; }
 .steps li::before{
   content:counter(step);
   font-family:var(--mono);
@@ -475,10 +476,10 @@ kbd.key-win i{ font-size:0.85em; line-height:1; }
           Download the "itch" file
         </button>
         <ol class="steps">
-          <li>Press <kbd class="key-win" aria-label="Windows key"><i class="bi bi-windows" aria-hidden="true"></i></kbd> + <kbd>R</kbd> to open the Run dialog.</li>
-          <li>Paste in <span class="path-row"><code>%localappdata%low\Innersloth\Among Us</code><button class="icon-btn copy-path" type="button" data-copy="%localappdata%low\Innersloth\Among Us" aria-label="Copy folder path"><i class="bi bi-copy" aria-hidden="true"></i></button></span> and press Enter.</li>
-          <li>Move the downloaded <code>itch</code> file into that folder.</li>
-          <li>If a file named <code>itchverify</code> already exists there, delete it.</li>
+          <li><span class="step-text">Press <kbd class="key-win" aria-label="Windows key"><i class="bi bi-windows" aria-hidden="true"></i></kbd> + <kbd>R</kbd> to open the Run dialog.</span></li>
+          <li><span class="step-text">Paste in <span class="path-row"><code>%localappdata%low\Innersloth\Among Us</code><button class="icon-btn copy-path" type="button" data-copy="%localappdata%low\Innersloth\Among Us" aria-label="Copy folder path"><i class="bi bi-copy" aria-hidden="true"></i></button></span> and press Enter.</span></li>
+          <li><span class="step-text">Move the downloaded <code>itch</code> file into that folder.</span></li>
+          <li><span class="step-text">If a file named <code>itchverify</code> already exists there, delete it.</span></li>
         </ol>
       </div>
 
@@ -488,11 +489,11 @@ kbd.key-win i{ font-size:0.85em; line-height:1; }
           <span>Use this if your browser blocks downloading files with no extension.</span>
         </div>
         <ol class="steps">
-          <li>Press <kbd class="key-win" aria-label="Windows key"><i class="bi bi-windows" aria-hidden="true"></i></kbd> + <kbd>R</kbd> to open the Run dialog.</li>
-          <li>Paste in <span class="path-row"><code>%localappdata%low\Innersloth\Among Us</code><button class="icon-btn copy-path" type="button" data-copy="%localappdata%low\Innersloth\Among Us" aria-label="Copy folder path"><i class="bi bi-copy" aria-hidden="true"></i></button></span> and press Enter.</li>
-          <li>Right-click an empty space, choose <strong>New &rarr; Text Document</strong>.</li>
-          <li>Rename it to <code>itch</code> and delete the <code>.txt</code> extension so nothing is left after the name.</li>
-          <li>Open it, paste in the <button class="token-ref" type="button" aria-describedby="itchToken">token</button> copied above, save, and delete any <code>itchverify</code> file.</li>
+          <li><span class="step-text">Press <kbd class="key-win" aria-label="Windows key"><i class="bi bi-windows" aria-hidden="true"></i></kbd> + <kbd>R</kbd> to open the Run dialog.</span></li>
+          <li><span class="step-text">Paste in <span class="path-row"><code>%localappdata%low\Innersloth\Among Us</code><button class="icon-btn copy-path" type="button" data-copy="%localappdata%low\Innersloth\Among Us" aria-label="Copy folder path"><i class="bi bi-copy" aria-hidden="true"></i></button></span> and press Enter.</span></li>
+          <li><span class="step-text">Right-click an empty space, choose <strong>New &rarr; Text Document</strong>.</span></li>
+          <li><span class="step-text">Rename it to <code>itch</code> and delete the <code>.txt</code> extension so nothing is left after the name.</span></li>
+          <li><span class="step-text">Open it, paste in the <button class="token-ref" type="button" aria-describedby="itchToken">token</button> copied above, save, and delete any <code>itchverify</code> file.</span></li>
         </ol>
       </div>
     </section>
