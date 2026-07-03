@@ -48,7 +48,7 @@ body{
 @media (min-width:641px){ body{ padding-left:6rem; } }
 @media (max-width:640px){ body{ padding-top:5rem; } }
 
-main{ width:min(760px,100%); margin:0 auto; }
+main{ width:min(760px,100%); margin:0 auto; position:relative; z-index:1; }
 
 a{ color:inherit; }
 button{ font:inherit; }
@@ -381,6 +381,15 @@ kbd.key-win i{ font-size:0.85em; line-height:1; }
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
+/* ---------- Dot grid background ---------- */
+#bgGrid{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  display:block;
+}
+
 /* ---------- Home dock ---------- */
 .home-dock{
   position:fixed;
@@ -443,6 +452,8 @@ kbd.key-win i{ font-size:0.85em; line-height:1; }
 </style>
 </head>
 <body class="auth-gate-logged-out" id="authGate">
+
+<canvas id="bgGrid" aria-hidden="true"></canvas>
 
 <a class="home-dock" href="https://amongus-launcher.vercel.app/" aria-label="Back to Among Us Launcher home">
   <i class="bi bi-arrow-left" aria-hidden="true"></i>
@@ -572,6 +583,81 @@ kbd.key-win i{ font-size:0.85em; line-height:1; }
 
 <script>
 'use strict';
+
+/* ---------- Dot grid background ---------- */
+(function initDotGrid() {
+  const canvas = document.getElementById('bgGrid');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const SPACING = 30;
+  const BASE_R = 1;
+  const MAX_R = 2.4;
+  const INFLUENCE = 170;
+  const BASE_COLOR = 'rgba(245, 238, 238, 0.10)';
+  const NEAR_COLOR = [229, 27, 36]; // matches --red
+
+  let width = 0, height = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let mouse = { x: -9999, y: -9999 };
+  let rafId = null;
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (reduceMotion) drawStatic();
+  }
+
+  function drawGrid(withGlow) {
+    ctx.clearRect(0, 0, width, height);
+    for (let y = SPACING / 2; y < height + SPACING; y += SPACING) {
+      for (let x = SPACING / 2; x < width + SPACING; x += SPACING) {
+        ctx.beginPath();
+        ctx.fillStyle = BASE_COLOR;
+        ctx.arc(x, y, BASE_R, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (!withGlow) continue;
+        const dx = x - mouse.x, dy = y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > INFLUENCE) continue;
+        const t = 1 - dist / INFLUENCE;
+        const r = BASE_R + (MAX_R - BASE_R) * t;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${NEAR_COLOR[0]}, ${NEAR_COLOR[1]}, ${NEAR_COLOR[2]}, ${t * 0.85})`;
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawStatic() { drawGrid(false); }
+
+  function loop() {
+    drawGrid(true);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  if (reduceMotion) {
+    drawStatic();
+  } else {
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { cancelAnimationFrame(rafId); }
+      else { rafId = requestAnimationFrame(loop); }
+    });
+    rafId = requestAnimationFrame(loop);
+  }
+})();
 
 const CLIENT_ID = '769b248eb1a5060a6fd0a4c5f303391f';
 const state = { token: localStorage.getItem('au:itchToken') || '' };
