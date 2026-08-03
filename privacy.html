@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Privacy Policy for the Among Us Launcher.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>Privacy Policy // Among Us Launcher</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.58);
+  --dim:rgba(240,240,242,.09);
+  --surface:rgba(240,240,242,.03);
+  --f:'Share Tech Mono',monospace;
+  --nav-h:3.2rem;
+}
+
+html{overflow-y:scroll;height:100%;overscroll-behavior-y:none;}
+body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100%;overflow-x:hidden;}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.024'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;
+}
+
+/* ── TOP NAV ─────────────────────────────── */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 1.4rem;
+  border-bottom:1px solid var(--dim);
+  background:rgba(9,9,9,.94);
+  backdrop-filter:blur(8px);
+}
+.nav-logo{
+  font-size:.72rem;letter-spacing:.1em;font-weight:bold;
+  color:var(--text);text-decoration:none;
+  padding-right:1.2rem;
+  border-right:1px solid var(--dim);
+  margin-right:1.2rem;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.nav-logo span{color:var(--red);}
+.nb{
+  font-family:var(--f);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;background:none;border:none;
+  cursor:pointer;transition:color .1s;padding:0 .7rem;white-space:nowrap;flex-shrink:0;
+}
+.nb:hover,.nb.active{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0px);}
+.nb:nth-child(2){transform:translateY(4px);}
+.nb:nth-child(3){transform:translateY(-2px);}
+.nb:nth-child(4){transform:translateY(3px);}
+
+/* ── PAGE ───────────────────────────────── */
+main{
+  position:relative;z-index:1;
+  padding-top:calc(var(--nav-h) + 4rem);
+  padding-bottom:5rem;
+  max-width:640px;
+  margin-inline:auto;
+  padding-left:1.6rem;
+  padding-right:1.6rem;
+}
+.legal-eyebrow{
+  font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--red);display:block;margin-bottom:1rem;
+}
+.legal-title{
+  font-size:clamp(2rem,5vw,3rem);
+  font-weight:bold;letter-spacing:-.02em;line-height:1;
+  margin-bottom:1.2rem;
+}
+.legal-intro{font-size:.8rem;color:var(--muted);line-height:1.8;margin-bottom:2.2rem;max-width:560px;}
+
+.legal-section{
+  border:1px solid var(--dim);
+  background:var(--surface);
+  padding:1.3rem 1.5rem 1.45rem;
+  margin-bottom:1rem;
+  position:relative;
+}
+.legal-section::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--red);
+}
+.legal-section-title{
+  font-size:.72rem;font-weight:bold;letter-spacing:.06em;
+  color:var(--text);margin-bottom:.55rem;
+}
+.legal-section p{font-size:.76rem;color:var(--muted);line-height:1.85;}
+
+.legal-links{
+  display:flex;gap:.6rem;margin-top:2.4rem;
+}
+.legal-switch{
+  font-family:var(--f);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  border:1px solid var(--dim);padding:.5rem .9rem;
+  transition:color .12s,border-color .12s,background .12s;
+}
+.legal-switch:hover{color:var(--text);border-color:rgba(240,240,242,.22);}
+.legal-switch.active{color:var(--text);border-color:rgba(200,21,27,.45);background:rgba(200,21,27,.08);}
+
+.legal-foot{
+  margin-top:2.6rem;padding-top:1.2rem;
+  border-top:1px solid var(--dim);
+  font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(240,240,242,.22);
+  display:flex;gap:1.4rem;flex-wrap:wrap;
+}
+.legal-foot a{color:rgba(240,240,242,.28);text-decoration:none;transition:color .12s;}
+.legal-foot a:hover{color:var(--red);}
+
+@media(max-width:540px){
+  #topnav{overflow-x:auto;}
+  main{padding-top:calc(var(--nav-h) + 3rem);}
+}
+</style>
+</head>
+<body>
+
+<nav id="topnav">
+  <a class="nav-logo" href="/">AU <span>Launcher</span></a>
+  <a class="nb" href="/">Home</a>
+  <a class="nb" href="/helpPage">Docs</a>
+  <a class="nb" href="/news">News</a>
+  <a class="nb" href="/developer">Dev</a>
+  <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+</nav>
+
+<main>
+  <span class="legal-eyebrow">// Legal</span>
+  <h1 class="legal-title">Privacy Policy</h1>
+  <p class="legal-intro">We don't collect your data. Here's what that actually looks like.</p>
+
+  <div class="legal-section">
+    <div class="legal-section-title">We collect nothing</div>
+    <p>No analytics, no tracking, no telemetry. We have no servers, no database, and no interest in knowing anything about you. Your name, your IP, what mods you installed, how long you played, none of that goes anywhere.</p>
+  </div>
+
+  <div class="legal-section">
+    <div class="legal-section-title">GitHub serves our files</div>
+    <p>Game files, mod downloads, news and launcher updates all come from GitHub. When you download something, GitHub's servers log your IP the same way any website does. That's GitHub doing their thing, not us. If you want to know what they do with that, check GitHub's own privacy policy.</p>
+  </div>
+
+  <div class="legal-section">
+    <div class="legal-section-title">Discord integration</div>
+    <p>The chat tab connects to our Discord server through a read-only embed. The feedback button sends your message to a Discord channel via webhook. That's it. We're not reading your DMs or doing anything weird.</p>
+  </div>
+
+  <div class="legal-section">
+    <div class="legal-section-title">Your stuff stays on your PC</div>
+    <p>Settings, your game path, installed mods, everything the launcher knows about you lives in AppData on your own machine. Nothing syncs to any server. You can wipe it all from the Uninstall tab anytime you want.</p>
+  </div>
+
+  <div class="legal-links">
+    <a class="legal-switch" href="/terms">Terms of Service</a>
+    <a class="legal-switch active" href="/privacy">Privacy Policy</a>
+  </div>
+
+  <div class="legal-foot">
+    <span>AU Launcher &middot; Not affiliated with Innersloth &middot; &copy; 2025 ShadowSlimeDEV</span>
+    <a href="/terms">Terms</a>
+    <a href="/privacy">Privacy</a>
+  </div>
+</main>
+
+</body>
+</html>
