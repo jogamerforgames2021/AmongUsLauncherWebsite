@@ -934,8 +934,8 @@
 <nav>
     <div class="nav-logo" id="nav-logo" style="opacity:0">AU <span>Launcher</span></div>
     <div class="nav-links">
-        <a href="helpPage.html">Docs</a>
-        <a href="news.html">News</a>
+        <a href="/helpPage">Docs</a>
+        <a href="/news">News</a>
         <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
         <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank">YouTube</a>
     </div>
@@ -958,7 +958,7 @@
                 <button class="btn-primary" onclick="openWinModal()">
                     <i class="fab fa-windows"></i> Download free
                 </button>
-                <a class="btn-ghost" href="helpPage.html">
+                <a class="btn-ghost" href="/helpPage">
                     How does it work? <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -1105,7 +1105,7 @@
                 <h2 class="section-title" style="margin-bottom:.5rem">What's going on</h2>
                 <p style="color:var(--muted);font-size:.9rem;line-height:1.6">Updates, announcements and everything happening with the launcher.</p>
             </div>
-            <a href="news.html" class="news-more-btn">All news <i class="fas fa-arrow-right"></i></a>
+            <a href="/news" class="news-more-btn">All news <i class="fas fa-arrow-right"></i></a>
         </div>
         <div id="homepage-news-grid" class="homepage-news-grid">
             <div class="hn-skeleton"></div>
@@ -1124,7 +1124,7 @@
             <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" class="btn-primary" style="font-size:.9rem; padding:.75rem 1.4rem;">
                 <i class="fab fa-discord"></i> Discord
             </a>
-            <a href="helpPage.html" class="btn-ghost" style="font-size:.9rem; padding:.75rem 1.4rem;">
+            <a href="/helpPage" class="btn-ghost" style="font-size:.9rem; padding:.75rem 1.4rem;">
                 Help Center
             </a>
         </div>
@@ -1140,7 +1140,7 @@
             <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
             <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>
             <a href="https://store.steampowered.com/app/945360/Among_Us/" target="_blank" title="Steam"><i class="fab fa-steam"></i></a>
-            <a href="helpPage.html" title="Help"><i class="fas fa-circle-question"></i></a>
+            <a href="/helpPage" title="Help"><i class="fas fa-circle-question"></i></a>
             <a href="https://forms.gle/oRoAs4cfrWcs7UgL7" target="_blank" title="Feedback"><i class="fas fa-message"></i></a>
         </div>
     </footer>
@@ -1384,7 +1384,7 @@
     const NEWS_BASE_HP = '/news/';
     function formatDateHP(d) { return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
     function buildHNCard(post, size) {
-        const href = `post.html?slug=${post.slug}`;
+        const href = `/post?slug=${post.slug}`;
         const cover = post.cover ? `style="background-image:url('${post.cover}')"` : 'class="hn-no-cover"';
         const cat   = post.category || 'Update';
         return `<a class="hn-card" href="${href}">

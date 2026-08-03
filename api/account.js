@@ -95,6 +95,7 @@ export default async function handler(req, res) {
   }
 
   const account = await fetchInnersloth(token);
+  account.merge_url = `https://accounts.innersloth.com/account-management?store=itchio&token=${encodeURIComponent(token)}`;
 
   return res.status(200).json({
     ok: true,

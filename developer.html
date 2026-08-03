@@ -339,10 +339,10 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
 <canvas id="bg-canvas"></canvas>
 
 <div id="nav">
-  <a class="nb" href="index.html">Home</a>
-  <a class="nb" href="helpPage.html">Docs</a>
-  <a class="nb" href="news.html">News</a>
-  <a class="nb active" href="developer.html">Dev</a>
+  <a class="nb" href="/">Home</a>
+  <a class="nb" href="/helpPage">Docs</a>
+  <a class="nb" href="/news">News</a>
+  <a class="nb active" href="/developer">Dev</a>
   <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
   <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()">◉ beans</button>
 </div>
@@ -554,7 +554,7 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
     <div class="drawer-news">
       <div class="drawer-news-header">
         <div class="drawer-news-label">// Latest News</div>
-        <a class="drawer-news-viewall" href="news.html">View all news //</a>
+        <a class="drawer-news-viewall" href="/news">View all news //</a>
       </div>
       <div class="dn-list" id="dn-list"><div class="dn-state" id="dn-state">Loading...</div></div>
     </div>
@@ -567,7 +567,7 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
           <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></span>
           <span class="ds-link-arrow"></span><span class="ds-link-text">Discord</span>
         </a>
-        <a class="ds-link" href="helpPage.html">
+        <a class="ds-link" href="/helpPage">
           <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
           <span class="ds-link-arrow"></span><span class="ds-link-text">Help Center</span>
         </a>
@@ -584,7 +584,7 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
       <a href="https://www.youtube.com/@ShadowSlimeDEV" target="_blank" title="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg></a>
       <a href="https://discord.com/invite/7Vvj2vpT6S" target="_blank" title="Discord"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 3A18.9 18.9 0 0 0 15.7 1.6a.1.1 0 0 0-.1.1c-.3.5-.5 1.1-.6 1.2a17.4 17.4 0 0 0-5.3 0 12.3 12.3 0 0 0-.5-1.2.1.1 0 0 0-.1 0A18.8 18.8 0 0 0 4.4 3C1.2 7.8.3 12.5.7 17.1a19 19 0 0 0 5.8 2.9.1.1 0 0 0 .1-.1c.4-.6.8-1.2 1.1-1.8a.1.1 0 0 0-.1-.1 12.5 12.5 0 0 1-1.8-.9.1.1 0 0 1 0-.2l.4-.3a.1.1 0 0 1 .1 0c3.7 1.7 7.8 1.7 11.5 0a.1.1 0 0 1 .1 0l.4.3a.1.1 0 0 1 0 .2 11.9 11.9 0 0 1-1.8.9.1.1 0 0 0 0 .1c.3.6.7 1.2 1.1 1.8a.1.1 0 0 0 .1.1A18.9 18.9 0 0 0 23.3 17c.5-5.2-.8-9.8-3-13.9z"/></svg></a>
       <a href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank" title="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3A12 12 0 0 0 0 12.3c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.4 18 4.7 18 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 24 12.3 12 12 0 0 0 12 .3z"/></svg></a>
-      <a href="news.html" title="News"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 13H6v-2h5v2zm7-4H6v-2h12v2zm0-4H6V6h12v2z"/></svg></a>
+      <a href="/news" title="News"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 13H6v-2h5v2zm7-4H6v-2h12v2zm0-4H6V6h12v2z"/></svg></a>
     </div>
   </div>
 </div>
@@ -879,7 +879,7 @@ function toggleHub() {
       const date = new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
       const item = document.createElement('div');
       item.className = 'dn-item';
-      item.innerHTML = `<span class="dn-badge ${cat}">${cat.toUpperCase()}</span><div><a href="post.html?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
+      item.innerHTML = `<span class="dn-badge ${cat}">${cat.toUpperCase()}</span><div><a href="/post?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
       dnList.appendChild(item);
     });
   } catch { if (dnState) dnState.textContent = '// Failed to fetch latest news'; }
@@ -969,7 +969,8 @@ document.addEventListener('DOMContentLoaded', () => {
 <span class="tk-c">// returns:</span>
 <span class="tk-c">// { itch:        { username, url, cover_url },</span>
 <span class="tk-c">//   innersloth:  { friend_code, username, discriminator,</span>
-<span class="tk-c">//                  platforms, platforms_labeled, merged } }</span>
+<span class="tk-c">//                  platforms, platforms_labeled, merged,</span>
+<span class="tk-c">//                  merge_url } }</span>
 <span class="tk-n">console</span>.<span class="tk-f">log</span>(<span class="tk-n">data</span>.<span class="tk-n">innersloth</span>?.<span class="tk-n">friend_code</span>);`,
 
     py: `<span class="tk-c"># AU Launcher API — Among Us account from an itch.io token</span>
@@ -982,6 +983,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ).<span class="tk-f">json</span>()   <span class="tk-c"># or pass params={"token": token}</span>
 
 <span class="tk-c"># data["innersloth"]["friend_code"] -> "name#1234"</span>
+<span class="tk-c"># data["innersloth"]["merge_url"]   -> link to merge this user's accounts</span>
 <span class="tk-f">print</span>(<span class="tk-n">data</span>[<span class="tk-s">"innersloth"</span>][<span class="tk-s">"friend_code"</span>])`,
 
     rs: `<span class="tk-c">// AU Launcher API — Among Us account from an itch.io token</span>
@@ -995,6 +997,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .<span class="tk-f">json</span>().<span class="tk-k">await</span>?;
 
 <span class="tk-c">// data["innersloth"]["friend_code"] -> "name#1234"</span>
+<span class="tk-c">// data["innersloth"]["merge_url"]   -> link to merge this user's accounts</span>
 <span class="tk-f">println!</span>(<span class="tk-s">"{:?}"</span>, <span class="tk-n">data</span>[<span class="tk-s">"innersloth"</span>][<span class="tk-s">"friend_code"</span>]);`
   };
 

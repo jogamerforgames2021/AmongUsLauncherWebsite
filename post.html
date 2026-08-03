@@ -273,7 +273,7 @@ body::after{
 .post-error a{color:var(--red);text-decoration:none;}
 .post-error a:hover{text-decoration:underline;}
 
-/* ── HUB DRAWER (copied from news.html) ─ */
+/* ── HUB DRAWER (copied from /news) ─ */
 @keyframes hub-glow{
   0%,60%,100%{box-shadow:none;border-color:var(--dim);}
   30%{box-shadow:0 -4px 18px rgba(200,21,27,.35);border-color:rgba(200,21,27,.5);}
@@ -355,17 +355,17 @@ body::after{
 
 <!-- NAV -->
 <div id="nav">
-  <a class="nb" href="index.html">Home</a>
-  <a class="nb" href="helpPage.html">Docs</a>
-  <a class="nb" href="news.html">News</a>
-  <a class="nb" href="developer.html">Dev</a>
+  <a class="nb" href="/">Home</a>
+  <a class="nb" href="/helpPage">Docs</a>
+  <a class="nb" href="/news">News</a>
+  <a class="nb" href="/developer">Dev</a>
   <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
   <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()" title="toggle beans">◉ beans</button>
 </div>
 
 <!-- POST -->
 <div class="page-wrap">
-  <a class="post-back" href="news.html">All News</a>
+  <a class="post-back" href="/news">All News</a>
 
   <!-- hero — swapped in by JS -->
   <div id="post-hero"></div>
@@ -400,7 +400,7 @@ body::after{
     <div class="drawer-news">
       <div class="drawer-news-header">
         <div class="drawer-news-label">// Latest News</div>
-        <a class="drawer-news-viewall" href="news.html">View all news //</a>
+        <a class="drawer-news-viewall" href="/news">View all news //</a>
       </div>
       <div class="dn-list" id="dn-list">
         <div class="dn-state" id="dn-state">Loading...</div>
@@ -416,7 +416,7 @@ body::after{
           <span class="ds-link-arrow"></span>
           <span class="ds-link-text">Discord</span>
         </a>
-        <a class="ds-link" href="helpPage.html">
+        <a class="ds-link" href="/helpPage">
           <span class="ds-link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
           <span class="ds-link-arrow"></span>
           <span class="ds-link-text">Help Center</span>
@@ -441,7 +441,7 @@ body::after{
       <a href="https://github.com/jogamerforgames2021/AmongUsLauncherNew" target="_blank" title="GitHub">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3A12 12 0 0 0 0 12.3c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.4 18 4.7 18 4.7c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 24 12.3 12 12 0 0 0 12 .3z"/></svg>
       </a>
-      <a href="news.html" title="News">
+      <a href="/news" title="News">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 13H6v-2h5v2zm7-4H6v-2h12v2zm0-4H6V6h12v2z"/></svg>
       </a>
     </div>
@@ -502,7 +502,7 @@ function parseFrontmatter(md) {
 
 async function loadPost() {
   const slug = getSlug();
-  if (!slug) { window.location.href = 'news.html'; return; }
+  if (!slug) { window.location.href = '/news'; return; }
 
   try {
     const [idxRes, mdRes] = await Promise.all([
@@ -554,7 +554,7 @@ async function loadPost() {
     document.getElementById('post-header').innerHTML = `
       <div class="post-error">
         // Post not found or couldn't be loaded.<br>
-        <a href="news.html">← Back to News</a>
+        <a href="/news">← Back to News</a>
       </div>`;
     document.getElementById('post-content').innerHTML = '';
     document.getElementById('post-rule').style.display = 'none';
@@ -578,7 +578,7 @@ loadPost();
       const item = document.createElement('div');
       item.className = 'dn-item';
       item.innerHTML = `<span class="dn-badge ${cat}">${cat.toUpperCase()}</span>
-        <div><a href="post.html?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
+        <div><a href="/post?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
       dnList.appendChild(item);
     });
   } catch {

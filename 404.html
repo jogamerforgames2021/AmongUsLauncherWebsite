@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Page not found.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>404 // Not Found</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.65);
+  --dim:rgba(240,240,242,.09);
+  --f:'Share Tech Mono',monospace;
+}
+
+html{ overflow-y:scroll; height:100%; overscroll-behavior-y:none; }
+
+body{
+  font-family:var(--f);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100%;
+  overflow-x:hidden;
+}
+
+/* grain */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;
+}
+
+#bg-canvas{
+  position:fixed;inset:0;
+  width:100%;height:100%;
+  pointer-events:none;z-index:0;
+}
+
+/* ── NAV ─────────────────────────────────── */
+#nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:600;
+  padding:1.5rem 2.5rem;
+  display:flex;gap:2.8rem;
+  pointer-events:none;
+}
+.nb{
+  font-family:var(--f);
+  font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);text-decoration:none;
+  background:none;border:none;cursor:pointer;
+  pointer-events:all;
+  transition:color .1s;
+  position:relative;
+}
+.nb:hover{color:var(--text);}
+.nb.active{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0px);}
+.nb:nth-child(2){transform:translateY(7px);}
+.nb:nth-child(3){transform:translateY(-4px);}
+.nb:nth-child(4){transform:translateY(9px);}
+.nb:nth-child(5){transform:translateY(-2px);}
+.bean-toggle-btn{
+  margin-left:auto;
+  transform:translateY(3px) !important;
+  opacity:.35;
+  transition:opacity .15s,color .1s !important;
+}
+.bean-toggle-btn:hover{opacity:.75;}
+.bean-toggle-btn.off{opacity:.18;}
+.bean-toggle-btn.off::after{content:' off';font-size:.55rem;opacity:.6;}
+
+/* ── 404 ─────────────────────────────────── */
+.page-wrap{
+  position:relative;z-index:1;
+  max-width:980px;
+  margin:0 auto;
+  padding:7rem 2.5rem 3rem;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;
+}
+.ph-label{
+  font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--red);margin-bottom:1.2rem;display:block;
+}
+.ph-title{
+  font-size:clamp(4.5rem,16vw,12rem);
+  line-height:.9;letter-spacing:-.02em;
+  font-weight:bold;margin-bottom:1.2rem;
+  color:var(--text);
+}
+.ph-title .slash{color:var(--red);}
+.ph-sub{
+  font-size:.85rem;color:var(--muted);
+  letter-spacing:.04em;line-height:1.9;margin-bottom:2rem;
+}
+.ph-path{
+  display:inline-block;
+  font-size:.62rem;letter-spacing:.1em;
+  color:rgba(200,21,27,.85);
+  border:1px solid rgba(200,21,27,.35);
+  padding:.35rem .8rem;
+  margin-bottom:2.2rem;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.ph-actions{display:flex;gap:1rem;flex-wrap:wrap;}
+.pa-btn{
+  font-family:var(--f);font-size:.62rem;
+  letter-spacing:.14em;text-transform:uppercase;
+  padding:.8rem 1.6rem;
+  text-decoration:none;cursor:pointer;
+  border:1px solid var(--dim);color:var(--text);
+  transition:border-color .12s,color .12s,background .12s;
+}
+.pa-btn:hover{border-color:var(--red);color:var(--red);}
+.pa-btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
+.pa-btn.primary:hover{background:#e01b22;}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<div id="nav">
+  <a class="nb" href="/">Home</a>
+  <a class="nb" href="/helpPage">Docs</a>
+  <a class="nb" href="/news">News</a>
+  <a class="nb" href="/developer">Dev</a>
+  <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+  <button class="nb bean-toggle-btn" id="bean-toggle-btn" onclick="toggleBeans()" title="toggle beans">◉ beans</button>
+</div>
+
+<!-- PAGE -->
+<div class="page-wrap">
+  <span class="ph-label">// Among Us Launcher</span>
+  <h1 class="ph-title">4<span class="slash">0</span>4</h1>
+  <p class="ph-sub">That page was ejected and thrown out of the airlock.<br>It doesn't exist — or never did.</p>
+  <span class="ph-path" id="ph-path">/lost-in-space</span>
+  <div class="ph-actions">
+    <a class="pa-btn primary" href="/">Back to Home</a>
+    <a class="pa-btn" href="/news">Latest News</a>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── SHOW THE REQUESTED PATH ─────────────────
+document.getElementById('ph-path').textContent = location.pathname || '/';
+
+// ── BEAN TOGGLE ────────────────────────────
+let beansEnabled = localStorage.getItem('beans') !== 'off';
+window.__beansEnabled = beansEnabled;
+function toggleBeans() {
+  beansEnabled = !beansEnabled;
+  localStorage.setItem('beans', beansEnabled ? 'on' : 'off');
+  window.__beansEnabled = beansEnabled;
+  const btn = document.getElementById('bean-toggle-btn');
+  btn.classList.toggle('off', !beansEnabled);
+}
+if (!beansEnabled) document.getElementById('bean-toggle-btn').classList.add('off');
+
+// ── NAV GLITCH ─────────────────────────────
+document.querySelectorAll('.nb').forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    btn.classList.add('glitch');
+    setTimeout(() => btn.classList.remove('glitch'), 280);
+  });
+});
+
+// ── CANVAS — STARS + BEANS ─────────────────
+(function spaceScene() {
+  const bgC = document.getElementById('bg-canvas');
+  const bgX = bgC.getContext('2d');
+  let W = 0, H = 0;
+  function resize() { W = bgC.width = window.innerWidth; H = bgC.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', () => { resize(); buildStars(); for(const b of [...BEANS_FAR,...BEANS_NEAR]) if(b.x>W) b.x=Math.random()*W; });
+
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+  const STAR_RADII=[0.55,0.95,1.55,2.40,3.60];
+  const starSprites=[];
+  function bakeStarSprites(){
+    starSprites.length=0;
+    for(const r of STAR_RADII){
+      const sz=Math.ceil(r*2+8)|1;
+      const c=document.createElement('canvas');c.width=c.height=sz;
+      const cx=c.getContext('2d');const half=sz/2;
+      const g=cx.createRadialGradient(half,half,0,half,half,half);
+      g.addColorStop(0,'rgba(222,215,255,1)');g.addColorStop(r/half,'rgba(195,185,255,0.60)');g.addColorStop(1,'rgba(0,0,0,0)');
+      cx.fillStyle=g;cx.fillRect(0,0,sz,sz);starSprites.push(c);
+    }
+  }
+  const STAR_LAYERS=[{count:180,si:0,alpha:0.20,drift:0.006},{count:110,si:1,alpha:0.38,drift:0.018},{count:65,si:2,alpha:0.60,drift:0.040},{count:22,si:3,alpha:0.82,drift:0.085},{count:7,si:4,alpha:1.00,drift:0.050}];
+  const stars=[];
+  function buildStars(){
+    stars.length=0;
+    for(const L of STAR_LAYERS) for(let i=0;i<L.count;i++) stars.push({x:rnd(0,W),y:rnd(0,H),si:L.si,baseAlpha:L.alpha*rnd(0.5,1.0),drift:rnd(-1,1)*L.drift,tw:rnd(0,Math.PI*2),twS:rnd(0.003,0.016)});
+  }
+  function drawStars(){
+    for(const s of stars){
+      s.x+=s.drift;if(s.x<-8)s.x=W+8;if(s.x>W+8)s.x=-8;
+      s.tw+=s.twS;
+      const a=s.baseAlpha*(0.55+0.45*Math.sin(s.tw));
+      const sp=starSprites[s.si];if(!sp)continue;
+      bgX.globalAlpha=a;bgX.drawImage(sp,s.x-sp.width*0.5,s.y-sp.height*0.5);
+    }
+    bgX.globalAlpha=1;
+  }
+
+  const PALETTE=[
+    {body:[197,17,17],shadow:[122,8,8],outline:[30,0,0]},
+    {body:[19,46,209],shadow:[9,21,142],outline:[0,10,50]},
+    {body:[17,127,45],shadow:[10,77,27],outline:[0,20,0]},
+    {body:[237,84,186],shadow:[171,43,131],outline:[60,0,40]},
+    {body:[239,125,13],shadow:[180,62,21],outline:[50,20,0]},
+    {body:[245,245,87],shadow:[194,135,34],outline:[60,40,0]},
+    {body:[63,71,78],shadow:[30,31,38],outline:[10,10,10]},
+    {body:[107,47,187],shadow:[76,30,149],outline:[20,0,40]},
+    {body:[56,254,220],shadow:[36,173,158],outline:[0,50,50]},
+    {body:[80,239,57],shadow:[21,167,38],outline:[10,40,0]},
+  ];
+  const VM=[146,166,176],VS=[113,141,152];
+
+  function recolor(img,pal){
+    const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
+    const cx=c.getContext('2d');cx.drawImage(img,0,0);
+    const id=cx.getImageData(0,0,c.width,c.height),d=id.data;
+    for(let i=0;i<d.length;i+=4){
+      if(d[i+3]<10)continue;
+      const r=d[i],g=d[i+1],b=d[i+2];
+      if(r>200&&g<50&&b<50){d[i]=pal.body[0];d[i+1]=pal.body[1];d[i+2]=pal.body[2];}
+      else if(r<50&&g<50&&b>200){d[i]=pal.shadow[0];d[i+1]=pal.shadow[1];d[i+2]=pal.shadow[2];}
+      else if(r<50&&g<50&&b<150){d[i]=pal.outline[0];d[i+1]=pal.outline[1];d[i+2]=pal.outline[2];}
+      else if(g>200&&r<50&&b<50){d[i]=VM[0];d[i+1]=VM[1];d[i+2]=VM[2];}
+      else if(g>100&&g<200&&r<50&&b<50){d[i]=VS[0];d[i+1]=VS[1];d[i+2]=VS[2];}
+    }
+    cx.putImageData(id,0,0);return c;
+  }
+
+  let templates=[],beanReady=false;
+  const beanImg=new Image();beanImg.crossOrigin='anonymous';beanImg.src='bean.png';
+  beanImg.onload=()=>{templates=[...PALETTE].sort(()=>Math.random()-0.5).map(p=>recolor(beanImg,p));beanReady=true;buildBeans();};
+  beanImg.onerror=()=>{beanReady=false;};
+
+  const BEANS_FAR=[],MAX_FAR=18,BEANS_NEAR=[],MAX_NEAR=10;
+  function mkFar(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(0.05,0.22),vy:rnd(-0.02,0.02),rot:rnd(0,Math.PI*2),vrot:rnd(-0.002,0.002),size:rnd(10,26),alpha:rnd(0.07,0.16),face:Math.random()<0.5?1:-1,tmpl:null};}
+  function mkNear(){return{x:rnd(0,W),y:rnd(0,H),vx:rnd(0.08,0.28),vy:rnd(-0.04,0.04),rot:rnd(0,Math.PI*2),vrot:rnd(-0.003,0.003),size:rnd(36,62),alpha:rnd(0.32,0.56),face:Math.random()<0.5?1:-1,tmpl:null};}
+  function buildBeans(){
+    BEANS_FAR.length=0;BEANS_NEAR.length=0;
+    for(let i=0;i<MAX_FAR;i++){const b=mkFar();b.tmpl=pick(templates);BEANS_FAR.push(b);}
+    for(let i=0;i<MAX_NEAR;i++){const b=mkNear();b.tmpl=pick(templates);BEANS_NEAR.push(b);}
+  }
+  function drawLayer(beans){
+    for(const b of beans){
+      b.x+=b.vx;b.y+=b.vy;b.rot+=b.vrot;
+      if(b.x-b.size>W){b.x=-b.size;b.y=rnd(0,H);}
+      if(!b.tmpl)continue;
+      bgX.save();bgX.globalAlpha=b.alpha;
+      bgX.translate(b.x,b.y);bgX.rotate(b.rot);bgX.scale(b.face,1);
+      bgX.drawImage(b.tmpl,-b.size/2,-b.size/2,b.size,b.size);
+      bgX.restore();
+    }
+    bgX.globalAlpha=1;
+  }
+
+  bakeStarSprites();buildStars();
+  function tick(){
+    bgX.clearRect(0,0,W,H);
+    drawStars();
+    if(beanReady && window.__beansEnabled !== false){drawLayer(BEANS_FAR);drawLayer(BEANS_NEAR);}
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
