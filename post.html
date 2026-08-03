@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js" defer></script>
 <title>Loading... // Among Us Launcher</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -129,7 +131,6 @@ body::after{
   content:'';position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(to bottom,rgba(9,9,9,0) 40%,rgba(9,9,9,.85) 100%);
 }
-.post-hero-video .pv-hero{height:100%;}
 .post-hero-video video{
   width:100%;height:100%;
   object-fit:cover;display:block;
@@ -218,71 +219,44 @@ body::after{
 
 .post-content video{
   max-width:100%;display:block;
-  margin:1.5rem 0;
   background:#000;
-  border:1px solid var(--dim);
   outline:none;
-  opacity:.85;transition:opacity .12s;
 }
-.post-content video:hover{opacity:1;}
 
-/* ── CUSTOM VIDEO PLAYER (square, themed) ─ */
-.post-video{
+/* ── VIDEO PLAYER (Plyr, homepage theme, square) ─ */
+.plyr{
+  --plyr-color-main:#c8151b;
+  --plyr-font-family:'Share Tech Mono',monospace;
+  --plyr-control-radius:0;
+  --plyr-video-background:#000;
+}
+.plyr__control--overlaid{background:rgba(200,21,27,.85)!important;}
+.plyr--video .plyr__control:hover,.plyr--video .plyr__control[aria-expanded=true]{background:var(--red)!important;}
+.plyr--full-ui input[type=range]{color:#c8151b;}
+.plyr--full-ui .plyr__control{border-radius:0;}
+.plyr__control--overlaid{width:56px;height:56px;border:1px solid rgba(240,240,242,.2);}
+/* content players */
+.post-content .plyr{
+  margin:1.5rem 0;
   border:1px solid var(--dim);
   background:#000;
-  margin:1.5rem 0;
-  display:flex;flex-direction:column;
   border-radius:0;
 }
-.post-video>video{
-  width:100%;display:block;margin:0;border:none;
-  opacity:1;
-}
-.pv-controls{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.45rem .6rem;
-  background:rgba(14,14,16,.96);
+.post-content .plyr__video-wrapper{width:100%;height:100%;}
+.post-content .plyr__video{width:100%;display:block;}
+.post-content .plyr__controls{
+  background:#0e0e10;
   border-top:1px solid var(--dim);
-  border-radius:0;
 }
-.pv-btn{
-  font-family:var(--f);font-size:.55rem;letter-spacing:.14em;
-  color:var(--muted);background:none;border:1px solid var(--dim);
-  border-radius:0;cursor:pointer;
-  padding:.32rem .5rem;min-width:46px;text-align:center;
-  transition:color .1s,border-color .1s;
+/* hero player — video fills the strip, controls overlay */
+.post-hero-video .plyr{
+  position:absolute;inset:0;width:100%;height:100%;
 }
-.pv-btn:hover{color:var(--text);border-color:var(--red);}
-.pv-play{min-width:60px;}
-.pv-time{
-  font-size:.58rem;color:var(--muted);letter-spacing:.06em;
-  min-width:120px;white-space:nowrap;
-}
-.pv-track{
-  flex:1;height:16px;
-  border:1px solid var(--dim);background:rgba(0,0,0,.5);
-  cursor:pointer;position:relative;
-  transition:border-color .1s;
-}
-.pv-track:hover{border-color:rgba(200,21,27,.5);}
-.pv-fill{
-  position:absolute;left:0;top:0;bottom:0;width:0;
-  background:var(--red);
-}
-.pv-fill::after{
-  content:'';position:absolute;right:0;top:0;bottom:0;width:2px;
-  background:var(--text);
-}
-/* hero player — controls overlay the video */
-.pv-hero{position:relative;margin:0;height:100%;}
-.pv-hero .pv-controls{
-  position:absolute;left:0;right:0;bottom:0;z-index:2;
-}
-@media (max-width:560px){
-  .pv-time{display:none;}
-  .pv-controls{gap:.4rem;padding:.4rem;}
-  .pv-btn{min-width:40px;}
-  .pv-play{min-width:52px;}
+.post-hero-video .plyr__video-wrapper{width:100%;height:100%;}
+.post-hero-video video{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+  background:#000;
 }
 
 .post-content ul,.post-content ol{
@@ -564,67 +538,16 @@ function isVideo(u) {
   return /\.(mp4|webm|ogv|mov)([?#].*)?$/i.test(u);
 }
 
-function pvHTML(src) {
-  return `<div class="post-video"><video src="${src}" preload="metadata" playsinline></video>
-  <div class="pv-controls">
-    <button type="button" class="pv-btn pv-play" title="Play / Pause">PLAY</button>
-    <span class="pv-time">0:00 / 0:00</span>
-    <div class="pv-track" role="slider" aria-label="Seek"><div class="pv-fill"></div></div>
-    <button type="button" class="pv-btn pv-mute" title="Mute">MUTE</button>
-    <button type="button" class="pv-btn pv-full" title="Fullscreen">FULL</button>
-  </div></div>`;
-}
-
-function wirePlayers(root) {
-  root.querySelectorAll('.post-video').forEach(wrap => {
-    if (wrap.dataset.pvWired) return;
-    wrap.dataset.pvWired = '1';
-    const vid  = wrap.querySelector('video');
-    const play = wrap.querySelector('.pv-play');
-    const time = wrap.querySelector('.pv-time');
-    const track= wrap.querySelector('.pv-track');
-    const fill = wrap.querySelector('.pv-fill');
-    const mute = wrap.querySelector('.pv-mute');
-    const full = wrap.querySelector('.pv-full');
-    let scrubbing = false;
-
-    function fmt(t) {
-      if (!isFinite(t)) return '0:00';
-      t = Math.round(t);
-      return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
-    }
-    function sync() {
-      if (!vid.duration) { time.textContent = '0:00 / 0:00'; return; }
-      play.textContent = vid.paused ? 'PLAY' : 'PAUSE';
-      time.textContent = fmt(vid.currentTime) + ' / ' + fmt(vid.duration);
-      fill.style.width = (vid.currentTime / vid.duration * 100) + '%';
-      mute.textContent = vid.muted ? 'SND' : 'MUTE';
-    }
-    function seekTo(e) {
-      const r = track.getBoundingClientRect();
-      const f = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1);
-      vid.currentTime = f * (vid.duration || 0);
-      sync();
-    }
-
-    play.addEventListener('click', () => { vid.paused ? vid.play() : vid.pause(); });
-    vid.addEventListener('click', () => { vid.paused ? vid.play() : vid.pause(); });
-    vid.addEventListener('play', sync);
-    vid.addEventListener('pause', sync);
-    vid.addEventListener('timeupdate', () => { if (!scrubbing) sync(); });
-    vid.addEventListener('loadedmetadata', sync);
-    vid.addEventListener('ended', sync);
-    mute.addEventListener('click', () => { vid.muted = !vid.muted; sync(); });
-    full.addEventListener('click', () => {
-      const el = (wrap.closest('.post-hero') || wrap);
-      if (document.fullscreenElement) document.exitFullscreen();
-      else if (el.requestFullscreen) el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+function initPlyr(root) {
+  if (typeof Plyr === 'undefined') { setTimeout(() => initPlyr(root), 50); return; }
+  root.querySelectorAll('video.post-video').forEach(v => {
+    if (v.dataset.plyrReady) return;
+    v.dataset.plyrReady = '1';
+    new Plyr(v, {
+      controls: ['play-large','play','progress','current-time','mute','volume','fullscreen'],
+      hideControls: false,
+      resetOnEnd: true,
     });
-    track.addEventListener('click', seekTo);
-    track.addEventListener('mousedown', e => { scrubbing = true; seekTo(e); });
-    window.addEventListener('mouseup', () => { scrubbing = false; });
-    sync();
   });
 }
 
@@ -669,18 +592,11 @@ async function loadPost() {
     const heroEl = document.getElementById('post-hero');
     if (cover) {
       if (isVideo(cover)) {
-        heroEl.innerHTML = `<div class="post-hero post-hero-video"><div class="post-video pv-hero"><video src="${cover}" preload="metadata" playsinline></video>
-  <div class="pv-controls">
-    <button type="button" class="pv-btn pv-play" title="Play / Pause">PLAY</button>
-    <span class="pv-time">0:00 / 0:00</span>
-    <div class="pv-track" role="slider" aria-label="Seek"><div class="pv-fill"></div></div>
-    <button type="button" class="pv-btn pv-mute" title="Mute">MUTE</button>
-    <button type="button" class="pv-btn pv-full" title="Fullscreen">FULL</button>
-  </div></div></div>`;
+        heroEl.innerHTML = `<div class="post-hero post-hero-video"><video class="post-video" src="${cover}" preload="metadata" playsinline></video></div>`;
       } else {
         heroEl.innerHTML = `<div class="post-hero"><img src="${cover}" alt=""></div>`;
       }
-      wirePlayers(document.body);
+      initPlyr(heroEl);
     }
 
     // header
@@ -702,9 +618,9 @@ async function loadPost() {
       if (!markedReady) {
         marked.use({
           renderer: {
-            image({ href, title, text }) {
+            image(href, title, text) {
               if (isVideo(href)) {
-                return pvHTML(href);
+                return `<video class="post-video" src="${href}" preload="metadata" playsinline></video>`;
               }
               return `<img src="${href}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
             }
@@ -715,7 +631,7 @@ async function loadPost() {
       const contentEl = document.getElementById('post-content');
       contentEl.style.opacity = '1';
       contentEl.innerHTML = marked.parse(content);
-      wirePlayers(contentEl);
+      initPlyr(contentEl);
     }
     renderContent();
 
