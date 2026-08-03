@@ -402,7 +402,7 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
   </div>
 
   <!-- CODE BLOCK -->
-  <div class="code-block">
+  <div class="code-block" id="gv-code">
     <div class="code-top">
       <div class="lang-tabs">
         <button class="lang-tab active" onclick="setLang('js')">JS</button>
@@ -451,6 +451,53 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
     </div>
 
     <div class="playground-response" id="pg-response">
+      <span class="pr-empty">// Hit Run to see the response</span>
+    </div>
+  </div>
+
+  <!-- FETCH AMONG US ACCOUNT -->
+  <div class="endpoint-header" style="margin-top:4rem;">
+    <div class="endpoint-meta">
+      <div class="endpoint-name">Among Us Account</div>
+      <p class="endpoint-desc">Hand an itch.io token to this endpoint and it returns the linked Among Us account — username, friend code, and every platform it's merged with. The itch.io profile is verified first; Among Us data is never exposed for an unverified token.</p>
+    </div>
+    <span class="src-badge" style="margin-top:.35rem;">AUTH REQUIRED</span>
+  </div>
+
+  <!-- CODE BLOCK -->
+  <div class="code-block" id="a2-code">
+    <div class="code-top">
+      <div class="lang-tabs">
+        <button class="lang-tab active" data-a2-lang="js">JS</button>
+        <button class="lang-tab" data-a2-lang="py">Python</button>
+        <button class="lang-tab" data-a2-lang="rs">Rust</button>
+      </div>
+      <button class="copy-btn" id="a2-copy-btn">Copy</button>
+    </div>
+    <pre class="code-body" id="a2-code-body"></pre>
+  </div>
+
+  <p class="code-note" id="a2-code-note"></p>
+
+  <!-- PLAYGROUND -->
+  <span class="section-label">// Try it live</span>
+  <div class="playground">
+    <div class="playground-top">
+      <span class="playground-label">Playground</span>
+      <button class="playground-run" id="a2-run-btn">&#9654; Run</button>
+    </div>
+    <div class="playground-url">
+      <span class="playground-method">GET</span>
+      <span class="playground-endpoint" id="a2-pg-url"></span>
+    </div>
+    <div class="playground-params">
+      <div class="pg-param" style="flex:1;">
+        <span class="pg-param-label">itch token</span>
+        <input class="pg-param-input" id="a2-token" type="text" style="width:min(240px,60vw);" placeholder="paste itch.io token..."
+               autocomplete="off" spellcheck="false" oninput="a2UpdateUrl()">
+      </div>
+    </div>
+    <div class="playground-response" id="a2-pg-response">
       <span class="pr-empty">// Hit Run to see the response</span>
     </div>
   </div>
@@ -681,7 +728,7 @@ function setMode(mode) {
 
 function setLang(lang) {
   currentLang = lang;
-  document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === lang));
+  document.querySelectorAll('#gv-code .lang-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === lang));
   renderCode();
 }
 
@@ -863,6 +910,112 @@ document.addEventListener('DOMContentLoaded', () => {
   bakeStarSprites();buildStars();
   function tick(){bgX.clearRect(0,0,W,H);drawStars();if(beanReady&&window.__beansEnabled!==false){drawLayer(BEANS_FAR);drawLayer(BEANS_NEAR);}requestAnimationFrame(tick);}
   requestAnimationFrame(tick);
+})();
+</script>
+<script>
+'use strict';
+
+// ── AMONG US ACCOUNT ENDPOINT (self-contained) ────────────────
+(function () {
+  const A2_API = 'https://amongus-launcher.vercel.app/api/account';
+
+  const A2_CODES = {
+    js: `<span class="tk-c">// AU Launcher API — Among Us account from an itch.io token</span>
+<span class="tk-k">const</span> <span class="tk-n">res</span> = <span class="tk-k">await</span> <span class="tk-f">fetch</span>(<span class="tk-s">'https://amongus-launcher.vercel.app/api/account'</span>, {
+  <span class="tk-n">headers</span>: { <span class="tk-s">'Authorization'</span>: <span class="tk-n">itchToken</span> }
+});
+<span class="tk-k">const</span> <span class="tk-n">data</span> = <span class="tk-k">await</span> <span class="tk-n">res</span>.<span class="tk-f">json</span>();
+
+<span class="tk-c">// also works: GET /api/account?token=&lt;itch_token&gt;</span>
+<span class="tk-c">// returns:</span>
+<span class="tk-c">// { itch:        { username, url, cover_url },</span>
+<span class="tk-c">//   innersloth:  { friend_code, username, discriminator,</span>
+<span class="tk-c">//                  platforms, platforms_labeled, merged } }</span>
+<span class="tk-n">console</span>.<span class="tk-f">log</span>(<span class="tk-n">data</span>.<span class="tk-n">innersloth</span>?.<span class="tk-n">friend_code</span>);`,
+
+    py: `<span class="tk-c"># AU Launcher API — Among Us account from an itch.io token</span>
+<span class="tk-k">import</span> requests
+
+<span class="tk-n">token</span> = <span class="tk-s">"your_itch_token"</span>
+<span class="tk-n">data</span> = requests.<span class="tk-f">get</span>(
+    <span class="tk-s">"https://amongus-launcher.vercel.app/api/account"</span>,
+    headers={<span class="tk-s">"Authorization"</span>: <span class="tk-n">token</span>},
+).<span class="tk-f">json</span>()   <span class="tk-c"># or pass params={"token": token}</span>
+
+<span class="tk-c"># data["innersloth"]["friend_code"] -> "name#1234"</span>
+<span class="tk-f">print</span>(<span class="tk-n">data</span>[<span class="tk-s">"innersloth"</span>][<span class="tk-s">"friend_code"</span>])`,
+
+    rs: `<span class="tk-c">// AU Launcher API — Among Us account from an itch.io token</span>
+<span class="tk-k">use</span> reqwest;
+<span class="tk-k">use</span> serde_json::Value;
+
+<span class="tk-k">let</span> <span class="tk-n">data</span>: Value = reqwest::<span class="tk-f">Client</span>::<span class="tk-f">new</span>()
+    .<span class="tk-f">get</span>(<span class="tk-s">"https://amongus-launcher.vercel.app/api/account"</span>)
+    .<span class="tk-f">header</span>(<span class="tk-s">"Authorization"</span>, <span class="tk-n">token</span>)   <span class="tk-c">// or add ?token=&lt;itch_token&gt;</span>
+    .<span class="tk-f">send</span>().<span class="tk-k">await</span>?
+    .<span class="tk-f">json</span>().<span class="tk-k">await</span>?;
+
+<span class="tk-c">// data["innersloth"]["friend_code"] -> "name#1234"</span>
+<span class="tk-f">println!</span>(<span class="tk-s">"{:?}"</span>, <span class="tk-n">data</span>[<span class="tk-s">"innersloth"</span>][<span class="tk-s">"friend_code"</span>]);`
+  };
+
+  const A2_NOTE = 'Requires an itch.io token — send it in the Authorization header, or as ?token= for quick testing. Bad or missing tokens return 400 / 401 / 422, and Among Us data is never returned for an unverified account. Treat the token as a secret: don\'t paste it into public URLs or logs.';
+
+  let a2Lang = 'js';
+
+  function a2UpdateUrl() {
+    const token = document.getElementById('a2-token').value.trim();
+    const url = token ? `${A2_API}?token=${encodeURIComponent(token)}` : A2_API;
+    document.getElementById('a2-pg-url').textContent = url;
+  }
+
+  function a2Render() {
+    document.getElementById('a2-code-body').innerHTML = A2_CODES[a2Lang];
+    document.getElementById('a2-code-note').textContent = A2_NOTE;
+    a2UpdateUrl();
+  }
+
+  function a2SetLang(lang) {
+    a2Lang = lang;
+    document.querySelectorAll('#a2-code .lang-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === lang));
+    a2Render();
+  }
+
+  async function a2Run() {
+    const btn = document.getElementById('a2-run-btn');
+    const out  = document.getElementById('a2-pg-response');
+    btn.disabled = true;
+    out.innerHTML = '<span class="pr-loading">// Fetching</span>';
+    try {
+      const token = document.getElementById('a2-token').value.trim();
+      if (!token) throw new Error('Paste an itch.io token first');
+      const res = await fetch(`${A2_API}?token=${encodeURIComponent(token)}`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        out.innerHTML = `<span class="pr-error">// HTTP ${res.status}${data && data.error ? ': ' + data.error : ''}</span>`;
+      } else {
+        out.innerHTML = prettyJson(data);
+      }
+    } catch (e) {
+      out.innerHTML = `<span class="pr-error">// Error: ${e.message}</span>`;
+    }
+    btn.disabled = false;
+  }
+
+  function a2Copy() {
+    const plain = A2_CODES[a2Lang].replace(/<[^>]+>/g, '');
+    navigator.clipboard.writeText(plain).then(() => {
+      const btn = document.getElementById('a2-copy-btn');
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+    });
+  }
+
+  document.querySelectorAll('#a2-code .lang-tab').forEach(t => t.addEventListener('click', () => a2SetLang(t.textContent.toLowerCase())));
+  document.getElementById('a2-copy-btn').addEventListener('click', a2Copy);
+  document.getElementById('a2-run-btn').addEventListener('click', a2Run);
+  a2Render();
 })();
 </script>
 </body>
