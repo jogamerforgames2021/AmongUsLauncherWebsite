@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Public Among Us Launcher profile — stats, achievements and skill score.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>Profile // Among Us Launcher</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.58);
+  --dim:rgba(240,240,242,.09);
+  --surface:rgba(240,240,242,.03);
+  --gold:#f5c842;
+  --silver:#c0c0c0;
+  --bronze:#cd7f32;
+  --f:'Share Tech Mono',monospace;
+  --nav-h:3.2rem;
+}
+
+html{overflow-y:scroll;height:100%;overscroll-behavior-y:none;}
+body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100%;overflow-x:hidden;}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.024'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;
+}
+
+/* ── TOP NAV ─────────────────────────────── */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 1.4rem;
+  border-bottom:1px solid var(--dim);
+  background:rgba(9,9,9,.94);
+  backdrop-filter:blur(8px);
+}
+.nav-logo{
+  font-size:.72rem;letter-spacing:.1em;font-weight:bold;
+  color:var(--text);text-decoration:none;
+  padding-right:1.2rem;
+  border-right:1px solid var(--dim);
+  margin-right:1.2rem;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.nav-logo span{color:var(--red);}
+.nb{
+  font-family:var(--f);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;background:none;border:none;
+  cursor:pointer;transition:color .1s;padding:0 .7rem;white-space:nowrap;flex-shrink:0;
+}
+.nb:hover,.nb.active{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0px);}
+.nb:nth-child(2){transform:translateY(4px);}
+.nb:nth-child(3){transform:translateY(-2px);}
+.nb:nth-child(4){transform:translateY(3px);}
+
+/* ── PAGE ───────────────────────────────── */
+main{
+  position:relative;z-index:1;
+  padding-top:calc(var(--nav-h) + 3rem);
+  padding-bottom:5rem;
+  max-width:760px;
+  margin-inline:auto;
+  padding-left:1.6rem;
+  padding-right:1.6rem;
+}
+.page-eyebrow{
+  font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--red);display:block;margin-bottom:.6rem;
+}
+
+/* ── states ─────────────────────────────── */
+.state{
+  padding:3rem 0;text-align:center;display:none;
+}
+.state.visible{display:block;}
+.state-icon{font-size:2rem;display:block;margin-bottom:1rem;}
+.state-title{font-size:1rem;font-weight:bold;margin-bottom:.5rem;letter-spacing:.04em;}
+.state-sub{font-size:.72rem;color:var(--muted);line-height:1.8;max-width:480px;margin-inline:auto;}
+.loader{display:inline-block;width:22px;height:22px;border:2px solid var(--dim);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:1rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── profile card ───────────────────────── */
+.profile-card{
+  border:1px solid var(--dim);
+  background:var(--surface);
+  padding:1.6rem 1.7rem;
+  position:relative;
+  overflow:hidden;
+}
+.profile-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--red),transparent 70%);
+}
+.pc-top{display:flex;gap:1.2rem;align-items:center;}
+.pc-avatar{
+  width:64px;height:64px;flex-shrink:0;
+  border:1px solid var(--dim);
+  background:rgba(240,240,242,.04);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.pc-avatar img{width:100%;height:100%;object-fit:cover;}
+.pc-avatar .initial{font-size:1.6rem;color:var(--muted);}
+.pc-name{font-size:1.25rem;font-weight:bold;letter-spacing:-.01em;}
+.pc-user{font-size:.68rem;color:var(--muted);letter-spacing:.06em;margin-top:.2rem;}
+.pc-id{
+  display:inline-flex;align-items:center;gap:.4rem;
+  margin-top:.5rem;
+  font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(240,240,242,.35);
+  border:1px solid var(--dim);padding:.22rem .55rem;
+}
+.pc-about{margin-top:1.2rem;font-size:.74rem;color:var(--muted);line-height:1.8;}
+.pc-about-none{color:rgba(240,240,242,.22);}
+
+/* skill score */
+.skill-badge{
+  margin-top:1.2rem;
+  display:flex;align-items:center;gap:.8rem;
+  border:1px solid rgba(200,21,27,.25);
+  background:rgba(200,21,27,.05);
+  padding:.7rem .9rem;
+}
+.skill-num{font-size:1.5rem;font-weight:bold;color:var(--red);}
+.skill-label{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);line-height:1.5;}
+
+/* stat tiles */
+.stat-tiles{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+  margin-top:1rem;
+}
+.stat-tile{background:var(--bg);padding:1rem 1rem;text-align:center;}
+.stat-tile .n{font-size:1.35rem;font-weight:bold;color:var(--text);}
+.stat-tile .l{font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(240,240,242,.32);margin-top:.3rem;}
+
+/* stat sections */
+.stats-block{margin-top:1rem;}
+.stats-block-label{
+  font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--red);margin-bottom:.7rem;display:flex;align-items:center;gap:.6rem;
+}
+.stats-block-label::after{content:'';flex:1;height:1px;background:var(--dim);}
+.stats-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+}
+.stat-row{
+  background:var(--bg);
+  padding:.55rem .8rem;
+  display:flex;justify-content:space-between;gap:1rem;align-items:baseline;
+}
+.stat-row .k{font-size:.62rem;color:var(--muted);letter-spacing:.04em;}
+.stat-row .v{font-size:.72rem;color:var(--text);font-weight:bold;flex-shrink:0;}
+
+/* achievements */
+.ach-block{margin-top:1.8rem;}
+.ach-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.7rem;}
+.ach-label{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);}
+.ach-count{font-size:.56rem;color:var(--muted);letter-spacing:.08em;}
+.ach-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+}
+.ach-chip{
+  background:var(--bg);
+  padding:.8rem .85rem;
+  display:flex;gap:.7rem;align-items:flex-start;
+  opacity:.32;
+  transition:opacity .15s;
+}
+.ach-chip.unlocked{opacity:1;}
+.ach-chip .ico{font-size:1.05rem;flex-shrink:0;line-height:1;}
+.ach-chip .tier{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  margin-top:.3rem;background:rgba(240,240,242,.15);
+}
+.ach-chip.unlocked .tier.bronze{background:var(--bronze);box-shadow:0 0 6px rgba(205,127,50,.5);}
+.ach-chip.unlocked .tier.silver{background:var(--silver);box-shadow:0 0 6px rgba(192,192,192,.5);}
+.ach-chip.unlocked .tier.gold{background:var(--gold);box-shadow:0 0 6px rgba(245,200,66,.5);}
+.ach-name{font-size:.66rem;font-weight:bold;color:var(--text);letter-spacing:.03em;line-height:1.35;}
+.ach-desc{font-size:.56rem;color:var(--muted);line-height:1.55;margin-top:.25rem;}
+
+/* footer nav */
+.page-foot{margin-top:2.4rem;padding-top:1.2rem;border-top:1px solid var(--dim);
+  font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,240,242,.22);
+  display:flex;gap:1.4rem;flex-wrap:wrap;}
+.page-foot a{color:rgba(240,240,242,.28);text-decoration:none;transition:color .12s;}
+.page-foot a:hover{color:var(--red);}
+
+@media(max-width:540px){
+  #topnav{overflow-x:auto;}
+  .stat-tiles{grid-template-columns:repeat(2,1fr);}
+  .stats-grid{grid-template-columns:1fr;}
+  .pc-top{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<nav id="topnav">
+  <a class="nav-logo" href="/">AU <span>Launcher</span></a>
+  <a class="nb" href="/">Home</a>
+  <a class="nb" href="/helpPage">Docs</a>
+  <a class="nb" href="/news">News</a>
+  <a class="nb" href="/developer">Dev</a>
+  <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+</nav>
+
+<main>
+  <span class="page-eyebrow">// Public Profile</span>
+
+  <!-- LOADING -->
+  <div class="state visible" id="st-loading">
+    <span class="loader"></span>
+    <div class="state-title">Fetching profile&hellip;</div>
+  </div>
+
+  <!-- NO ID -->
+  <div class="state" id="st-noid">
+    <span class="state-icon">&#128100;</span>
+    <div class="state-title">No Discord ID in the URL</div>
+    <p class="state-sub">Public profile pages live at <b style="color:var(--text)">/users/&lt;your-discord-id&gt;</b>. Open your profile in the launcher to find your Discord ID, then share that link.</p>
+  </div>
+
+  <!-- NOT FOUND -->
+  <div class="state" id="st-404">
+    <span class="state-icon">&#129300;</span>
+    <div class="state-title">No profile found</div>
+    <p class="state-sub">Nobody with that Discord ID has signed in yet. Ask them to log in once in the launcher — their page will appear here.</p>
+  </div>
+
+  <!-- SERVER ERROR -->
+  <div class="state" id="st-error">
+    <span class="state-icon">&#9888;&#65039;</span>
+    <div class="state-title">Something went wrong</div>
+    <p class="state-sub" id="st-error-msg">Could not load this profile.</p>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="st-profile" style="display:none">
+
+    <div class="profile-card">
+      <div class="pc-top">
+        <div class="pc-avatar" id="p-avatar"><span class="initial">?</span></div>
+        <div>
+          <div class="pc-name" id="p-name">&mdash;</div>
+          <div class="pc-user" id="p-user">@&mdash;</div>
+          <span class="pc-id">&#129331; Discord ID <span id="p-discord">-</span></span>
+        </div>
+      </div>
+      <div class="pc-about" id="p-about"></div>
+      <div class="skill-badge">
+        <span class="skill-num" id="p-skill">0</span>
+        <span class="skill-label">Skill score<br>wins / kills / tasks, weighted</span>
+      </div>
+    </div>
+
+    <div class="stat-tiles">
+      <div class="stat-tile"><div class="n" id="t-games">0</div><div class="l">Games played</div></div>
+      <div class="stat-tile"><div class="n" id="t-wins">0</div><div class="l">Total wins</div></div>
+      <div class="stat-tile"><div class="n" id="t-kills">0</div><div class="l">Impostor kills</div></div>
+      <div class="stat-tile"><div class="n" id="t-tasks">0</div><div class="l">Tasks done</div></div>
+    </div>
+
+    <div class="stats-block">
+      <div class="stats-block-label">Summary</div>
+      <div class="stats-grid" id="stats-summary"></div>
+    </div>
+
+    <div class="stats-block">
+      <div class="stats-block-label">Map wins</div>
+      <div class="stats-grid" id="stats-maps"></div>
+    </div>
+
+    <div class="stats-block">
+      <div class="stats-block-label">Role wins</div>
+      <div class="stats-grid" id="stats-roles"></div>
+    </div>
+
+    <div class="ach-block">
+      <div class="ach-header">
+        <span class="ach-label">Achievements</span>
+        <span class="ach-count" id="ach-count">0 / 33</span>
+      </div>
+      <div class="ach-grid" id="ach-grid"></div>
+    </div>
+
+  </div>
+
+  <div class="page-foot">
+    <span>AU Launcher &middot; Not affiliated with Innersloth &middot; &copy; 2025 ShadowSlimeDEV</span>
+    <a href="/terms">Terms</a>
+    <a href="/privacy">Privacy</a>
+  </div>
+</main>
+
+<script>
+(function () {
+  var ACH_META = {
+    ship_adrift:{icon:'🚀',name:'A Ship Adrift',desc:'Win 3 games on The Skeld',tier:'silver'},
+    corporate_lockdown:{icon:'🏢',name:'Corporate Lockdown',desc:'Win 3 games on MIRA HQ',tier:'silver'},
+    unearthed:{icon:'🪨',name:'Unearthed',desc:'Win 3 games on Polus',tier:'silver'},
+    toppat_crewmates:{icon:'🎩',name:'Toppat Crewmates',desc:'Win 3 games on The Airship',tier:'silver'},
+    survivor:{icon:'🛡️',name:'Survivor',desc:'Survive and win as a Crewmate',tier:'bronze'},
+    well_oiled:{icon:'⚙️',name:'A Well-Oiled Machine',desc:'Win by completing all tasks',tier:'silver'},
+    sherlock:{icon:'🔍',name:'Sherlock',desc:'Every vote lands on an Impostor',tier:'gold'},
+    slasher:{icon:'🗡️',name:'Slasher',desc:'Win by killing all Crewmates',tier:'silver'},
+    smooth_talker:{icon:'🗣️',name:'Smooth Talker',desc:'Win by votes as an Impostor',tier:'bronze'},
+    saboteur:{icon:'💥',name:'Saboteur',desc:'Win by Critical Sabotage',tier:'silver'},
+    circumventer:{icon:'🌀',name:'Circumventer',desc:'Win without using vents as Impostor',tier:'gold'},
+    never_suspect:{icon:'🤫',name:'Never Suspect A Thing',desc:'Win with both Impostors alive',tier:'gold'},
+    trust_no_one:{icon:'🎭',name:'Trust No One',desc:'Kill a Crewmate while disguised as them',tier:'bronze'},
+    i_can_be_your_angle:{icon:'👼',name:'I Can Be Your Angle',desc:'Protect a Crewmate as Guardian Angel',tier:'silver'},
+    intern:{icon:'📋',name:'Intern',desc:'Complete 10 total tasks',tier:'bronze'},
+    manager:{icon:'📊',name:'Manager',desc:'Complete 100 total tasks',tier:'silver'},
+    taskmaster:{icon:'📌',name:'Taskmaster',desc:'Complete 500 total tasks',tier:'gold'},
+    taste_for_it:{icon:'🩸',name:'A Taste For It',desc:'Get your first kill',tier:'bronze'},
+    killer:{icon:'⚔️',name:'Killer',desc:'Get 5 total kills',tier:'bronze'},
+    assassin:{icon:'🎯',name:'Assassin',desc:'Get 50 total kills',tier:'silver'},
+    scourge:{icon:'💀',name:'Scourge',desc:'Get 150 total kills',tier:'gold'},
+    impossible_task:{icon:'💳',name:'Impossible Task',desc:'Swipe Card on the first try',tier:'silver'},
+    watch_me_scan:{icon:'🔬',name:'Watch Me Scan',desc:'Get killed during Submit Scan',tier:'silver'},
+    hunger:{icon:'🥩',name:'H U N G E R',desc:'3 kills before any emergency meeting',tier:'gold'},
+    crewpostor:{icon:'🔧',name:'Crewpostor',desc:'Fix a sabotage that you called',tier:'bronze'},
+    lights_out:{icon:'🌑',name:'Lights Out',desc:'Get a kill during Fix Lights',tier:'silver'},
+    hidden_talent:{icon:'🌿',name:'Hidden Talent',desc:'Survive a game as Crewmate in Hide n Seek',tier:'bronze'},
+    no_escape:{icon:'🏃',name:'No Escape',desc:'Kill all Crewmates as Impostor in HnS',tier:'bronze'},
+    perform_under_pressure:{icon:'⏱️',name:'Perform Under Pressure',desc:'Complete all tasks in Hide n Seek',tier:'bronze'},
+    you_cant_run:{icon:'🏅',name:'You Can\'t Run',desc:'10 wins as Crewmate in Hide n Seek',tier:'bronze'},
+    but_you_can_hide:{icon:'🥇',name:'But You Can Hide',desc:'50 wins as Crewmate in Hide n Seek',tier:'silver'},
+    you_can_run:{icon:'👁️',name:'You Can Run',desc:'100 kills as Seeker in Hide n Seek',tier:'bronze'},
+    but_you_cant_hide:{icon:'🏆',name:'But You Can\'t Hide',desc:'200 kills as Seeker in Hide n Seek',tier:'silver'}
+  };
+  var SKILL_ACH = ['sherlock','circumventer','never_suspect','hunger','crewpostor','lights_out','trust_no_one','smooth_talker','saboteur','survivor','well_oiled','slasher','i_can_be_your_angle','hidden_talent','no_escape','perform_under_pressure'];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var show = function (id) { document.querySelectorAll('.state').forEach(function (s) { s.classList.remove('visible'); }); $('st-profile').style.display = 'none'; if (id === 'profile') { $('st-profile').style.display = ''; } else { $(id).classList.add('visible'); } };
+
+  function parseJson(v) {
+    if (v == null) return null;
+    if (typeof v === 'object') return v;
+    try { return JSON.parse(v); } catch (e) { return null; }
+  }
+  function num(v) { v = parseInt(v, 10); return isFinite(v) ? v : 0; }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+
+  function calcStatScore(gs) {
+    if (!gs) return 0;
+    var totalWins = Object.keys(gs).filter(function (k) { return k.indexOf('_Wins') !== -1; }).reduce(function (s, k) { return s + (gs[k] || 0); }, 0);
+    var games = gs.GamesFinished || 1;
+    var impGames = gs.GamesAsImpostor || 1;
+    var crewGames = gs.GamesAsCrewmate || 1;
+    var winRate = totalWins / games;
+    var killEff = (gs.ImpostorKills || 0) / impGames;
+    var taskRate = (gs.TasksCompleted || 0) / (crewGames * 5);
+    return (winRate * 0.5) + (killEff * 0.3) + (taskRate * 0.2);
+  }
+
+  function renderRow(k, v) {
+    return '<div class="stat-row"><span class="k">' + esc(k) + '</span><span class="v">' + num(v) + '</span></div>';
+  }
+
+  function render(p) {
+    var gs = parseJson(p.game_stats) || {};
+    var ach = parseJson(p.achievements) || {};
+    var name = p.display_name || p.username || 'Player';
+
+    // avatar
+    var av = $('p-avatar');
+    if (p.avatar_url) {
+      var img = document.createElement('img');
+      img.src = p.avatar_url; img.alt = '';
+      img.onerror = function () { av.innerHTML = '<span class="initial">' + esc(name[0].toUpperCase()) + '</span>'; };
+      av.innerHTML = ''; av.appendChild(img);
+    } else {
+      av.innerHTML = '<span class="initial">' + esc(name[0].toUpperCase()) + '</span>';
+    }
+    $('p-name').textContent = name;
+    $('p-user').textContent = '@' + (p.username || '');
+    $('p-discord').textContent = p.discord_id || '-';
+    $('p-about').innerHTML = p.about_me && p.about_me.trim()
+      ? esc(p.about_me.trim())
+      : '<span class="pc-about-none">No about me set.</span>';
+
+    // tiles
+    var totalWins = Object.keys(gs).filter(function (k) { return k.indexOf('_Wins') !== -1; }).reduce(function (s, k) { return s + (gs[k] || 0); }, 0);
+    $('t-games').textContent = num(gs.GamesStarted);
+    $('t-wins').textContent = num(totalWins);
+    $('t-kills').textContent = num(gs.ImpostorKills);
+    $('t-tasks').textContent = num(gs.TasksCompleted);
+
+    // skill score
+    var achScore = SKILL_ACH.filter(function (id) { var a = ach[id]; return a && a.unlocked; }).length;
+    var statScore = calcStatScore(gs);
+    var total = (achScore / SKILL_ACH.length) * 0.6 + statScore * 0.4;
+    $('p-skill').textContent = Math.round(total * 100);
+
+    // summary
+    var summary = [
+      ['Games Finished', gs.GamesFinished], ['Games as Impostor', gs.GamesAsImpostor],
+      ['Games as Crewmate', gs.GamesAsCrewmate], ['Crewmate Streak', gs.CrewmateStreak],
+      ['Times Murdered', gs.TimesMurdered], ['Times Ejected', gs.TimesEjected],
+      ['All Tasks Completed', gs.AllTasksCompleted], ['Sabotages Fixed', gs.SabotagesFixed],
+      ['Bodies Reported', gs.BodiesReported], ['Emergency Meetings', gs.EmergenciesCalledCrewmate]
+    ];
+    $('stats-summary').innerHTML = summary.map(function (r) { return renderRow(r[0], r[1]); }).join('');
+
+    // maps
+    $('stats-maps').innerHTML = [
+      ['The Skeld', gs.Map_Skeld_Wins], ['MIRA HQ', gs.Map_MiraHQ_Wins], ['Polus', gs.Map_Polus_Wins],
+      ['The Airship', gs.Map_Airship_Wins], ['The Fungle', gs.Map_Fungle_Wins]
+    ].map(function (r) { return renderRow(r[0], r[1]); }).join('');
+
+    // roles
+    $('stats-roles').innerHTML = [
+      ['Crewmate', gs.Role_Crewmate_Wins], ['Impostor', gs.Role_Impostor_Wins], ['Engineer', gs.Role_Engineer_Wins],
+      ['Scientist', gs.Role_Scientist_Wins], ['Guardian Angel', gs.Role_GuardianAngel_Wins],
+      ['Shapeshifter', gs.Role_Shapeshifter_Wins], ['Noisemaker', gs.Role_Noisemaker_Wins],
+      ['Tracker', gs.Role_Tracker_Wins], ['Phantom', gs.Role_Phantom_Wins]
+    ].map(function (r) { return renderRow(r[0], r[1]); }).join('');
+
+    // achievements
+    var keys = Object.keys(ACH_META);
+    var unlocked = keys.filter(function (k) { var a = ach[k]; return a && a.unlocked; });
+    $('ach-count').textContent = unlocked.length + ' / ' + keys.length;
+    var sorted = unlocked.concat(keys.filter(function (k) { return unlocked.indexOf(k) === -1; }));
+    $('ach-grid').innerHTML = sorted.map(function (k) {
+      var m = ACH_META[k]; var done = unlocked.indexOf(k) !== -1;
+      return '<div class="ach-chip' + (done ? ' unlocked' : '') + '">' +
+        '<span class="ico">' + m.icon + '</span>' +
+        '<span class="tier ' + m.tier + '"></span>' +
+        '<span><span class="ach-name">' + esc(m.name) + '</span><div class="ach-desc">' + esc(m.desc) + '</div></span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function fail(id, msg) { show(id); if (msg) $('st-error-msg').textContent = msg; }
+
+  (function init() {
+    var parts = location.pathname.split('/').filter(Boolean);
+    var id = '';
+    // /users/<discord-id>  →  last segment; ignore "users"
+    for (var i = parts.length - 1; i >= 0; i--) {
+      if (parts[i] !== 'users' && parts[i] !== 'users.html' && /^\d{15,20}$/.test(parts[i])) { id = parts[i]; break; }
+    }
+    if (!id) { show('st-noid'); return; }
+
+    fetch('/api/user?discord_id=' + encodeURIComponent(id))
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+      .then(function (res) {
+        if (res.status === 404) { show('st-404'); return; }
+        if (!res.ok) { fail('st-error', res.j.error || ('Request failed (' + res.status + ')')); return; }
+        render(res.j);
+        show('profile');
+      })
+      .catch(function (e) { fail('st-error', String(e)); });
+  })();
+})();
+</script>
+
+</body>
+</html>

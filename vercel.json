@@ -2,7 +2,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/post/:slug", "destination": "/post" }
+    { "source": "/post/:slug", "destination": "/post" },
+    { "source": "/users/:id", "destination": "/users" }
   ],
   "headers": [
     {
