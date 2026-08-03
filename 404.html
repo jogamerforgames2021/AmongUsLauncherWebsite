@@ -18,14 +18,14 @@
   --f:'Share Tech Mono',monospace;
 }
 
-html{ overflow-y:scroll; height:100%; overscroll-behavior-y:none; }
+html{ height:100%; overscroll-behavior-y:none; }
 
 body{
   font-family:var(--f);
   background:var(--bg);
   color:var(--text);
-  min-height:100%;
-  overflow-x:hidden;
+  height:100%;
+  overflow:hidden;
 }
 
 /* grain */
@@ -69,37 +69,27 @@ body::after{
   position:relative;z-index:1;
   width:100%;max-width:880px;
   margin:0 auto;
-  padding:6rem 2rem 3rem;
-  min-height:100vh;
+  padding:2rem 1.5rem;
+  height:100vh;
+  height:100dvh;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   text-align:center;
   transition:transform .28s ease-out;
 }
 
-.ph-label{
-  display:flex;align-items:center;gap:1.1rem;
-  font-size:.58rem;letter-spacing:.32em;text-transform:uppercase;
-  color:var(--red);margin-bottom:1.6rem;
-  animation:label-flicker 6s steps(1) infinite;
-}
-.ph-label::before,.ph-label::after{content:'';height:1px;flex:0 1 90px;}
-.ph-label::before{background:linear-gradient(90deg,transparent,rgba(200,21,27,.5));}
-.ph-label::after{background:linear-gradient(90deg,rgba(200,21,27,.5),transparent);}
-@keyframes label-flicker{0%,90%,92%,100%{opacity:1}91%{opacity:.35}93%{opacity:.7}}
-
 .ph-title{
   position:relative;
-  font-size:clamp(4.5rem,17vw,12.5rem);
+  font-size:clamp(3.4rem,11vw,8.5rem);
   line-height:.9;letter-spacing:-.02em;
-  font-weight:bold;margin-bottom:.9rem;
+  font-weight:bold;margin-bottom:.6rem;
   color:var(--text);
   white-space:nowrap;
   animation:floaty 6.5s ease-in-out infinite;
 }
 .ph-title > span{position:relative;z-index:2;}
 .ph-title .slash{color:var(--red);}
-@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
 /* RGB-split glitch slices */
 .ph-title::before,.ph-title::after{
@@ -143,7 +133,7 @@ body::after{
 
 .ph-sub{
   font-size:.8rem;color:var(--muted);
-  letter-spacing:.06em;line-height:1.9;margin-bottom:2rem;
+  letter-spacing:.06em;line-height:1.9;margin-bottom:1.5rem;
 }
 
 /* terminal panel */
@@ -153,12 +143,12 @@ body::after{
   background:rgba(10,10,12,.55);
   text-align:left;
   overflow:hidden;
-  margin-bottom:2.2rem;
+  margin-bottom:1.6rem;
   box-shadow:0 10px 40px rgba(0,0,0,.45);
 }
 .term-head{
   display:flex;align-items:center;gap:.7rem;
-  padding:.55rem 1rem;
+  padding:.5rem 1rem;
   border-bottom:1px solid var(--dim);
   font-size:.54rem;letter-spacing:.22em;text-transform:uppercase;
   color:rgba(240,240,242,.35);
@@ -169,7 +159,7 @@ body::after{
 .th-dot:nth-child(2){animation-delay:.25s;}
 .th-dot:nth-child(3){animation-delay:.5s;}
 @keyframes dot-pulse{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
-.term-body{padding:1rem 1.15rem 1.15rem;font-size:.7rem;line-height:2;letter-spacing:.045em;color:rgba(240,240,242,.6);min-height:158px;}
+.term-body{padding:.8rem 1.05rem .95rem;font-size:.68rem;line-height:1.9;letter-spacing:.045em;color:rgba(240,240,242,.6);min-height:120px;}
 .term-body div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .t-fail{color:#e05565;}
 .t-dim{color:rgba(240,240,242,.26);}
@@ -187,7 +177,7 @@ body::after{
   color:rgba(200,21,27,.9);
   border:1px solid rgba(200,21,27,.35);
   padding:.4rem .9rem;
-  margin-bottom:2.4rem;
+  margin-bottom:1.8rem;
   max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .ph-path::after{
@@ -203,20 +193,40 @@ body::after{
   text-decoration:none;cursor:pointer;
   border:1px solid var(--dim);color:var(--text);
   transition:border-color .12s,color .12s,background .12s,transform .12s;
-  position:relative;overflow:hidden;
+  position:relative;overflow:visible;
 }
-.pa-btn::after{
+.pa-btn::before{
   content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
-  transition:left .4s;
+  transition:left .4s;pointer-events:none;
 }
 .pa-btn:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px);}
-.pa-btn:hover::after{left:160%;}
+.pa-btn:hover::before{left:160%;}
 .pa-btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
 .pa-btn.primary:hover{background:#e01b22;}
 
+/* animated tooltips */
+.pa-btn .tip{
+  position:absolute;bottom:calc(100% + 10px);left:50%;
+  transform:translateX(-50%) translateY(8px);
+  background:#0d0d10;
+  border:1px solid var(--dim);
+  color:var(--muted);
+  font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.45rem .75rem;
+  white-space:nowrap;
+  opacity:0;pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease;
+  z-index:5;
+}
+.pa-btn .tip::after{
+  content:'';position:absolute;top:100%;left:50%;margin-left:-4px;
+  border:4px solid transparent;border-top-color:rgba(240,240,242,.16);
+}
+.pa-btn:hover .tip{opacity:1;transform:translateX(-50%) translateY(0);}
+
 .ph-footer{
-  margin-top:2.8rem;
+  margin-top:1.8rem;
   font-size:.54rem;letter-spacing:.26em;text-transform:uppercase;
   color:rgba(240,240,242,.22);
   display:flex;align-items:center;gap:.7rem;
@@ -226,6 +236,15 @@ body::after{
 .foot-dots span:nth-child(2){animation-delay:.18s;}
 .foot-dots span:nth-child(3){animation-delay:.36s;}
 @keyframes foot-bounce{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+/* short viewports: keep it on one screen */
+@media (max-height:640px){
+  .ph-title{font-size:clamp(2.6rem,9vw,5rem);}
+  .term-body{min-height:96px;line-height:1.7;}
+  .ph-sub{margin-bottom:1rem;}
+  .ph-path{margin-bottom:1.2rem;}
+  .ph-footer{display:none;}
+}
 </style>
 </head>
 <body>
@@ -236,9 +255,8 @@ body::after{
 
 <!-- PAGE -->
 <div class="page-wrap" id="page-wrap">
-  <span class="ph-label">signal lost</span>
   <h1 class="ph-title" id="ph-title" data-text="404"><span>4</span><span class="slash">0</span><span>4</span></h1>
-  <p class="ph-sub">That page was ejected and thrown out of the airlock.</p>
+  <p class="ph-sub">Requested resource does not exist &mdash; probably ejected off the airlock.</p>
 
   <div class="term">
     <div class="term-head">
@@ -251,8 +269,8 @@ body::after{
   <span class="ph-path" id="ph-path">/lost-in-space</span>
 
   <div class="ph-actions">
-    <a class="pa-btn primary" href="/">Return to Base</a>
-    <a class="pa-btn" href="/news">Mission Log</a>
+    <a class="pa-btn primary" href="/">Go to Main Page <span class="tip">return to the main page &mdash; everything is safe there</span></a>
+    <a class="pa-btn" href="/news">Go to News Page <span class="tip">maybe we removed the page you were looking for</span></a>
   </div>
 
   <div class="ph-footer">
@@ -398,7 +416,6 @@ document.getElementById('ph-path').textContent = location.pathname || '/';
       if(s.x>W+8)s.x=-8; if(s.x<-8)s.x=W+8;
       if(s.y>H+8)s.y=-8; if(s.y<-8)s.y=H+8;
       const a=s.baseAlpha*(0.6+0.4*Math.sin(s.tw));
-      const len=s.sp*15*s.r;
       const tx=s.x-s.dx*s.sp*15, ty=s.y-s.dy*s.sp*15;
       const gr=bgX.createLinearGradient(s.x,s.y,tx,ty);
       gr.addColorStop(0,'rgba('+s.col+','+a+')');
