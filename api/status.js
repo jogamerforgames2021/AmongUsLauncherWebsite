@@ -10,11 +10,10 @@
 // {
 //   "ok": true,
 //   "source": ".../AppDetail.json",
-//   "repository_version": "17.4I",
-//   "uploaded_version":   "17.4I",
+//   "shadow_slime_latest_version": "17.4I",
+//   "innersloth_latest_version":   "17.4I",
 //   "outdated": false,
 //   "status": "up_to_date" | "behind",
-//   "message": "...",
 //   "checked_at": "2026-08-03T...Z"
 // }
 
@@ -81,25 +80,15 @@ export default async function handler(req, res) {
   const cmp = compareVersions(repoVer, uploadedVer);
   const outdated = cmp < 0; // Innersloth's latest is newer than what the launcher hosts
 
-  let status  = 'up_to_date';
-  let message = 'Launcher builds are up to date.';
-  if (outdated) {
-    status = 'behind';
-    message = `Innersloth pushed ${uploadedVer || 'a newer version'} but the latest hosted build is still ${repoVer || 'unknown'}.`;
-  } else if (cmp === 0) {
-    message = `Latest hosted build (${repoVer}) matches Innersloth's current version.`;
-  } else {
-    message = `Hosted build (${repoVer}) is ahead of the tracked Innersloth version (${uploadedVer}).`;
-  }
+  const status = outdated ? 'behind' : 'up_to_date';
 
   return res.status(200).json({
     ok: true,
     source: APP_DETAIL_URL,
-    repository_version: repoVer || null,
-    uploaded_version:   uploadedVer || null,
+    shadow_slime_latest_version: repoVer || null,
+    innersloth_latest_version:   uploadedVer || null,
     outdated,
     status,
-    message,
     checked_at: new Date().toISOString(),
   });
 }

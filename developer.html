@@ -502,6 +502,45 @@ pre.code-body::-webkit-scrollbar-thumb{background:var(--dim);}
     </div>
   </div>
 
+  <!-- BUILD STATUS -->
+  <div class="endpoint-header" style="margin-top:4rem;">
+    <div class="endpoint-meta">
+      <div class="endpoint-name">Build Status</div>
+      <p class="endpoint-desc">Reports whether the launcher's hosted game builds are behind Innersloth. Reads the same AppDetail.json the launcher uses for its "BEHIND" banner — compare Shadow Slime's latest hosted version against Innersloth's latest, no auth needed.</p>
+    </div>
+  </div>
+
+  <!-- CODE BLOCK -->
+  <div class="code-block" id="a3-code">
+    <div class="code-top">
+      <div class="lang-tabs">
+        <button class="lang-tab active" data-a3-lang="js">JS</button>
+        <button class="lang-tab" data-a3-lang="py">Python</button>
+        <button class="lang-tab" data-a3-lang="rs">Rust</button>
+      </div>
+      <button class="copy-btn" id="a3-copy-btn">Copy</button>
+    </div>
+    <pre class="code-body" id="a3-code-body"></pre>
+  </div>
+
+  <p class="code-note" id="a3-code-note"></p>
+
+  <!-- PLAYGROUND -->
+  <span class="section-label">// Try it live</span>
+  <div class="playground">
+    <div class="playground-top">
+      <span class="playground-label">Playground</span>
+      <button class="playground-run" id="a3-run-btn">&#9654; Run</button>
+    </div>
+    <div class="playground-url">
+      <span class="playground-method">GET</span>
+      <span class="playground-endpoint">https://amongus-launcher.vercel.app/api/status</span>
+    </div>
+    <div class="playground-response" id="a3-pg-response">
+      <span class="pr-empty">// Hit Run to see the response</span>
+    </div>
+  </div>
+
 </div>
 
 <!-- HUB DRAWER -->
@@ -1016,6 +1055,99 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('a2-copy-btn').addEventListener('click', a2Copy);
   document.getElementById('a2-run-btn').addEventListener('click', a2Run);
   a2Render();
+})();
+</script>
+<script>
+'use strict';
+
+// ── BUILD STATUS ENDPOINT (self-contained) ─────────────────────
+(function () {
+  const A3_API = 'https://amongus-launcher.vercel.app/api/status';
+
+  const A3_CODES = {
+    js: `<span class="tk-c">// AU Launcher API — is the hosted build behind Innersloth?</span>
+<span class="tk-k">const</span> <span class="tk-n">res</span> = <span class="tk-k">await</span> <span class="tk-f">fetch</span>(<span class="tk-s">'https://amongus-launcher.vercel.app/api/status'</span>);
+<span class="tk-k">const</span> <span class="tk-n">status</span> = <span class="tk-k">await</span> <span class="tk-n">res</span>.<span class="tk-f">json</span>();
+
+<span class="tk-c">// returns:</span>
+<span class="tk-c">// { shadow_slime_latest_version: "17.4I",</span>
+<span class="tk-c">//   innersloth_latest_version:   "17.4I",</span>
+<span class="tk-c">//   outdated: false,</span>
+<span class="tk-c">//   status: "up_to_date" | "behind" }</span>
+<span class="tk-n">console</span>.<span class="tk-f">log</span>(<span class="tk-n">status</span>.<span class="tk-n">outdated</span>, <span class="tk-n">status</span>.<span class="tk-n">innersloth_latest_version</span>);`,
+
+    py: `<span class="tk-c"># AU Launcher API — is the hosted build behind Innersloth?</span>
+<span class="tk-k">import</span> requests
+
+<span class="tk-n">status</span> = requests.<span class="tk-f">get</span>(<span class="tk-s">"https://amongus-launcher.vercel.app/api/status"</span>).<span class="tk-f">json</span>()
+
+<span class="tk-c"># status["shadow_slime_latest_version"] -> "17.4I"</span>
+<span class="tk-c"># status["innersloth_latest_version"]   -> "17.4I"</span>
+<span class="tk-c"># status["outdated"], status["status"]  -> False / "up_to_date"</span>
+<span class="tk-f">print</span>(<span class="tk-n">status</span>[<span class="tk-s">"outdated"</span>], <span class="tk-n">status</span>[<span class="tk-s">"innersloth_latest_version"</span>])`,
+
+    rs: `<span class="tk-c">// AU Launcher API — is the hosted build behind Innersloth?</span>
+<span class="tk-k">use</span> reqwest;
+<span class="tk-k">use</span> serde_json::Value;
+
+<span class="tk-k">let</span> <span class="tk-n">status</span>: Value = reqwest::<span class="tk-f">Client</span>::<span class="tk-f">new</span>()
+    .<span class="tk-f">get</span>(<span class="tk-s">"https://amongus-launcher.vercel.app/api/status"</span>)
+    .<span class="tk-f">send</span>().<span class="tk-k">await</span>?
+    .<span class="tk-f">json</span>().<span class="tk-k">await</span>?;
+
+<span class="tk-c">// status["shadow_slime_latest_version"] -> "17.4I"</span>
+<span class="tk-c">// status["innersloth_latest_version"]   -> "17.4I"</span>
+<span class="tk-k">let</span> <span class="tk-n">behind</span> = <span class="tk-n">status</span>[<span class="tk-s">"outdated"</span>].<span class="tk-f">as_bool</span>().<span class="tk-f">unwrap</span>();`
+  };
+
+  const A3_NOTE = 'No auth needed. Compares Shadow Slime\'s latest hosted build (repository_version in AppDetail.json) against Innersloth\'s latest (uploaded_version). "behind" is what triggers the launcher\'s BEHIND banner.';
+
+  let a3Lang = 'js';
+
+  function a3Render() {
+    document.getElementById('a3-code-body').innerHTML = A3_CODES[a3Lang];
+    document.getElementById('a3-code-note').textContent = A3_NOTE;
+  }
+
+  function a3SetLang(lang) {
+    a3Lang = lang;
+    document.querySelectorAll('#a3-code .lang-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === lang));
+    a3Render();
+  }
+
+  async function a3Run() {
+    const btn = document.getElementById('a3-run-btn');
+    const out  = document.getElementById('a3-pg-response');
+    btn.disabled = true;
+    out.innerHTML = '<span class="pr-loading">// Fetching</span>';
+    try {
+      const res = await fetch(A3_API);
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        out.innerHTML = `<span class="pr-error">// HTTP ${res.status}${data && data.error ? ': ' + data.error : ''}</span>`;
+      } else {
+        out.innerHTML = prettyJson(data);
+      }
+    } catch (e) {
+      out.innerHTML = `<span class="pr-error">// Error: ${e.message}</span>`;
+    }
+    btn.disabled = false;
+  }
+
+  function a3Copy() {
+    const plain = A3_CODES[a3Lang].replace(/<[^>]+>/g, '');
+    navigator.clipboard.writeText(plain).then(() => {
+      const btn = document.getElementById('a3-copy-btn');
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+    });
+  }
+
+  document.querySelectorAll('#a3-code .lang-tab').forEach(t => t.addEventListener('click', () => a3SetLang(t.textContent.toLowerCase())));
+  document.getElementById('a3-copy-btn').addEventListener('click', a3Copy);
+  document.getElementById('a3-run-btn').addEventListener('click', a3Run);
+  a3Render();
 })();
 </script>
 </body>
