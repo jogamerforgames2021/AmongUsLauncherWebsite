@@ -85,8 +85,59 @@ main{
 .state-icon{font-size:2rem;display:block;margin-bottom:1rem;}
 .state-title{font-size:1rem;font-weight:bold;margin-bottom:.5rem;letter-spacing:.04em;}
 .state-sub{font-size:.72rem;color:var(--muted);line-height:1.8;max-width:480px;margin-inline:auto;}
-.loader{display:inline-block;width:22px;height:22px;border:2px solid var(--dim);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:1rem;}
-@keyframes spin{to{transform:rotate(360deg);}}
+
+/* square spinner — same as the launcher (rect tracing its perimeter) */
+.sq-spin{display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+.sq-spin svg{width:22px;height:22px;display:block;flex-shrink:0;}
+.sq-spin .trk{fill:none;stroke:rgba(240,240,242,.07);stroke-width:2;}
+.sq-spin .arc{fill:none;stroke:var(--red);stroke-width:2;stroke-dasharray:20 60;stroke-dashoffset:80;animation:sqTrace 1s linear infinite;}
+.sq-spin-sm{margin:0;}
+.sq-spin-sm svg{width:13px;height:13px;}
+.sq-spin-sm .arc{stroke-dasharray:11 33;stroke-dashoffset:44;}
+@keyframes sqTrace{to{stroke-dashoffset:0;}}
+
+/* search engine */
+.search-wrap{position:relative;margin-bottom:1.8rem;}
+.search-box{
+  display:flex;align-items:center;gap:.7rem;
+  border:1px solid var(--dim);background:rgba(240,240,242,.02);
+  padding:0 .9rem;height:2.8rem;transition:border-color .12s;
+}
+.search-box:focus-within{border-color:var(--red);}
+.search-box input{
+  flex:1;min-width:0;background:none;border:none;outline:none;
+  font-family:var(--f);color:var(--text);font-size:.78rem;letter-spacing:.03em;
+}
+.search-box input::placeholder{color:rgba(240,240,242,.22);}
+.search-hint{
+  font-size:.52rem;color:rgba(240,240,242,.24);letter-spacing:.12em;text-transform:uppercase;
+  margin-top:.55rem;
+}
+.search-drop{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;
+  border:1px solid var(--dim);background:#0c0c0c;
+  display:none;max-height:340px;overflow-y:auto;
+}
+.search-drop.open{display:block;}
+.sr{
+  display:flex;gap:.8rem;align-items:center;
+  padding:.6rem .9rem;cursor:pointer;text-decoration:none;color:var(--text);
+  border-bottom:1px solid rgba(240,240,242,.06);
+}
+.sr:last-child{border-bottom:none;}
+.sr:hover,.sr.sel{background:rgba(240,240,242,.05);}
+.sr-av{
+  width:34px;height:34px;flex-shrink:0;
+  background:rgba(240,240,242,.05);border:1px solid var(--dim);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.sr-av img{width:100%;height:100%;object-fit:cover;}
+.sr-av .i{font-size:.9rem;color:var(--muted);}
+.sr-nm{font-size:.68rem;font-weight:bold;letter-spacing:.02em;}
+.sr-us{font-size:.56rem;color:var(--muted);margin-top:.14rem;letter-spacing:.05em;}
+.sr-stats{margin-left:auto;text-align:right;font-size:.52rem;color:rgba(240,240,242,.3);letter-spacing:.08em;white-space:nowrap;}
+.sr-stats b{color:var(--text);}
+.sr-empty,.sr-fail{padding:.9rem;font-size:.62rem;color:var(--muted);text-align:center;}
 
 /* ── profile card ───────────────────────── */
 .profile-card{
@@ -181,7 +232,7 @@ main{
 .ach-chip.unlocked{opacity:1;}
 .ach-chip .ico{font-size:1.05rem;flex-shrink:0;line-height:1;}
 .ach-chip .tier{
-  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  width:6px;height:6px;flex-shrink:0;
   margin-top:.3rem;background:rgba(240,240,242,.15);
 }
 .ach-chip.unlocked .tier.bronze{background:var(--bronze);box-shadow:0 0 6px rgba(205,127,50,.5);}
@@ -219,9 +270,24 @@ main{
 <main>
   <span class="page-eyebrow">// Public Profile</span>
 
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="sq-spin sq-spin-sm" id="q-spin" style="display:none">
+        <svg viewBox="0 0 13 13"><rect class="trk" x="1" y="1" width="11" height="11"/><rect class="arc" x="1" y="1" width="11" height="11"/></svg>
+      </span>
+      <input id="q-input" type="text" placeholder="Search players by name, or paste a Discord ID&hellip;" autocomplete="off" spellcheck="false">
+      <span style="color:var(--dim);font-size:.85rem;pointer-events:none">&#128269;</span>
+    </div>
+    <div class="search-hint">Find a player &middot; or open a shared link: /users/&lt;discord-id&gt;</div>
+    <div class="search-drop" id="q-drop"></div>
+  </div>
+
   <!-- LOADING -->
   <div class="state visible" id="st-loading">
-    <span class="loader"></span>
+    <span class="sq-spin">
+      <svg viewBox="0 0 22 22"><rect class="trk" x="1" y="1" width="20" height="20"/><rect class="arc" x="1" y="1" width="20" height="20"/></svg>
+    </span>
     <div class="state-title">Fetching profile&hellip;</div>
   </div>
 
@@ -450,6 +516,126 @@ main{
   }
 
   function fail(id, msg) { show(id); if (msg) $('st-error-msg').textContent = msg; }
+
+  // ── SEARCH ENGINE ──────────────────────────────
+  (function search() {
+    var input = $('q-input');
+    var drop = $('q-drop');
+    var spin = $('q-spin');
+    var results = [];
+    var sel = -1;
+    var timer = null;
+    var controller = null;
+    var ID_RE = /^\d{15,20}$/;
+
+    function setLoading(on) { spin.style.display = on ? '' : 'none'; }
+    function openDrop() { drop.classList.add('open'); }
+    function hideDrop() { drop.classList.remove('open'); drop.innerHTML = ''; results = []; sel = -1; }
+
+    function smallStats(gs) {
+      var games = num(gs.GamesStarted);
+      var wins = Object.keys(gs).filter(function (k) { return k.indexOf('_Wins') !== -1; }).reduce(function (s, k) { return s + (gs[k] || 0); }, 0);
+      return (games || wins) ? '<b>' + num(games) + '</b> games &middot; <b>' + num(wins) + '</b> wins' : '';
+    }
+
+    function renderRows(rows) {
+      results = rows;
+      sel = -1;
+      if (!rows.length) {
+        drop.innerHTML = '<div class="sr-empty">No players found for that name.</div>';
+        openDrop(); return;
+      }
+      drop.innerHTML = rows.map(function (r, i) {
+        var name = r.display_name || r.username || 'Player';
+        var stats = smallStats(parseJson(r.game_stats) || {});
+        return '<a class="sr' + (i === 0 ? ' sel' : '') + '" href="/users/' + encodeURIComponent(r.discord_id) + '">' +
+          '<span class="sr-av"><span class="i">' + esc(name[0].toUpperCase()) + '</span></span>' +
+          '<span><span class="sr-nm">' + esc(name) + '</span><div class="sr-us">@' + esc(r.username || '') + '</div></span>' +
+          (stats ? '<span class="sr-stats">' + stats + '</span>' : '') +
+          '</a>';
+      }).join('');
+      // swap in real avatars
+      results.forEach(function (r, i) {
+        if (!r.avatar_url) return;
+        var cell = drop.querySelectorAll('.sr-av')[i];
+        var img = document.createElement('img');
+        img.src = r.avatar_url; img.alt = '';
+        img.onerror = function () { cell.innerHTML = '<span class="i">' + esc((r.display_name || r.username || '?')[0].toUpperCase()) + '</span>'; };
+        cell.innerHTML = ''; cell.appendChild(img);
+      });
+      openDrop();
+    }
+
+    function setSel() {
+      var els = drop.querySelectorAll('.sr');
+      for (var i = 0; i < els.length; i++) els[i].classList.toggle('sel', i === sel);
+      if (els[sel]) els[sel].scrollIntoView({ block: 'nearest' });
+    }
+
+    function go(i) {
+      if (i >= 0 && i < results.length) { location.href = '/users/' + results[i].discord_id; return; }
+      var v = input.value.trim();
+      if (ID_RE.test(v)) location.href = '/users/' + v;
+    }
+
+    function showIdRow(v) {
+      setLoading(false);
+      drop.innerHTML = '<a class="sr sel" href="/users/' + v + '">' +
+        '<span class="sr-av"><span class="i">#</span></span>' +
+        '<span><span class="sr-nm">Open Discord ID profile</span><div class="sr-us">/users/' + v + '</div></span>' +
+        '</a>';
+      results = [];
+      openDrop();
+    }
+
+    input.addEventListener('input', function () {
+      var v = input.value.trim();
+      clearTimeout(timer);
+      if (controller) { controller.abort(); controller = null; }
+      hideDrop();
+      if (!v) { setLoading(false); return; }
+      if (ID_RE.test(v)) { showIdRow(v); return; }
+      if (v.length < 2) { setLoading(false); return; }
+      setLoading(true);
+      timer = setTimeout(function () {
+        controller = new AbortController();
+        fetch('/api/search?q=' + encodeURIComponent(v), { signal: controller.signal })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (res) {
+            setLoading(false);
+            if (!res.ok) { drop.innerHTML = '<div class="sr-fail">Search failed &mdash; try again.</div>'; openDrop(); return; }
+            renderRows(res.j);
+          })
+          .catch(function (e) {
+            if (e && e.name === 'AbortError') return;
+            setLoading(false);
+            drop.innerHTML = '<div class="sr-fail">Search failed &mdash; try again.</div>';
+            openDrop();
+          });
+      }, 220);
+    });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        if (!results.length) return;
+        e.preventDefault();
+        sel = e.key === 'ArrowDown' ? (sel + 1) % results.length : (sel - 1 + results.length) % results.length;
+        setSel();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        go(sel);
+      } else if (e.key === 'Escape') {
+        hideDrop();
+        input.blur();
+      }
+    });
+
+    input.addEventListener('blur', function () { setTimeout(hideDrop, 120); });
+    input.addEventListener('focus', function () {
+      var v = input.value.trim();
+      if (v && (ID_RE.test(v) || results.length)) openDrop();
+    });
+  })();
 
   (function init() {
     var parts = location.pathname.split('/').filter(Boolean);
