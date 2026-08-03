@@ -483,7 +483,7 @@ function fmt(d) {
 
 function buildCard(post, idx) {
   const cat  = post.category || 'Update';
-  const href = `/post?slug=${post.slug}`;
+  const href = `/post/${post.slug}`;
   const cls  = idx === 0 ? 'featured' : (idx === 1 ? 'high' : 'normal');
 
   // Cover image — shown on all card types
@@ -561,7 +561,7 @@ loadNews();
       const item = document.createElement('div');
       item.className = 'dn-item';
       item.innerHTML = `<span class="dn-badge ${cat}">${cat.toUpperCase()}</span>
-        <div><a href="/post?slug=${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
+        <div><a href="/post/${p.slug}"><div class="dn-title">${p.title}</div></a><div class="dn-date">${date}</div></div>`;
       dnList.appendChild(item);
     });
   } catch {

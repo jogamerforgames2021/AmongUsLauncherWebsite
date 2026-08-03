@@ -1384,7 +1384,7 @@
     const NEWS_BASE_HP = '/news/';
     function formatDateHP(d) { return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
     function buildHNCard(post, size) {
-        const href = `/post?slug=${post.slug}`;
+        const href = `/post/${post.slug}`;
         const cover = post.cover ? `style="background-image:url('${post.cover}')"` : 'class="hn-no-cover"';
         const cat   = post.category || 'Update';
         return `<a class="hn-card" href="${href}">
