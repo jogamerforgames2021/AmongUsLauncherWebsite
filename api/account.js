@@ -7,7 +7,7 @@ const PLATFORM_LABELS = {
   itchio: 'itch.io', itch: 'itch.io',
   steam: 'Steam',
   epic: 'Epic Games', epicgames: 'Epic Games',
-  xbox: 'Xbox', xboxlive: 'Xbox',
+  xbox: 'Xbox', xboxlive: 'Xbox', xbl: 'Xbox',
   playstation: 'PlayStation', psn: 'PlayStation',
   nintendo: 'Nintendo', switch: 'Nintendo Switch',
   ios: 'iOS', android: 'Android',
