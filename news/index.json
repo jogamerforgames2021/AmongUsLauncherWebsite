@@ -1,5 +1,15 @@
 [
   {
+    "slug": "fix-you-must-own-among-us",
+    "title": "WE FOUND A WAY TO FIX THE \"YOU MUST OWN AMONG US\" ERROR DESPITE OWNING IT",
+    "brief": "You own Among Us, it's in your library, but the launcher still hits you with \"YOU MUST OWN AMONG US\"? There's a fix now — watch the video.",
+    "date": "2026-08-04",
+    "category": "Announcement",
+    "priority": "featured",
+    "cover": "Fixownthegame.mp4",
+    "video": "Fixownthegame.mp4"
+  },
+  {
     "slug": "launcher-v14-release",
     "title": "Launcher v1.4 is here and it's insane",
     "brief": "New look, mods tab, AUnlocker built right in, live download speed graph, Discord status and a ton more. This one's big.",

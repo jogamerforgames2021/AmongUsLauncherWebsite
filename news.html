@@ -489,7 +489,11 @@ function buildCard(post, idx) {
   // Cover image — shown on all card types
   let coverHtml = '';
   if (post.cover) {
-    coverHtml = `<div class="nc-cover-wrap"><img class="nc-cover" src="${post.cover}" alt="" loading="lazy"></div>`;
+    if (/\.(mp4|webm|ogv|mov)([?#].*)?$/i.test(post.cover)) {
+      coverHtml = `<div class="nc-cover-wrap"><video class="nc-cover" src="${post.cover}" autoplay muted loop playsinline preload="metadata"></video></div>`;
+    } else {
+      coverHtml = `<div class="nc-cover-wrap"><img class="nc-cover" src="${post.cover}" alt="" loading="lazy"></div>`;
+    }
   } else if (cls === 'featured' || cls === 'high') {
     // decorative filler only on larger cards
     coverHtml = `<div class="nc-no-cover">///</div>`;

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="News Poster — create a news post for the Among Us Launcher without touching JSON.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>News Poster // Tools</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.65);
+  --dim:rgba(240,240,242,.09);
+  --f:'Share Tech Mono',monospace;
+}
+html{height:100%;}
+body{
+  font-family:var(--f);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100%;
+  background-image:
+    radial-gradient(80% 60% at 15% 0%,rgba(200,21,27,.06),transparent 60%),
+    radial-gradient(70% 50% at 90% 20%,rgba(123,97,255,.05),transparent 60%);
+  background-attachment:fixed;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+}
+a{color:inherit;}
+
+/* top bar */
+.topbar{
+  display:flex;align-items:center;gap:1.6rem;
+  padding:1.3rem 2.2rem;
+  border-bottom:1px solid var(--dim);
+}
+.tb-back{
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;transition:color .12s;
+}
+.tb-back:hover{color:var(--red);}
+.tb-title{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--text);}
+.tb-title b{color:var(--red);font-weight:bold;}
+.tb-doc{margin-left:auto;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;border:1px solid var(--dim);padding:.4rem .7rem;transition:color .12s,border-color .12s;}
+.tb-doc:hover{color:var(--red);border-color:var(--red);}
+
+/* layout */
+.wrap{
+  position:relative;z-index:1;
+  max-width:1200px;margin:0 auto;
+  padding:2.4rem 2.2rem 4rem;
+}
+.hero{margin-bottom:2.2rem;}
+.hero-label{font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:.7rem;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.01em;font-weight:bold;margin-bottom:.5rem;}
+.hero p{font-size:.78rem;color:var(--muted);letter-spacing:.04em;line-height:1.8;}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+@media (max-width:1000px){.grid{grid-template-columns:1fr;}}
+
+.panel{
+  border:1px solid var(--dim);
+  background:rgba(12,12,14,.7);
+  margin-bottom:1.6rem;
+  overflow:hidden;
+}
+.panel-head{
+  display:flex;align-items:center;gap:.7rem;
+  padding:.65rem 1.1rem;
+  border-bottom:1px solid var(--dim);
+  font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(240,240,242,.4);
+  background:rgba(240,240,242,.02);
+}
+.panel-head .ph-num{color:var(--red);}
+.panel-body{padding:1.1rem 1.2rem 1.3rem;}
+
+/* form */
+.field{margin-bottom:1.1rem;}
+.field label{display:block;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem;}
+.field label b{color:var(--red);}
+.field input,.field select,.field textarea{
+  width:100%;
+  font-family:var(--f);
+  font-size:.78rem;
+  color:var(--text);
+  background:rgba(240,240,242,.03);
+  border:1px solid var(--dim);
+  padding:.55rem .7rem;
+  outline:none;
+  transition:border-color .12s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(200,21,27,.5);}
+.field textarea{resize:vertical;min-height:90px;line-height:1.7;}
+.field textarea#body-in{min-height:200px;}
+.field .row2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.hint{font-size:.56rem;color:rgba(240,240,242,.28);margin-top:.35rem;letter-spacing:.05em;line-height:1.6;}
+.warn{color:#e05565;font-size:.56rem;letter-spacing:.05em;margin-top:.35rem;display:none;}
+select option{background:#0c0c0e;}
+
+/* preview */
+.preview-card{
+  border:1px solid var(--dim);
+  background:var(--bg);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.pc-cover{height:110px;background-size:cover;background-position:center;background-color:rgba(240,240,242,.03);}
+.pc-cover.empty{display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:rgba(200,21,27,.15);letter-spacing:.1em;}
+.pc-cover video{width:100%;height:100%;object-fit:cover;display:block;background:#000;}
+.pc-body{padding:1rem 1.1rem 1.1rem;display:flex;flex-direction:column;gap:.45rem;}
+.pc-meta{display:flex;align-items:center;gap:.7rem;}
+.pc-cat{font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;padding:.18rem .5rem;border:1px solid;}
+.pc-cat.Update{border-color:rgba(200,21,27,.35);color:#e05565;}
+.pc-cat.Announcement{border-color:rgba(0,200,150,.25);color:#00c896;}
+.pc-cat.Event{border-color:rgba(245,158,11,.25);color:#fbbf24;}
+.pc-date{font-size:.54rem;color:var(--muted);letter-spacing:.06em;}
+.pc-title{font-size:.95rem;font-weight:bold;line-height:1.3;}
+.pc-brief{font-size:.68rem;color:var(--muted);line-height:1.7;}
+
+/* output */
+pre.out{
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--dim);
+  padding:.9rem 1rem;
+  font-size:.7rem;line-height:1.7;
+  color:rgba(240,240,242,.75);
+  white-space:pre;overflow:auto;
+  max-height:240px;
+  user-select:text;
+}
+.btn-row{display:flex;gap:.6rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{
+  font-family:var(--f);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.55rem 1rem;cursor:pointer;
+  background:transparent;border:1px solid var(--dim);color:var(--text);
+  transition:color .12s,border-color .12s,background .12s;
+}
+.btn:hover{border-color:var(--red);color:var(--red);}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
+.btn.primary:hover{background:#e01b22;}
+.btn.copied{color:#00c896;border-color:rgba(0,200,150,.5);}
+
+textarea#current-json{
+  width:100%;min-height:130px;
+  font-family:var(--f);font-size:.7rem;color:var(--text);
+  background:rgba(240,240,242,.03);border:1px solid var(--dim);
+  padding:.7rem;resize:vertical;line-height:1.6;outline:none;
+}
+textarea#current-json:focus{border-color:rgba(200,21,27,.5);}
+.note{font-size:.56rem;color:rgba(240,240,242,.32);letter-spacing:.04em;line-height:1.7;margin-bottom:.7rem;}
+
+/* how to */
+.howto ol{list-style:none;counter-reset:step;}
+.howto li{
+  counter-increment:step;
+  position:relative;
+  padding-left:2.2rem;
+  padding-bottom:.9rem;
+  font-size:.72rem;color:var(--muted);line-height:1.75;letter-spacing:.03em;
+}
+.howto li::before{
+  content:counter(step);
+  position:absolute;left:0;top:.05rem;
+  width:1.5rem;height:1.5rem;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;color:var(--red);
+  border:1px solid rgba(200,21,27,.4);
+}
+.howto li code{color:var(--text);}
+.howto li b{color:var(--text);font-weight:bold;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tb-back" href="/">&lsaquo; back to site</a>
+  <span class="tb-title">AU LAUNCHER <b>//</b> NEWS POSTER</span>
+  <a class="tb-doc" href="/news" target="_blank">view /news</a>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="hero-label">// tools</span>
+    <h1>News Poster</h1>
+    <p>Write the post, copy or download the files, drop them into GitHub. You never have to edit a JSON by hand.</p>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: form -->
+    <div>
+      <div class="panel">
+        <div class="panel-head"><span class="ph-num">POST</span> details</div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="title-in">Title <b>*</b></label>
+            <input id="title-in" type="text" placeholder="Launcher v1.5 is here">
+          </div>
+          <div class="field">
+            <label for="slug-in">Slug (URL — auto-filled, editable)</label>
+            <input id="slug-in" type="text" placeholder="launcher-v15-release">
+            <div class="hint">Lowercase letters, numbers, dashes. Used for the .md filename and the /post?slug= link.</div>
+            <div class="warn" id="slug-warn"></div>
+          </div>
+          <div class="field">
+            <div class="row2">
+              <div>
+                <label for="date-in">Date</label>
+                <input id="date-in" type="date">
+              </div>
+              <div>
+                <label for="cat-in">Category</label>
+                <select id="cat-in">
+                  <option>Update</option>
+                  <option>Announcement</option>
+                  <option>Event</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="row2">
+              <div>
+                <label for="prio-in">Priority</label>
+                <select id="prio-in">
+                  <option value="featured">featured</option>
+                  <option value="high">high</option>
+                  <option value="normal">normal</option>
+                </select>
+                <div class="hint">featured = full-width hero card. high = wide card. normal = small.</div>
+              </div>
+              <div>
+                <label for="cover-in">Cover image URL</label>
+                <input id="cover-in" type="text" placeholder="https://i.ibb.co/…/image.png">
+                <div class="hint">Optional. Leave empty for a plain card.</div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="video-in">Video URL (optional)</label>
+            <input id="video-in" type="text" placeholder="https://…/fix.mp4">
+            <div class="hint">A playable player is inserted at the end of the post. If the cover is left empty, this video becomes the post hero. Upload the file to the site root first (e.g. <code>fix.mp4</code>).</div>
+          </div>
+          <div class="field">
+            <label for="brief-in">Brief (shown on the card)</label>
+            <textarea id="brief-in" placeholder="One or two lines shown on the news grid."></textarea>
+          </div>
+          <div class="field">
+            <label for="body-in">Post body (markdown)</label>
+            <textarea id="body-in" placeholder="Write the full post here in markdown. **Bold**, ## headings, lists — all work."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="ph-num">CARD</span> preview</div>
+        <div class="panel-body">
+          <div class="preview-card">
+            <div class="pc-cover" id="pc-cover"></div>
+            <div class="pc-body">
+              <div class="pc-meta">
+                <span class="pc-cat" id="pc-cat">Update</span>
+                <span class="pc-date" id="pc-date">—</span>
+              </div>
+              <div class="pc-title" id="pc-title">Your post title</div>
+              <div class="pc-brief" id="pc-brief">Your brief goes here.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: outputs -->
+    <div>
+      <div class="panel">
+        <div class="panel-head"><span class="ph-num">1</span> markdown file &mdash; <span>news/posts/&lt;slug&gt;.md</span></div>
+        <div class="panel-body">
+          <pre class="out" id="md-out"></pre>
+          <div class="btn-row">
+            <button class="btn primary" id="md-copy">Copy</button>
+            <button class="btn" id="md-dl">Download .md</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="ph-num">2</span> json entry &mdash; <span>paste into news/index.json</span></div>
+        <div class="panel-body">
+          <pre class="out" id="json-out"></pre>
+          <div class="btn-row">
+            <button class="btn primary" id="json-copy">Copy</button>
+          </div>
+          <div class="note" style="margin-top:.7rem;">This is the exact block to add to the top of <code>index.json</code> if you edit it manually.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="ph-num">3</span> full index.json &mdash; <span>auto-merged</span></div>
+        <div class="panel-body">
+          <div class="note">Loaded from the live site. If it couldn't load, paste your current <code>index.json</code> below (or leave <code>[]</code>).</div>
+          <textarea id="current-json" spellcheck="false"></textarea>
+          <div class="btn-row" style="margin-top:.7rem;">
+            <button class="btn primary" id="merge-btn">Generate full index.json</button>
+          </div>
+          <pre class="out" id="full-out" style="margin-top:.8rem;display:none;"></pre>
+          <div class="btn-row" id="full-actions" style="display:none;">
+            <button class="btn primary" id="full-copy">Copy</button>
+            <button class="btn" id="full-dl">Download index.json</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel howto">
+        <div class="panel-head"><span class="ph-num">?</span> how to publish</div>
+        <div class="panel-body">
+          <ol>
+            <li>Download both files: <code>&lt;slug&gt;.md</code> and <code>index.json</code>.</li>
+            <li>On GitHub, go to <code>news/posts/</code> &rarr; <b>Add file &rarr; Upload files</b> &rarr; drop the <code>.md</code>. Commit.</li>
+            <li>If the post uses a video: upload the <code>.mp4</code> to the site <b>root</b> the same way (e.g. <code>fix.mp4</code>), then reference it as <code>fix.mp4</code> (or the full URL) in the video field.</li>
+            <li>Open <code>news/index.json</code> &rarr; click the <b>pencil (edit)</b> &rarr; replace everything with the new file &rarr; Commit.</li>
+            <li>Done. The site picks it up within a minute (news list &amp; the drawer on every page).</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── ELEMENT REFS ───────────────────────────
+const $ = id => document.getElementById(id);
+const el = {
+  title: $('title-in'), slug: $('slug-in'), date: $('date-in'),
+  cat: $('cat-in'), prio: $('prio-in'), cover: $('cover-in'),
+  video: $('video-in'),
+  brief: $('brief-in'), body: $('body-in'),
+  slugWarn: $('slug-warn'),
+  mdOut: $('md-out'), jsonOut: $('json-out'), fullOut: $('full-out'),
+  fullActions: $('full-actions'), currentJson: $('current-json'),
+  pcCover: $('pc-cover'), pcCat: $('pc-cat'), pcDate: $('pc-date'),
+  pcTitle: $('pc-title'), pcBrief: $('pc-brief'),
+};
+
+// ── STATE ──────────────────────────────────
+let livePosts = null;
+
+// default date = today
+(function init() {
+  const d = new Date();
+  el.date.value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  try { loadLiveJson(); } catch (e) { /* ignore */ }
+  refresh();
+  ['input', 'change'].forEach(ev => {
+    Object.values(el).forEach(e => { if (e && e.addEventListener) e.addEventListener(ev, refresh); });
+  });
+  $('merge-btn').addEventListener('click', mergeFull);
+  $('md-copy').addEventListener('click', () => copyText(el.mdOut.textContent, $('md-copy')));
+  $('json-copy').addEventListener('click', () => copyText(el.jsonOut.textContent, $('json-copy')));
+  $('full-copy').addEventListener('click', () => copyText(el.fullOut.textContent, $('full-copy')));
+  $('md-dl').addEventListener('click', () => download(slug() + '.md', el.mdOut.textContent));
+  $('full-dl').addEventListener('click', () => download('index.json', el.fullOut.textContent));
+})();
+
+function loadLiveJson() {
+  fetch('/news/index.json')
+    .then(r => { if (!r.ok) throw new Error('bad'); return r.json(); })
+    .then(a => {
+      livePosts = Array.isArray(a) ? a : [];
+      el.currentJson.value = JSON.stringify(livePosts, null, 2);
+    })
+    .catch(() => {
+      el.currentJson.value = '[]';
+      $('current-json').title = 'Could not reach the live site — this is the fallback. Paste your current index.json here.';
+    });
+}
+
+// ── DERIVED ────────────────────────────────
+function slug() {
+  const t = el.slug.value.trim();
+  if (t) return t.replace(/\s+/g, '-').toLowerCase();
+  const auto = el.title.value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return auto || 'untitled-post';
+}
+function title() { return el.title.value.trim() || 'Untitled Post'; }
+function brief() { return el.brief.value.trim() || ''; }
+function dateVal() { return el.date.value || ''; }
+function cover() { return el.cover.value.trim() || ''; }
+function video() { return el.video.value.trim() || ''; }
+function isVideo(u) { return /\.(mp4|webm|ogv|mov)([?#].*)?$/i.test(u); }
+
+function yamlVal(s) {
+  if (/:\s|#|^\s|\s$|"/.test(s)) {
+    return '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+  }
+  return s;
+}
+
+function mdFile() {
+  const body = el.body.value.replace(/\n*$/, '');
+  const vid  = video();
+  const lines = [
+    '---',
+    'title: ' + yamlVal(title()),
+    'date: ' + yamlVal(dateVal()),
+    'category: ' + yamlVal(el.cat.value),
+    'priority: ' + yamlVal(el.prio.value),
+    'cover: ' + yamlVal(cover()),
+    'brief: ' + yamlVal(brief()),
+  ];
+  if (vid) lines.push('video: ' + yamlVal(vid));
+  lines.push('---', '', body);
+  if (vid) lines.push('', '![video](' + vid + ')');
+  lines.push('');
+  return lines.join('\n');
+}
+
+function jsonEntry() {
+  const entry = {
+    slug: slug(),
+    title: title(),
+    brief: brief(),
+    date: dateVal(),
+    category: el.cat.value,
+    priority: el.prio.value,
+    cover: cover(),
+  };
+  const vid = video();
+  if (vid) entry.video = vid;
+  return '  ' + JSON.stringify(entry, null, 2).split('\n').join('\n  ') + ',';
+}
+
+// ── REFRESH OUTPUTS + PREVIEW ──────────────
+function refresh() {
+  el.mdOut.textContent = mdFile();
+  el.jsonOut.textContent = jsonEntry();
+  el.fullOut.style.display = 'none';
+  el.fullActions.style.display = 'none';
+  refreshPreview();
+  checkSlug();
+}
+
+function checkSlug() {
+  if (!livePosts) return;
+  const dup = livePosts.some(p => p && p.slug === slug());
+  el.slugWarn.style.display = dup ? 'block' : 'none';
+  el.slugWarn.textContent = dup ? '! This slug already exists in index.json — the merge will create a duplicate entry.' : '';
+}
+
+function refreshPreview() {
+  el.pcTitle.textContent = title();
+  el.pcBrief.textContent = brief() || 'No brief yet.';
+  el.pcCat.textContent = el.cat.value;
+  el.pcCat.className = 'pc-cat ' + el.cat.value;
+  const c = cover();
+  const v = video();
+  if (c) {
+    el.pcCover.innerHTML = '';
+    el.pcCover.style.backgroundImage = "url('" + c.replace(/'/g, "\\'") + "')";
+    el.pcCover.classList.remove('empty');
+  } else if (v && isVideo(v)) {
+    el.pcCover.innerHTML = `<video src="${v}" autoplay muted loop playsinline preload="metadata"></video>`;
+    el.pcCover.style.backgroundImage = '';
+    el.pcCover.classList.remove('empty');
+  } else {
+    el.pcCover.innerHTML = '';
+    el.pcCover.style.backgroundImage = '';
+    el.pcCover.classList.add('empty');
+    el.pcCover.textContent = '//';
+  }
+  const d = dateVal();
+  if (d) {
+    const dt = new Date(d + 'T00:00:00');
+    if (!isNaN(dt)) el.pcDate.textContent = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    else el.pcDate.textContent = d;
+  } else {
+    el.pcDate.textContent = '—';
+  }
+}
+
+// ── MERGE FULL index.json ──────────────────
+function mergeFull() {
+  let current = [];
+  const raw = el.currentJson.value.trim();
+  if (raw) {
+    try { current = JSON.parse(raw); } catch (e) { alert('Current index.json is not valid JSON — fix it first.'); return; }
+    if (!Array.isArray(current)) { alert('Current index.json must be an array of posts.'); return; }
+  }
+  const entry = JSON.parse('[' + jsonEntry().replace(/,\s*$/, '') + ']')[0];
+  const merged = [entry, ...current];
+  el.fullOut.textContent = JSON.stringify(merged, null, 2) + '\n';
+  el.fullOut.style.display = 'block';
+  el.fullActions.style.display = 'flex';
+}
+
+// ── HELPERS ────────────────────────────────
+async function copyText(text, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e2) {}
+    ta.remove();
+  }
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+  }
+}
+
+function download(name, text) {
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+</script>
+</body>
+</html>
