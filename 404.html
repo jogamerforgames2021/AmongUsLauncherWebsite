@@ -195,13 +195,15 @@ body::after{
   transition:border-color .12s,color .12s,background .12s,transform .12s;
   position:relative;overflow:visible;
 }
-.pa-btn::before{
+.pa-btn::before,.pa-btn::after{content:none;}
+.pa-btn .shine{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.pa-btn .shine::before{
   content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
-  transition:left .4s;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+  transition:left .4s;
 }
 .pa-btn:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px);}
-.pa-btn:hover::before{left:160%;}
+.pa-btn:hover .shine::before{left:160%;}
 .pa-btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
 .pa-btn.primary:hover{background:#e01b22;}
 
@@ -269,8 +271,8 @@ body::after{
   <span class="ph-path" id="ph-path">/lost-in-space</span>
 
   <div class="ph-actions">
-    <a class="pa-btn primary" href="/">Go to Main Page <span class="tip">return to the main page &mdash; everything is safe there</span></a>
-    <a class="pa-btn" href="/news">Go to News Page <span class="tip">maybe we removed the page you were looking for</span></a>
+    <a class="pa-btn primary" href="/"><span class="shine"></span>Go to Main Page <span class="tip">return to the main page &mdash; everything is safe there</span></a>
+    <a class="pa-btn" href="/news"><span class="shine"></span>Go to News Page <span class="tip">maybe we removed the page you were looking for</span></a>
   </div>
 
   <div class="ph-footer">
