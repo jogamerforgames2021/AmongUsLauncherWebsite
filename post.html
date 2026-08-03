@@ -572,6 +572,12 @@ function isVideo(u) {
   return /\.(mp4|webm|ogv|mov)([?#].*)?$/i.test(u);
 }
 
+function absUrl(u) {
+  if (!u) return u;
+  if (/^([a-z][a-z0-9+.-]*:|\/)/i.test(u)) return u;
+  return '/' + u.replace(/^\.\//, '');
+}
+
 function initPlyr(root) {
   if (typeof Plyr === 'undefined') { setTimeout(() => initPlyr(root), 50); return; }
   root.querySelectorAll('video.post-video').forEach(v => {
@@ -625,10 +631,11 @@ async function loadPost() {
     // hero
     const heroEl = document.getElementById('post-hero');
     if (cover) {
+      const heroSrc = absUrl(cover);
       if (isVideo(cover)) {
-        heroEl.innerHTML = `<div class="post-hero post-hero-video"><video class="post-video" src="${cover}" preload="metadata" playsinline></video></div>`;
+        heroEl.innerHTML = `<div class="post-hero post-hero-video"><video class="post-video" src="${heroSrc}" preload="metadata" playsinline></video></div>`;
       } else {
-        heroEl.innerHTML = `<div class="post-hero"><img src="${cover}" alt=""></div>`;
+        heroEl.innerHTML = `<div class="post-hero"><img src="${heroSrc}" alt=""></div>`;
       }
       initPlyr(heroEl);
     }
@@ -653,10 +660,11 @@ async function loadPost() {
         marked.use({
           renderer: {
             image(href, title, text) {
+              const src = absUrl(href);
               if (isVideo(href)) {
-                return `<video class="post-video" src="${href}" preload="metadata" playsinline></video>`;
+                return `<video class="post-video" src="${src}" preload="metadata" playsinline></video>`;
               }
-              return `<img src="${href}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
+              return `<img src="${src}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
             }
           }
         });

@@ -481,6 +481,12 @@ function fmt(d) {
   return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
 }
 
+function absUrl(u) {
+  if (!u) return u;
+  if (/^([a-z][a-z0-9+.-]*:|\/)/i.test(u)) return u;
+  return '/' + u.replace(/^\.\//, '');
+}
+
 function buildCard(post, idx) {
   const cat  = post.category || 'Update';
   const href = `/post/${post.slug}`;
@@ -489,10 +495,11 @@ function buildCard(post, idx) {
   // Cover image — shown on all card types
   let coverHtml = '';
   if (post.cover) {
+    const coverSrc = absUrl(post.cover);
     if (/\.(mp4|webm|ogv|mov)([?#].*)?$/i.test(post.cover)) {
-      coverHtml = `<div class="nc-cover-wrap"><video class="nc-cover" src="${post.cover}" autoplay muted loop playsinline preload="metadata"></video></div>`;
+      coverHtml = `<div class="nc-cover-wrap"><video class="nc-cover" src="${coverSrc}" autoplay muted loop playsinline preload="metadata"></video></div>`;
     } else {
-      coverHtml = `<div class="nc-cover-wrap"><img class="nc-cover" src="${post.cover}" alt="" loading="lazy"></div>`;
+      coverHtml = `<div class="nc-cover-wrap"><img class="nc-cover" src="${coverSrc}" alt="" loading="lazy"></div>`;
     }
   } else if (cls === 'featured' || cls === 'high') {
     // decorative filler only on larger cards
