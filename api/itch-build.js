@@ -28,11 +28,11 @@
 //   create or replace function increment_usage(k text, w int)
 //   returns int language plpgsql as $$
 //   declare
-//     bucket bigint := floor(extract(epoch from now()) / w);
+//     b bigint := floor(extract(epoch from now()) / w);
 //     new_count int;
 //   begin
 //     insert into api_key_usage (id, bucket, count)
-//     values (k, bucket, 1)
+//     values (k, b, 1)
 //     on conflict (id, bucket) do update
 //       set count = api_key_usage.count + 1
 //     returning count into new_count;
