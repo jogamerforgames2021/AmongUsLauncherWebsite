@@ -63,6 +63,7 @@ function extractVersion(html) {
   return m[1]
     .replace(/<[^>]+>/g, '')
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/\s*(?:just now|\d+\s*(?:second|minute|hour|day)s?\s+ago).*$/i, '')
     .trim() || 'Unknown';
 }
 
