@@ -2,13 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    // TEMPORARY: SITE IS HIDDEN (added 2026-08-04).
-    // All page files currently live in /_hidden, so every real route 404s.
-    // The API (/api/*) still works and is key-protected.
-    // To restore the site: `git revert` the commit that moved files to /_hidden,
-    // or move the files back to the repo root, then commit + push.
-    // NOTE: do NOT use a catch-all rewrite to a missing path to hide files —
-    // Vercel falls back to the filesystem and serves them anyway.
     { "source": "/post/:slug", "destination": "/post" },
     { "source": "/users/:id", "destination": "/users" }
   ],
