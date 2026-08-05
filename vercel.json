@@ -3,7 +3,22 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/", "destination": "/201.html" },
-    { "source": "/(index|aa|amongus|developer|helpPage|home|news|post|privacy|terms|users|tools)(?:\\.html)?(?:/.*)?", "destination": "/201.html" }
+    { "source": "/index", "destination": "/201.html" },
+    { "source": "/aa", "destination": "/201.html" },
+    { "source": "/amongus", "destination": "/201.html" },
+    { "source": "/developer", "destination": "/201.html" },
+    { "source": "/helpPage", "destination": "/201.html" },
+    { "source": "/home", "destination": "/201.html" },
+    { "source": "/news", "destination": "/201.html" },
+    { "source": "/news/:path*", "destination": "/201.html" },
+    { "source": "/post", "destination": "/201.html" },
+    { "source": "/post/:path*", "destination": "/201.html" },
+    { "source": "/privacy", "destination": "/201.html" },
+    { "source": "/terms", "destination": "/201.html" },
+    { "source": "/users", "destination": "/201.html" },
+    { "source": "/users/:path*", "destination": "/201.html" },
+    { "source": "/tools", "destination": "/201.html" },
+    { "source": "/tools/:path*", "destination": "/201.html" }
   ],
   "headers": [
     {
