@@ -2,6 +2,14 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    // ⛔⛔⛔ TEMPORARY SITE-WIDE 404 — DELETE THIS BLOCK TO RESTORE THE SITE ⛔⛔⛔
+    // Rewrites EVERY route to a path that does not exist, so Vercel returns
+    // 404 for all pages and the API. Files stay deployed, nothing is served.
+    // To keep ONLY the API alive while the site is hidden:
+    //   comment out the line below and uncomment the /api-excluding one.
+    { "source": "/(.*)", "destination": "/__temporarily_hidden__" },
+    // { "source": "/(?!/api/)(.*)", "destination": "/__temporarily_hidden__" },
+    // ── end of TEMPORARY block ──
     { "source": "/post/:slug", "destination": "/post" },
     { "source": "/users/:id", "destination": "/users" }
   ],
