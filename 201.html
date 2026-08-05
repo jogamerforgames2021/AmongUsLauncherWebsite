@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="That page got ejected into space.">
+<meta name="description" content="Still under construction — releasing with AU Launcher 1.4.">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<title>404 // Signal Lost</title>
+<title>201 // Under Development</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 
@@ -248,26 +248,26 @@ body::after{
 <div class="vignette"></div>
 
 <div class="page-wrap" id="page-wrap">
-  <h1 class="ph-title" id="ph-title" data-text="404"><span>4</span><span class="slash">0</span><span>4</span></h1>
-  <p class="ph-sub">Requested resource does not exist &mdash; probably ejected off the airlock.</p>
+  <h1 class="ph-title" id="ph-title" data-text="201"><span>2</span><span class="slash">0</span><span>1</span></h1>
+  <p class="ph-sub">This page exists, it's just not finished yet. The full site ships with AU Launcher 1.4.</p>
 
   <div class="term">
     <div class="term-head">
-      <span>au-launcher :: packet log</span>
+      <span>au-launcher :: build log</span>
       <span class="th-dots"><span class="th-dot"></span><span class="th-dot"></span><span class="th-dot"></span></span>
     </div>
     <div class="term-body" id="term" aria-live="polite"></div>
   </div>
 
-  <span class="ph-path" id="ph-path">/lost-in-space</span>
+  <span class="ph-path" id="ph-path">/under-construction</span>
 
   <div class="ph-actions">
     <a class="pa-btn primary" href="/"><span class="shine"></span>Go to Main Page <span class="tip">return to the main page &mdash; everything is safe there</span></a>
-    <a class="pa-btn" href="/news"><span class="shine"></span>Go to News Page <span class="tip">maybe we removed the page you were looking for</span></a>
+    <a class="pa-btn" href="/news"><span class="shine"></span>Go to News Page <span class="tip">still being built, same as this one</span></a>
   </div>
 
   <div class="ph-footer">
-    <span id="foot-text">searching deep space</span>
+    <span id="foot-text">compiling assets</span>
     <span class="foot-dots"><span></span><span></span><span></span></span>
   </div>
 </div>
@@ -282,10 +282,10 @@ document.getElementById('ph-path').textContent = location.pathname || '/';
   const path = location.pathname || '/';
   const lines = [
     { t: '> inbound: request for "' + path + '"', c: 't-dim' },
-    { t: '> plotting course: skeld / mira-hq / polus / airship / fungle / dleks', c: '' },
-    { t: '> scan complete: 0 rooms contain this page', c: '' },
-    { t: '> packets lost: 404', c: 't-fail' },
-    { t: '> status: EJECTED — no route back home', c: 't-fail' },
+    { t: '> scanning site: this page exists', c: '' },
+    { t: '> content still being written', c: '' },
+    { t: '> status: UNDER CONSTRUCTION', c: 't-fail' },
+    { t: '> full site ships with AU Launcher 1.4', c: '' },
   ];
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const cursor = document.createElement('span');
@@ -322,7 +322,7 @@ document.getElementById('ph-path').textContent = location.pathname || '/';
 
 (function footer() {
   const text = document.getElementById('foot-text');
-  const phrases = ['searching deep space', 're-routing through the skeld', 'no route found', 'signal re-acquired', 'lost again'];
+  const phrases = ['compiling assets', 'still cooking', 'almost there', 'releasing with au launcher 1.4', 'patience, detective'];
   let i = 0;
   setInterval(() => { text.textContent = phrases[++i % phrases.length]; }, 2600);
 })();

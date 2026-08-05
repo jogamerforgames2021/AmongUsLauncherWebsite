@@ -2,8 +2,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/post/:slug", "destination": "/post" },
-    { "source": "/users/:id", "destination": "/users" }
+    { "source": "/", "destination": "/201.html" },
+    { "source": "/(index|aa|amongus|developer|helpPage|home|news|post|privacy|terms|users|tools)(?:\\.html)?(?:/.*)?", "destination": "/201.html" }
   ],
   "headers": [
     {
