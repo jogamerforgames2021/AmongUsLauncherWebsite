@@ -2,14 +2,13 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    // ⛔⛔⛔ TEMPORARY SITE-WIDE 404 — DELETE THIS BLOCK TO RESTORE THE SITE ⛔⛔⛔
-    // Rewrites EVERY route to a path that does not exist, so Vercel returns
-    // 404 for all pages and the API. Files stay deployed, nothing is served.
-    // To keep ONLY the API alive while the site is hidden:
-    //   comment out the line below and uncomment the /api-excluding one.
-    { "source": "/(.*)", "destination": "/__temporarily_hidden__" },
-    // { "source": "/(?!/api/)(.*)", "destination": "/__temporarily_hidden__" },
-    // ── end of TEMPORARY block ──
+    // TEMPORARY: SITE IS HIDDEN (added 2026-08-04).
+    // All page files currently live in /_hidden, so every real route 404s.
+    // The API (/api/*) still works and is key-protected.
+    // To restore the site: `git revert` the commit that moved files to /_hidden,
+    // or move the files back to the repo root, then commit + push.
+    // NOTE: do NOT use a catch-all rewrite to a missing path to hide files —
+    // Vercel falls back to the filesystem and serves them anyway.
     { "source": "/post/:slug", "destination": "/post" },
     { "source": "/users/:id", "destination": "/users" }
   ],
