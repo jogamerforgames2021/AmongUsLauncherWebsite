@@ -2,23 +2,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/", "destination": "/201" },
-    { "source": "/index", "destination": "/201" },
-    { "source": "/aa", "destination": "/201" },
-    { "source": "/amongus", "destination": "/201" },
-    { "source": "/developer", "destination": "/201" },
-    { "source": "/helpPage", "destination": "/201" },
-    { "source": "/home", "destination": "/201" },
-    { "source": "/news", "destination": "/201" },
-    { "source": "/news/:path*", "destination": "/201" },
-    { "source": "/post", "destination": "/201" },
-    { "source": "/post/:path*", "destination": "/201" },
-    { "source": "/privacy", "destination": "/201" },
-    { "source": "/terms", "destination": "/201" },
-    { "source": "/users", "destination": "/201" },
-    { "source": "/users/:path*", "destination": "/201" },
-    { "source": "/tools", "destination": "/201" },
-    { "source": "/tools/:path*", "destination": "/201" }
+    { "source": "/post/:slug", "destination": "/post" },
+    { "source": "/users/:id", "destination": "/users" }
   ],
   "headers": [
     {
