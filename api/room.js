@@ -325,23 +325,22 @@ export default async function handler(req, res) {
 
     if (!data) return res.status(502).json({ error: 'Matchmaker returned non-JSON', raw: txt.slice(0, 200) });
 
-    const errs = data.Errors;
-    if (Array.isArray(errs) && errs.length > 0) {
-      const { state, code } = normalizeReason(errs[0].Reason ?? 17);
+    const g = data.Game;
+    const errs = Array.isArray(data.Errors) ? data.Errors : [];
+    const errState = errs.length > 0 ? normalizeReason(errs[0].Reason ?? 17) : null;
+
+    // The matchmaker may return Errors (GameStarted/GameFull/...) together with
+    // a valid Game object — same as lookup.py: still return the room.
+    if (!g) {
       return res.status(200).json({
         ok: true,
         found: false,
         code,
         region,
         game_id: gameId,
-        state,
-        reason_code: code,
+        state: errState ? errState.state : 'NoGame',
+        reason_code: errState ? errState.code : null,
       });
-    }
-
-    const g = data.Game;
-    if (!g) {
-      return res.status(200).json({ ok: true, found: false, code, region, game_id: gameId, state: 'NoGame' });
     }
 
     const game = {
@@ -365,7 +364,12 @@ export default async function handler(req, res) {
       }));
     }
 
-    return res.status(200).json({ ok: true, found: true, code, region, game_id: gameId, game });
+    const payload = { ok: true, found: true, code, region, game_id: gameId, game };
+    if (errState) {
+      payload.state = errState.state;
+      payload.reason_code = errState.code;
+    }
+    return res.status(200).json(payload);
   } catch (e) {
     return res.status(502).json({ error: e.message });
   }
