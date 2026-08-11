@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Look up an Among Us lobby code — live settings, roles and players for Classic and Hide n Seek.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>Lobby Lookup // Among Us Launcher</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --muted:rgba(240,240,242,.58);
+  --dim:rgba(240,240,242,.09);
+  --surface:rgba(240,240,242,.03);
+  --green:#3fae5a;
+  --amber:#f5b83d;
+  --f:'Share Tech Mono',monospace;
+  --nav-h:3.2rem;
+}
+
+html{overflow-y:scroll;height:100%;overscroll-behavior-y:none;}
+body{font-family:var(--f);background:var(--bg);color:var(--text);min-height:100%;overflow-x:hidden;}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.024'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;
+}
+
+/* ── TOP NAV ─────────────────────────────── */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 1.4rem;
+  border-bottom:1px solid var(--dim);
+  background:rgba(9,9,9,.94);
+  backdrop-filter:blur(8px);
+}
+.nav-logo{
+  font-size:.72rem;letter-spacing:.1em;font-weight:bold;
+  color:var(--text);text-decoration:none;
+  padding-right:1.2rem;
+  border-right:1px solid var(--dim);
+  margin-right:1.2rem;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.nav-logo span{color:var(--red);}
+.nb{
+  font-family:var(--f);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;background:none;border:none;
+  cursor:pointer;transition:color .1s;padding:0 .7rem;white-space:nowrap;flex-shrink:0;
+}
+.nb:hover,.nb.active{color:var(--text);}
+.nb:nth-child(1){transform:translateY(0px);}
+.nb:nth-child(2){transform:translateY(4px);}
+.nb:nth-child(3){transform:translateY(-2px);}
+.nb:nth-child(4){transform:translateY(3px);}
+
+/* ── PAGE ───────────────────────────────── */
+main{
+  position:relative;z-index:1;
+  padding-top:calc(var(--nav-h) + 3rem);
+  padding-bottom:5rem;
+  max-width:780px;
+  margin-inline:auto;
+  padding-left:1.6rem;
+  padding-right:1.6rem;
+}
+.page-eyebrow{
+  font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--red);display:block;margin-bottom:1.4rem;
+}
+
+/* ── states ─────────────────────────────── */
+.state{
+  padding:3rem 0;text-align:center;display:none;
+}
+.state.visible{display:block;}
+.state-icon{font-size:2rem;display:block;margin-bottom:1rem;}
+.state-title{font-size:1rem;font-weight:bold;margin-bottom:.5rem;letter-spacing:.04em;}
+.state-sub{font-size:.72rem;color:var(--muted);line-height:1.8;max-width:480px;margin-inline:auto;}
+
+/* square spinner — same as the launcher (rect tracing its perimeter) */
+.sq-spin{display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+.sq-spin svg{width:22px;height:22px;display:block;flex-shrink:0;}
+.sq-spin .trk{fill:none;stroke:rgba(240,240,242,.07);stroke-width:2;}
+.sq-spin .arc{fill:none;stroke:var(--red);stroke-width:2;stroke-dasharray:20 60;stroke-dashoffset:80;animation:sqTrace 1s linear infinite;}
+.sq-spin-sm{margin:0;}
+.sq-spin-sm svg{width:13px;height:13px;}
+.sq-spin-sm .arc{stroke-dasharray:11 33;stroke-dashoffset:44;}
+@keyframes sqTrace{to{stroke-dashoffset:0;}}
+
+/* ── lookup bar ─────────────────────────── */
+.lookup-row{display:flex;gap:.7rem;align-items:stretch;margin-bottom:1.8rem;}
+.lookup-box{
+  flex:1;display:flex;align-items:center;gap:.7rem;
+  border:1px solid var(--dim);background:rgba(240,240,242,.02);
+  padding:0 .9rem;height:2.8rem;transition:border-color .12s;
+}
+.lookup-box:focus-within{border-color:var(--red);}
+.lookup-box input{
+  flex:1;min-width:0;background:none;border:none;outline:none;
+  font-family:var(--f);color:var(--text);font-size:.78rem;letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.lookup-box input::placeholder{color:rgba(240,240,242,.22);text-transform:none;}
+.lookup-hint{
+  font-size:.52rem;color:rgba(240,240,242,.24);letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:2rem;
+}
+
+/* buttons */
+.raw-btn{
+  font-family:var(--f);
+  font-size:.66rem;letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--text);
+  background:transparent;
+  border:1px solid rgba(240,240,242,.2);
+  padding:0 1.2rem;
+  cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  transition:border-color .1s,color .1s;
+  position:relative;
+  white-space:nowrap;
+}
+.raw-btn:hover{
+  border-color:var(--red);
+  color:var(--red);
+  animation:btn-glitch .22s steps(1) infinite;
+}
+.raw-btn:disabled{opacity:.35;pointer-events:none;}
+.raw-btn.solid{border-color:rgba(200,21,27,.5);color:var(--red);}
+.raw-btn.solid:hover{background:rgba(200,21,27,.06);}
+@keyframes btn-glitch{
+  0%,100%{transform:translate(0);}
+  25%{transform:translate(-1px,1px);}
+  50%{transform:translate(1px,-1px);}
+  75%{transform:translate(-1px,0);}
+}
+
+/* ── lobby card ─────────────────────────── */
+.lobby-card{
+  border:1px solid var(--dim);
+  background:var(--surface);
+  padding:1.7rem 1.7rem 1.4rem;
+  position:relative;
+  overflow:hidden;
+}
+.lobby-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--red),transparent 70%);
+}
+.lc-top{
+  display:flex;gap:1.2rem;align-items:flex-start;
+  flex-wrap:wrap;
+}
+.lc-code-label{
+  font-size:.5rem;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(240,240,242,.32);margin-bottom:.3rem;
+}
+.lc-code{
+  font-size:clamp(2.4rem,7vw,3.4rem);
+  font-weight:bold;letter-spacing:.18em;
+  line-height:1;
+}
+.lc-code small{color:rgba(240,240,242,.25);font-weight:normal;letter-spacing:.05em;}
+.lc-actions{
+  margin-left:auto;
+  display:flex;gap:.6rem;align-items:center;
+  flex-wrap:wrap;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.54rem;letter-spacing:.16em;text-transform:uppercase;
+  padding:.28rem .7rem;
+  border:1px solid var(--dim);
+  color:var(--muted);
+  white-space:nowrap;
+}
+.pill.live{border-color:rgba(63,174,90,.4);color:var(--green);}
+.pill.started{border-color:rgba(245,184,61,.4);color:var(--amber);}
+.pill.full{border-color:rgba(200,21,27,.5);color:var(--red);}
+.pill.mode{border-color:rgba(200,21,27,.35);color:var(--red);}
+.pill .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+.lc-meta{
+  margin-top:1.4rem;
+  display:flex;gap:1.6rem;flex-wrap:wrap;
+  font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(240,240,242,.35);
+}
+.lc-meta b{color:var(--text);font-weight:bold;}
+
+/* players */
+.players-block{margin-top:1rem;}
+.players-block-label{
+  font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--red);margin-bottom:.7rem;display:flex;align-items:center;gap:.6rem;
+}
+.players-block-label::after{content:'';flex:1;height:1px;background:var(--dim);}
+.players-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+}
+.player-chip{
+  background:var(--bg);
+  padding:.65rem .8rem;
+  display:flex;gap:.6rem;align-items:center;
+  min-width:0;
+}
+.player-chip .i{
+  width:26px;height:26px;flex-shrink:0;
+  border:1px solid var(--dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;color:var(--red);
+}
+.player-chip .n{
+  font-size:.66rem;font-weight:bold;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.player-chip .p{
+  font-size:.5rem;color:rgba(240,240,242,.3);letter-spacing:.08em;text-transform:uppercase;
+  margin-top:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.players-none{
+  border:1px solid var(--dim);background:var(--bg);
+  padding:.8rem .9rem;font-size:.6rem;color:rgba(240,240,242,.25);text-align:center;
+}
+
+/* stat tiles */
+.stat-tiles{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+  margin-top:1rem;
+}
+.stat-tile{background:var(--bg);padding:1rem 1rem;text-align:center;}
+.stat-tile .n{font-size:1.35rem;font-weight:bold;color:var(--text);}
+.stat-tile .l{font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(240,240,242,.32);margin-top:.3rem;}
+
+/* stats sections */
+.stats-block{margin-top:1.2rem;}
+.stats-block-label{
+  font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--red);margin-bottom:.7rem;display:flex;align-items:center;gap:.6rem;
+}
+.stats-block-label::after{content:'';flex:1;height:1px;background:var(--dim);}
+.stats-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+}
+.stat-row{
+  background:var(--bg);
+  padding:.55rem .8rem;
+  display:flex;justify-content:space-between;gap:1rem;align-items:baseline;
+}
+.stat-row .k{font-size:.62rem;color:var(--muted);letter-spacing:.04em;}
+.stat-row .v{font-size:.72rem;color:var(--text);font-weight:bold;flex-shrink:0;}
+.stat-row.full{grid-column:1/-1;}
+
+/* roles */
+.roles-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+}
+.role-card{background:var(--bg);padding:.85rem .95rem;}
+.role-card .rc-head{
+  display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  margin-bottom:.55rem;
+}
+.role-card .rc-name{font-size:.72rem;font-weight:bold;letter-spacing:.02em;}
+.role-card .rc-odds{font-size:.52rem;letter-spacing:.06em;color:rgba(240,240,242,.35);white-space:nowrap;}
+.role-card .rc-rows{border-top:1px solid var(--dim);}
+.role-card .rc-row{
+  display:flex;justify-content:space-between;gap:.6rem;align-items:baseline;
+  padding:.4rem 0 .1rem;
+  font-size:.6rem;
+}
+.role-card .rc-row .k{color:var(--muted);}
+.role-card .rc-row .v{color:var(--text);font-weight:bold;}
+.role-chip{
+  background:var(--bg);
+  padding:.5rem .7rem;
+  font-size:.62rem;font-weight:bold;letter-spacing:.04em;
+}
+
+/* optimal reference */
+.opt-block{margin-top:1.8rem;}
+.opt-tabs{display:flex;gap:0;margin-bottom:.7rem;border-bottom:1px solid var(--dim);}
+.opt-tab{
+  font-family:var(--f);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);background:none;border:none;cursor:pointer;
+  padding:.5rem .9rem .55rem;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  transition:color .1s,border-color .1s;
+}
+.opt-tab:hover{color:var(--text);}
+.opt-tab.active{color:var(--red);border-bottom-color:var(--red);}
+.opt-note{
+  font-size:.56rem;color:rgba(240,240,242,.28);
+  letter-spacing:.06em;line-height:1.8;margin-top:.7rem;
+}
+
+/* demo banner */
+.demo-banner{
+  border:1px solid rgba(245,184,61,.4);
+  color:var(--amber);
+  background:rgba(245,184,61,.05);
+  font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.6rem .8rem;
+  margin-bottom:1.2rem;
+  display:none;
+}
+.demo-banner.visible{display:block;}
+
+/* region list (not found) */
+.region-grid{
+  display:grid;grid-template-columns:1fr;gap:1px;
+  background:var(--dim);border:1px solid var(--dim);
+  max-width:380px;margin:1.2rem auto 0;
+  text-align:left;
+}
+.region-row{
+  background:var(--bg);padding:.55rem .9rem;
+  display:flex;justify-content:space-between;gap:1rem;align-items:baseline;
+  font-size:.62rem;
+}
+.region-row .rk{letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+.region-row .rv{font-weight:bold;color:var(--text);}
+
+/* footer nav */
+.page-foot{margin-top:2.4rem;padding-top:1.2rem;border-top:1px solid var(--dim);
+  font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,240,242,.22);
+  display:flex;gap:1.4rem;flex-wrap:wrap;}
+.page-foot a{color:rgba(240,240,242,.28);text-decoration:none;transition:color .12s;}
+.page-foot a:hover{color:var(--red);}
+
+@media(max-width:540px){
+  #topnav{overflow-x:auto;}
+  .stat-tiles{grid-template-columns:repeat(2,1fr);}
+  .stats-grid,.roles-grid{grid-template-columns:1fr;}
+  .lc-actions{margin-left:0;width:100%;}
+  .lookup-row{flex-wrap:wrap;}
+  .lookup-row .raw-btn{height:2.8rem;}
+}
+</style>
+</head>
+<body>
+
+<nav id="topnav">
+  <a class="nav-logo" href="/">AU <span>Launcher</span></a>
+  <a class="nb" href="/">Home</a>
+  <a class="nb" href="/helpPage">Docs</a>
+  <a class="nb" href="/news">News</a>
+  <a class="nb" href="/developer">Dev</a>
+  <a class="nb" href="https://discord.com/invite/7Vvj2vpT6S" target="_blank">Discord</a>
+</nav>
+
+<main>
+  <span class="page-eyebrow">// Lobby Lookup</span>
+
+  <div class="demo-banner" id="demo-banner">DEMO DATA &middot; this is a sample lobby, not a real room</div>
+
+  <!-- LOOKUP -->
+  <div class="lookup-row">
+    <div class="lookup-box">
+      <span class="sq-spin sq-spin-sm" id="lookup-spin" style="display:none">
+        <svg viewBox="0 0 13 13"><rect class="trk" x="1" y="1" width="11" height="11"/><rect class="arc" x="1" y="1" width="11" height="11"/></svg>
+      </span>
+      <input id="code-input" type="text" placeholder="Enter a 6-letter code&hellip;" autocomplete="off" spellcheck="false" maxlength="6">
+      <span style="color:var(--dim);font-size:.85rem;pointer-events:none">&#128270;</span>
+    </div>
+    <button class="raw-btn solid" id="go-btn">[ GO ]</button>
+    <button class="raw-btn" id="refresh-btn" title="Refresh this lobby">
+      <span class="sq-spin sq-spin-sm" id="refresh-spin" style="display:none">
+        <svg viewBox="0 0 13 13"><rect class="trk" x="1" y="1" width="11" height="11"/><rect class="arc" x="1" y="1" width="11" height="11"/></svg>
+      </span>
+      <span id="refresh-label">[ Refresh ]</span>
+    </button>
+  </div>
+  <div class="lookup-hint">Share a link: /lobby/&lt;CODE&gt; &middot; checks eu / na / as</div>
+
+  <!-- LOADING -->
+  <div class="state visible" id="st-loading">
+    <span class="sq-spin">
+      <svg viewBox="0 0 22 22"><rect class="trk" x="1" y="1" width="20" height="20"/><rect class="arc" x="1" y="1" width="20" height="20"/></svg>
+    </span>
+    <div class="state-title">Locating lobby&hellip;</div>
+  </div>
+
+  <!-- NO CODE -->
+  <div class="state" id="st-noid">
+    <span class="state-icon">&#128269;</span>
+    <div class="state-title">No lobby code</div>
+    <p class="state-sub">Enter a 6-letter Among Us code above, or open a shared link like <b style="color:var(--text)">/lobby/XXXXXX</b>.</p>
+  </div>
+
+  <!-- INVALID -->
+  <div class="state" id="st-invalid">
+    <span class="state-icon">&#9888;&#65039;</span>
+    <div class="state-title">Invalid code</div>
+    <p class="state-sub" id="st-invalid-msg">Lobby codes are 6 characters long.</p>
+  </div>
+
+  <!-- NOT FOUND -->
+  <div class="state" id="st-nf">
+    <span class="state-icon">&#129300;</span>
+    <div class="state-title">No lobby found</div>
+    <p class="state-sub" id="st-nf-msg">The lobby <b style="color:var(--text)">??????</b> isn't reachable right now. It may have closed, started, or the code may be wrong.</p>
+    <div class="region-grid" id="region-grid"></div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="state" id="st-error">
+    <span class="state-icon">&#9888;&#65039;</span>
+    <div class="state-title">Something went wrong</div>
+    <p class="state-sub" id="st-error-msg">Could not look up this lobby.</p>
+  </div>
+
+  <!-- LOBBY -->
+  <div id="st-lobby" style="display:none">
+
+    <div class="lobby-card">
+      <div class="lc-top">
+        <div>
+          <div class="lc-code-label">Lobby code</div>
+          <div class="lc-code" id="l-code">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash; <small id="l-code-tag"></small></div>
+        </div>
+        <div class="lc-actions">
+          <span class="pill" id="l-mode"></span>
+          <span class="pill" id="l-status"></span>
+          <button class="raw-btn" id="copy-btn">[ COPY CODE ]</button>
+        </div>
+      </div>
+      <div class="lc-meta" id="l-meta"></div>
+    </div>
+
+    <div class="stat-tiles" id="l-tiles"></div>
+
+    <div class="players-block">
+      <div class="players-block-label" id="players-label">Players</div>
+      <div class="players-grid" id="players-grid"></div>
+    </div>
+
+    <div class="stats-block">
+      <div class="stats-block-label">Game settings</div>
+      <div class="stats-grid" id="settings-grid"></div>
+    </div>
+
+    <div class="stats-block" id="roles-block">
+      <div class="stats-block-label">Roles</div>
+      <div class="roles-grid" id="roles-grid"></div>
+    </div>
+
+    <div class="stats-block opt-block">
+      <div class="stats-block-label">Optimal settings reference</div>
+      <div class="opt-tabs">
+        <button class="opt-tab active" data-mode="classic" onclick="switchOpt(this)">Classic</button>
+        <button class="opt-tab" data-mode="hns" onclick="switchOpt(this)">Hide n Seek</button>
+      </div>
+      <div class="stats-grid" id="opt-grid"></div>
+      <div class="opt-note">Community-balanced reference values &mdash; a good starting point, not a rule.</div>
+    </div>
+
+  </div>
+
+  <div class="page-foot">
+    <span>AU Launcher &middot; Not affiliated with Innersloth &middot; &copy; 2025 ShadowSlimeDEV</span>
+    <a href="/terms">Terms</a>
+    <a href="/privacy">Privacy</a>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  var CODE_RE = /^[QWXRTYLPESDFGHUJKZOCVBINMA]{6}$/;
+
+  var OPTIMAL = {
+    classic: [
+      ['# Impostors', '2'], ['Player Speed', '1.25x'], ['Crewmate Vision', '1.0x'], ['Impostor Vision', '1.75x'],
+      ['Kill Cooldown', '25s'], ['Kill Distance', 'Short'], ['# Common Tasks', '1'], ['# Long Tasks', '2'],
+      ['# Short Tasks', '2'], ['# Emergency Meetings', '2'], ['Emergency Cooldown', '20s'],
+      ['Discussion Time', '30\u201345s'], ['Voting Time', '60\u201390s'], ['Confirm Ejects', 'Off'],
+      ['Visual Tasks', 'Off'], ['Anonymous Votes', 'Off'], ['Task Bar Updates', 'Always']
+    ],
+    hns: [
+      ['Hiding Time', '300s'], ['Final Hide Time', '50s'], ['Show Names', 'On'], ['Flashlight Mode', 'On'],
+      ['Player Speed', '1.0x'], ['Crewmate Vision', '0.5x'], ['Impostor Vision', '0.35x'],
+      ['# Common Tasks', '1'], ['# Long Tasks', '2'], ['# Short Tasks', '3'],
+      ['Max Vent Uses', '3'], ['Max Time In Vent', '3s'], ['Crewmate Flashlight Size', '0.25x'],
+      ['Impostor Flashlight Size', '0.2x'], ['Final Hide Impostor Speed', '1.25x'],
+      ['Final Hide Seek Map', 'On'], ['Final Hide Pings', 'On'], ['Ping Interval', '5s']
+    ]
+  };
+
+  var ROLE_FIELD_LABELS = {
+    Cooldown: 'Cooldown',
+    BatteryCharge: 'Battery Charge',
+    InVentMaxTime: 'Vent Duration',
+    ProtectionDuration: 'Protection Duration',
+    ImpostorsCanSeeProtect: 'Impostors Can See Protections',
+    LeaveSkin: 'Leave Skin',
+    Duration: 'Duration',
+    AlertDuration: 'Alert Duration',
+    ImpostorAlert: 'Impostor Alert',
+    Delay: 'Delay',
+    DetectiveSuspectLimit: 'Suspect Limit',
+    ViperDissolveTime: 'Dissolve Time'
+  };
+  var ROLE_BOOL_FIELDS = { LeaveSkin: 1, ImpostorsCanSeeProtect: 1, ImpostorAlert: 1 };
+
+  var NORMAL_LABELS = {
+    playerSpeedMod: ['Player Speed', 'speed'],
+    crewLightMod: ['Crewmate Vision', 'speed'],
+    impostorLightMod: ['Impostor Vision', 'speed'],
+    killCooldownSec: ['Kill Cooldown', 'sec'],
+    numCommonTasks: ['# Common Tasks', 'int'],
+    numLongTasks: ['# Long Tasks', 'int'],
+    numShortTasks: ['# Short Tasks', 'int'],
+    numEmergencyMeetings: ['# Emergency Meetings', 'int'],
+    numImpostors: ['# Impostors', 'int'],
+    killDistance: ['Kill Distance', 'enum'],
+    discussionTimeSec: ['Discussion Time', 'sec'],
+    votingTimeSec: ['Voting Time', 'sec'],
+    isDefaults: ['Recommended Settings', 'bool'],
+    emergencyCooldownSec: ['Emergency Cooldown', 'sec'],
+    confirmImpostor: ['Confirm Ejects', 'bool'],
+    visualTasks: ['Visual Tasks', 'bool'],
+    anonymousVotes: ['Anonymous Votes', 'bool'],
+    taskBarUpdate: ['Task Bar Updates', 'enum'],
+    tag: ['Lobby Tag', 'tag']
+  };
+
+  var HNS_LABELS = {
+    playerSpeedMod: ['Player Speed', 'speed'],
+    crewLightMod: ['Crewmate Vision', 'speed'],
+    impostorLightMod: ['Impostor Vision', 'speed'],
+    numCommonTasks: ['# Common Tasks', 'int'],
+    numLongTasks: ['# Long Tasks', 'int'],
+    numShortTasks: ['# Short Tasks', 'int'],
+    isDefaults: ['Recommended Settings', 'bool'],
+    crewmateVentUses: ['Max Vent Uses', 'int'],
+    hidingTimeSec: ['Hiding Time', 'sec'],
+    crewmateFlashlightSize: ['Crewmate Flashlight Size', 'speed'],
+    impostorFlashlightSize: ['Impostor Flashlight Size', 'speed'],
+    useFlashlight: ['Flashlight Mode', 'bool'],
+    finalHideSeekMap: ['Final Hide Seek Map', 'bool'],
+    finalHideTimeSec: ['Final Hide Time', 'sec'],
+    finalSeekerSpeed: ['Final Hide Impostor Speed', 'speed'],
+    finalHidePings: ['Final Hide Pings', 'bool'],
+    showCrewmateNames: ['Show Names', 'bool'],
+    seekerPlayerId: ['Impostor Selection', 'seat'],
+    maxPingTimeSec: ['Ping Interval', 'sec'],
+    crewmateTimeInVentSec: ['Max Time In Vent', 'sec'],
+    tag: ['Lobby Tag', 'tag']
+  };
+
+  var TAG_NAMES = { 0: 'None', 1: 'Beginner', 2: 'Intermediate', 3: 'Expert' };
+  var PLATFORM_NAMES = {
+    itchio: 'itch.io', itch: 'itch.io', steam: 'Steam', epic: 'Epic', epicgames: 'Epic',
+    xbox: 'Xbox', playstation: 'PlayStation', psn: 'PlayStation', nintendo: 'Nintendo',
+    switch: 'Switch', ios: 'iOS', android: 'Android', google: 'Google Play'
+  };
+  var STATE_NAMES = {
+    GameNotFound: 'No lobby', NoGame: 'No lobby', GameFull: 'Full', GameStarted: 'In game',
+    MatchmakerError: 'Matchmaker error', IncorrectVersion: 'Wrong version', Banned: 'Banned'
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var show = function (id) {
+    document.querySelectorAll('.state').forEach(function (s) { s.classList.remove('visible'); });
+    $('st-lobby').style.display = 'none';
+    if (id === 'st-lobby') $('st-lobby').style.display = '';
+    else $(id).classList.add('visible');
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function trimNum(v) {
+    var n = Number(v);
+    if (!isFinite(n)) return v;
+    return String(Math.round(n * 100) / 100).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+  }
+  function fmt(v, t) {
+    if (v == null || v === '' ) return '\u2014';
+    if (t === 'bool') return v ? 'On' : 'Off';
+    if (t === 'speed') return trimNum(v) + 'x';
+    if (t === 'sec') return trimNum(v) + 's';
+    if (t === 'int') return trimNum(v);
+    if (t === 'enum') {
+      var m = String(v).match(/^\d+ \((.*)\)$/);
+      return m ? m[1] : v;
+    }
+    if (t === 'tag') return TAG_NAMES[v] != null ? TAG_NAMES[v] : v;
+    if (t === 'seat') return (Number(v) === -1 || Number(v) === 4294967295) ? 'Round-robin' : 'Seat ' + v;
+    return v;
+  }
+
+  function row(k, v, full) {
+    return '<div class="stat-row' + (full ? ' full' : '') + '"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
+  }
+
+  function tiles(items) {
+    return items.map(function (t) {
+      return '<div class="stat-tile"><div class="n">' + esc(t.n) + '</div><div class="l">' + esc(t.l) + '</div></div>';
+    }).join('');
+  }
+
+  function ageText(ms) {
+    if (ms == null || !isFinite(Number(ms)) || Number(ms) < 0) return '\u2014';
+    var s = Math.floor(Number(ms) / 1000);
+    var m = Math.floor(s / 60);
+    s = s % 60;
+    if (m <= 0) return s + 's';
+    if (m < 60) return m + 'm ' + s + 's';
+    return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+  }
+
+  function platformName(p) {
+    var k = String(p || '').toLowerCase();
+    return PLATFORM_NAMES[k] || p || '\u2014';
+  }
+
+  function settingsOf(options) {
+    if (!options || typeof options !== 'object' || options.error) return null;
+    var m = String(options.gameMode || '').match(/^(\d+) \(/);
+    var gm = m ? Number(m[1]) : NaN;
+    if (gm === 1) return { mode: 'classic', labels: NORMAL_LABELS, roles: options.roles };
+    if (gm === 2) return { mode: 'hns', labels: HNS_LABELS, roles: options.roles };
+    return null;
+  }
+
+  function roleRow(k, v, bool) {
+    return '<div class="rc-row"><span class="k">' + esc(k) + '</span><span class="v">' + esc(bool ? (v ? 'On' : 'Off') : trimNum(v)) + '</span></div>';
+  }
+
+  function renderRoles(roles) {
+    if (!roles || !roles.length) return '';
+    var html = roles.map(function (r) {
+      if (r.unknown) {
+        var raw = (r.rawValues || []).map(function (b) { return b.toString(16).padStart(2, '0'); }).join(' ');
+        return '<div class="role-card"><div class="rc-head"><span class="rc-name">' + esc(r.type) + '</span><span class="rc-odds">max ' + trimNum(r.maxCount) + ' &middot; ' + trimNum(r.chancePct) + '%</span></div>' +
+          '<div class="rc-rows"><div class="rc-row"><span class="k">raw</span><span class="v">' + esc(raw || '\u2014') + '</span></div></div></div>';
+      }
+      var rows = Object.keys(ROLE_FIELD_LABELS).filter(function (f) { return f in r; }).map(function (f) {
+        return roleRow(ROLE_FIELD_LABELS[f], r[f], ROLE_BOOL_FIELDS[f]);
+      }).join('');
+      var odds = ('maxCount' in r ? 'max ' + trimNum(r.maxCount) : '') + (r.chancePct != null ? ' \u00b7 ' + trimNum(r.chancePct) + '%' : '');
+      return '<div class="role-card"><div class="rc-head"><span class="rc-name">' + esc(r.type) + '</span>' +
+        (odds ? '<span class="rc-odds">' + odds + '</span>' : '') +
+        '</div><div class="rc-rows">' + (rows || '<div class="rc-row"><span class="k">No custom fields</span></div>') + '</div></div>';
+    }).join('');
+    return html;
+  }
+
+  function renderLobby(p) {
+    var g = p.game || {};
+    var code = p.code;
+    var opts = settingsOf(g.options);
+    var region = (p.region || '').toUpperCase();
+
+    $('l-code').innerHTML = esc(code) + ' <small>&middot; ' + esc(region || '??') + '</small>';
+    $('l-code-tag').textContent = '';
+
+    var modeName = opts ? (opts.mode === 'classic' ? 'Classic' : 'Hide n Seek') : (g.map && g.map.name ? g.map.name : '\u2014');
+    $('l-mode').textContent = modeName;
+    $('l-mode').className = 'pill mode';
+
+    var st = p.state || '';
+    var statusEl = $('l-status');
+    if (st === 'GameStarted') { statusEl.textContent = 'In game'; statusEl.className = 'pill started'; }
+    else if (st === 'GameFull') { statusEl.textContent = 'Full'; statusEl.className = 'pill full'; }
+    else if (st === 'GameNotFound') { statusEl.textContent = 'Stale'; statusEl.className = 'pill'; }
+    else { statusEl.textContent = 'In lobby'; statusEl.className = 'pill live'; }
+    statusEl.innerHTML = '<span class="dot"></span>' + esc(statusEl.textContent);
+
+    var keywords = (g.options && g.options.keywords) || '';
+    $('l-meta').innerHTML = [
+      ['Map', (g.map && g.map.name) || '\u2014'],
+      ['Players', (g.player_count != null ? g.player_count : '\u2014') + ' / ' + (g.max_players != null ? g.max_players : '\u2014')],
+      ['Impostors', g.impostors != null ? g.impostors : '\u2014'],
+      ['Host', g.host || '\u2014'],
+      ['Platform', platformName(g.platform)],
+      ['Language', keywords || '\u2014'],
+      ['Quick chat', g.quick_chat != null ? (g.quick_chat ? 'On' : 'Off') : '\u2014'],
+      ['Open for', ageText(g.age_ms)]
+    ].map(function (m) {
+      return '<span><b>' + esc(m[1]) + '</b> &middot; ' + esc(m[0]).toUpperCase() + '</span>';
+    }).join('');
+
+    var players = g.players || [];
+    $('players-label').textContent = 'Players \u2014 ' + (g.player_count != null ? g.player_count : players.length) + (players.length ? ' / ' + players.length + ' listed' : '');
+    $('players-grid').innerHTML = players.length
+      ? players.map(function (pl) {
+          var name = pl.name || 'Player';
+          return '<div class="player-chip"><span class="i">' + esc(String(name).charAt(0).toUpperCase()) + '</span>' +
+            '<span><span class="n">' + esc(name) + '</span><div class="p">' + esc(platformName(pl.platform)) + '</div></span></div>';
+        }).join('')
+      : '<div class="players-none" style="grid-column:1/-1">No player names exposed by the matchmaker.</div>';
+
+    $('l-tiles').innerHTML = tiles([
+      { n: g.player_count != null ? g.player_count : '\u2014', l: 'Players' },
+      { n: g.max_players != null ? g.max_players : '\u2014', l: 'Capacity' },
+      { n: g.impostors != null ? g.impostors : '\u2014', l: 'Impostors' },
+      { n: g.host || '\u2014', l: 'Host' }
+    ]);
+
+    if (opts && opts.labels) {
+      var o = g.options;
+      var html = Object.keys(opts.labels).filter(function (f) { return f in o && o[f] != null; }).map(function (f) {
+        var d = opts.labels[f];
+        return row(d[0], fmt(o[f], d[1]));
+      }).join('');
+      $('settings-grid').innerHTML = html;
+    } else {
+      $('settings-grid').innerHTML = row('Options', 'Not available for this lobby', true);
+    }
+
+    var rolesBlock = $('roles-block');
+    if (opts && opts.mode === 'classic') {
+      rolesBlock.style.display = '';
+      var rhtml = renderRoles(opts.roles);
+      $('roles-grid').innerHTML = rhtml || row('No roles enabled', '\u2014', true).replace('stat-row', 'stat-row full');
+    } else if (opts && opts.mode === 'hns') {
+      rolesBlock.style.display = '';
+      var chips = (opts.roles || []).map(function (r) { return '<div class="role-chip">' + esc(r.type) + '</div>'; });
+      $('roles-grid').innerHTML = chips.length
+        ? '<div class="players-grid" style="grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr))">' + chips.join('') + '</div>'
+        : row('No roles enabled', '\u2014', true).replace('stat-row', 'stat-row full');
+    } else {
+      rolesBlock.style.display = 'none';
+    }
+
+    var currentMode = opts ? opts.mode : 'classic';
+    switchOptTab(currentMode);
+    document.title = code + ' \u2014 Lobby // Among Us Launcher';
+    show('st-lobby');
+  }
+
+  function renderNotFound(p) {
+    var code = p.code || '??????';
+    $('st-nf-msg').innerHTML = 'The lobby <b style="color:var(--text)">' + esc(code) + '</b> isn\'t reachable right now. It may have closed, started, or the code may be wrong.';
+    var regions = p.regions || [];
+    if (!regions.length && p.region) {
+      regions = [{ region: p.region, state: p.state || 'NoGame' }];
+    }
+    $('region-grid').innerHTML = regions.map(function (r) {
+      return '<div class="region-row"><span class="rk">' + esc(r.region.toUpperCase()) + '</span><span class="rv">' +
+        esc(STATE_NAMES[r.state] || r.state || 'No lobby') + '</span></div>';
+    }).join('') || '';
+    show('st-nf');
+  }
+
+  function fail(msg) {
+    $('st-error-msg').textContent = msg || 'Could not look up this lobby.';
+    show('st-error');
+  }
+
+  function setSpinning(on) {
+    $('lookup-spin').style.display = on ? '' : 'none';
+    $('refresh-spin').style.display = on ? '' : 'none';
+    $('refresh-label').textContent = on ? 'Refreshing' : '[ Refresh ]';
+    $('go-btn').disabled = on;
+    $('refresh-btn').disabled = on;
+  }
+
+  function currentCode() {
+    var parts = location.pathname.split('/').filter(Boolean);
+    for (var i = parts.length - 1; i >= 0; i--) {
+      if (parts[i] !== 'lobby' && parts[i] !== 'lobby.html' && CODE_RE.test(parts[i])) return parts[i];
+    }
+    return '';
+  }
+
+  function go(code) {
+    code = String(code || '').trim().toUpperCase();
+    if (!code) { show('st-noid'); return; }
+    if (!CODE_RE.test(code)) { $('st-invalid-msg').textContent = '"' + esc(code) + '" isn\'t a valid lobby code \u2014 6 characters from ' + 'QWXRTYLPESDFGHUJKZOCVBINMA' + '.'; show('st-invalid'); return; }
+    if (code !== currentCode()) {
+      location.href = '/lobby/' + code;
+      return;
+    }
+    load(code);
+  }
+
+  function load(code) {
+    var qs = new URLSearchParams(location.search);
+    var demo = qs.get('demo');
+    setSpinning(true);
+    show('st-loading');
+
+    if (demo) {
+      setTimeout(function () {
+        setSpinning(false);
+        $('demo-banner').classList.add('visible');
+        renderLobby(DEMO[demo] || DEMO['1']);
+      }, 350);
+      return;
+    }
+
+    fetch('/api/lobby?code=' + encodeURIComponent(code), { headers: { 'X-Requested-With': 'LobbyPage' } })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+      .then(function (res) {
+        setSpinning(false);
+        if (!res.ok) { fail(res.j.error || ('Request failed (' + res.status + ')')); return; }
+        if (res.j.found) renderLobby(res.j);
+        else renderNotFound(res.j);
+      })
+      .catch(function (e) { setSpinning(false); fail(String(e)); });
+  }
+
+  function switchOptTab(mode) {
+    document.querySelectorAll('.opt-tab').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-mode') === mode);
+    });
+    $('opt-grid').innerHTML = (OPTIMAL[mode] || []).map(function (r) { return row(r[0], r[1]); }).join('');
+  }
+  window.switchOpt = function (el) { switchOptTab(el.getAttribute('data-mode')); };
+
+  var DEMO = {
+    '1': {
+      ok: true, found: true, code: 'YNETSG', region: 'eu', game_id: -1925164453,
+      game: {
+        game_id: -1925164453, host: 'lewis', platform: 'Steam', platform_id: 'steam',
+        player_count: 8, max_players: 10, impostors: 2,
+        map: { id: 4, name: 'The Airship' }, language: 0, quick_chat: false, age_ms: 204000,
+        options: {
+          version: 10, innerLen: 255, gameMode: '1 (Normal)', specialMode: '0 (None)',
+          rulesPreset: '100 (Custom)', maxPlayers: 10, keywords: 'English', map: '4 (The Airship)',
+          playerSpeedMod: 1.25, crewLightMod: 1, impostorLightMod: 1.5, killCooldownSec: 25,
+          numCommonTasks: 1, numLongTasks: 2, numShortTasks: 2, numEmergencyMeetings: 2,
+          numImpostors: 2, killDistance: '1 (Medium)', discussionTimeSec: 45, votingTimeSec: 90,
+          isDefaults: false, emergencyCooldownSec: 15, confirmImpostor: false, visualTasks: true,
+          anonymousVotes: false, taskBarUpdate: '0 (Always)', tag: 0,
+          roles: [
+            { type: 'Scientist', maxCount: 2, chancePct: 100, Cooldown: 15, BatteryCharge: 5 },
+            { type: 'Engineer', maxCount: 2, chancePct: 100, Cooldown: 25, InVentMaxTime: 15 },
+            { type: 'Guardian Angel', maxCount: 1, chancePct: 50, Cooldown: 30, ProtectionDuration: 10, ImpostorsCanSeeProtect: false },
+            { type: 'Shapeshifter', maxCount: 1, chancePct: 35, LeaveSkin: true, Cooldown: 20, Duration: 10 },
+            { type: 'Tracker', maxCount: 2, chancePct: 80, Cooldown: 15, Duration: 5, Delay: 1 }
+          ]
+        },
+        players: [
+          { name: 'lewis', platform: 'steam' }, { name: 'bean', platform: 'itchio' },
+          { name: 'tofu', platform: 'android' }, { name: 'glitch', platform: 'epic' },
+          { name: 'nyx', platform: 'ios' }, { name: 'rusty', platform: 'steam' },
+          { name: 'momo', platform: 'xbox' }, { name: 'kero', platform: 'switch' }
+        ]
+      }
+    },
+    '2': {
+      ok: true, found: true, code: 'ABGLMM', region: 'na', game_id: -1234567890,
+      game: {
+        game_id: -1234567890, host: 'hider', platform: 'Epic', platform_id: 'epic',
+        player_count: 6, max_players: 10, impostors: 1,
+        map: { id: 5, name: 'The Fungle' }, language: 0, quick_chat: true, age_ms: 92000,
+        options: {
+          version: 10, innerLen: 255, gameMode: '2 (HideNSeek)', specialMode: '0 (None)',
+          rulesPreset: '100 (Custom)', maxPlayers: 10, keywords: 'English', map: '5 (The Fungle)',
+          playerSpeedMod: 1, crewLightMod: 0.5, impostorLightMod: 0.35,
+          numCommonTasks: 1, numLongTasks: 2, numShortTasks: 3,
+          isDefaults: false, crewmateVentUses: 3, hidingTimeSec: 300,
+          crewmateFlashlightSize: 0.25, impostorFlashlightSize: 0.2, useFlashlight: true,
+          finalHideSeekMap: true, finalHideTimeSec: 50, finalSeekerSpeed: 1.25,
+          finalHidePings: true, showCrewmateNames: true, seekerPlayerId: 4294967295,
+          maxPingTimeSec: 5, crewmateTimeInVentSec: 3, tag: 2,
+          roles: [{ type: 'Crewmate' }, { type: 'Impostor' }, { type: 'Scientist' }]
+        },
+        players: [
+          { name: 'hider', platform: 'epic' }, { name: 'seekr', platform: 'steam' },
+          { name: 'bean2', platform: 'itchio' }, { name: 'fang', platform: 'android' }
+        ]
+      }
+    }
+  };
+
+  function init() {
+    var input = $('code-input');
+    var code = currentCode();
+    if (code) input.value = code;
+
+    var qs = new URLSearchParams(location.search);
+    var demo = qs.get('demo');
+
+    $('go-btn').addEventListener('click', function () { go(input.value); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') go(input.value);
+    });
+    $('refresh-btn').addEventListener('click', function () {
+      if (code) load(code);
+    });
+    $('copy-btn').addEventListener('click', function () {
+      var label = this.firstChild;
+      var t = this.textContent;
+      var done = function () {
+        this.textContent = '[ COPIED ]';
+        var btn = this;
+        setTimeout(function () { btn.textContent = t; }, 1400);
+      }.bind(this);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(done, done);
+      } else {
+        done();
+      }
+    });
+
+    if (!code) { show('st-noid'); return; }
+    load(code);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
