@@ -1,4 +1,4 @@
-// api/room.js
+﻿// api/room.js
 // Among Us room-code lookup. Key-protected (same api_keys / rate-limit infra as itch-build.js).
 //
 // Auth:
@@ -58,8 +58,8 @@ const KEYWORD_FLAGS = [
   [16384, 'German'], [32768, 'Italian'], [65536, 'SChinese'], [131072, 'TChinese'], [262144, 'Irish'],
 ];
 const ROLE_NAMES = {
-  2: 'Scientist', 3: 'Engineer', 4: 'Guardian Angel', 5: 'Shapeshifter',
-  8: 'Noisemaker', 9: 'Phantom', 10: 'Tracker', 12: 'Detective', 18: 'Viper',
+  0: 'Crewmate', 1: 'Impostor', 2: 'Scientist', 3: 'Engineer', 4: 'Guardian Angel',
+  5: 'Shapeshifter', 8: 'Noisemaker', 9: 'Phantom', 10: 'Tracker', 12: 'Detective', 18: 'Viper',
 };
 const ROLE_FIELDS = {
   2: ['Cooldown', 'BatteryCharge'],
@@ -99,40 +99,88 @@ function decodeOptions(b64) {
   const kw = u32();
   opts.keywords = KEYWORD_FLAGS.filter(([mask]) => kw & mask).map(([, name]) => name).join(', ') || `0x${kw.toString(16)}`;
   opts.map = named(u8(), MAP_NAMES);
-  opts.playerSpeedMod = round2(f32());
-  opts.crewLightMod = round2(f32());
-  opts.impostorLightMod = round2(f32());
-  opts.killCooldownSec = round2(f32());
-  opts.numCommonTasks = u8();
-  opts.numLongTasks = u8();
-  opts.numShortTasks = u8();
-  opts.numEmergencyMeetings = i32();
-  opts.numImpostors = u8();
-  opts.killDistance = named(u8(), KILL_DISTANCE_NAMES);
-  opts.discussionTimeSec = i32();
-  opts.votingTimeSec = i32();
-  opts.isDefaults = u8flag();
-  opts.emergencyCooldownSec = u8();
-  opts.confirmImpostor = u8flag();
-  opts.visualTasks = u8flag();
-  opts.anonymousVotes = u8flag();
-  opts.taskBarUpdate = named(u8(), TASK_BAR_NAMES);
-  opts.tag = u8();
-  if (gm !== 1) opts.warning = `non-Normal gameMode (${gm}); fields after RulesPreset may not parse`;
-  opts.roles = decodeRoles(b, i);
+
+  if (gm === 1) {
+    // Normal mode
+    opts.playerSpeedMod = round2(f32());
+    opts.crewLightMod = round2(f32());
+    opts.impostorLightMod = round2(f32());
+    opts.killCooldownSec = round2(f32());
+    opts.numCommonTasks = u8();
+    opts.numLongTasks = u8();
+    opts.numShortTasks = u8();
+    opts.numEmergencyMeetings = i32();
+    opts.numImpostors = u8();
+    opts.killDistance = named(u8(), KILL_DISTANCE_NAMES);
+    opts.discussionTimeSec = i32();
+    opts.votingTimeSec = i32();
+    opts.isDefaults = u8flag();
+    opts.emergencyCooldownSec = u8();
+    opts.confirmImpostor = u8flag();
+    opts.visualTasks = u8flag();
+    opts.anonymousVotes = u8flag();
+    opts.taskBarUpdate = named(u8(), TASK_BAR_NAMES);
+    opts.tag = u8();
+    opts.roles = decodeRoles(b, i);
+  } else if (gm === 2) {
+    // HideNSeek v10 layout
+    opts.playerSpeedMod = round2(f32());
+    opts.crewLightMod = round2(f32());
+    opts.impostorLightMod = round2(f32());
+    opts.numCommonTasks = u8();
+    opts.numLongTasks = u8();
+    opts.numShortTasks = u8();
+    opts.isDefaults = u8flag();
+    opts.crewmateVentUses = i32();
+    opts.hidingTimeSec = round2(f32());
+    opts.crewmateFlashlightSize = round2(f32());
+    opts.impostorFlashlightSize = round2(f32());
+    opts.useFlashlight = u8flag();
+    opts.finalHideSeekMap = u8flag();
+    opts.finalHideTimeSec = round2(f32());
+    opts.finalSeekerSpeed = round2(f32());
+    opts.finalHidePings = u8flag();
+    opts.showCrewmateNames = u8flag();
+    opts.seekerPlayerId = u32();
+    opts.maxPingTimeSec = round2(f32());
+    opts.crewmateTimeInVentSec = round2(f32());
+    opts.tag = u8();
+    // v10 role section: packed count then one-byte role types
+    if (i < b.length) {
+      const { value: count, index } = readPacked(b, i);
+      i = index;
+      const roles = [];
+      for (let n = 0; n < count; n++) {
+        const rt = u8();
+        roles.push({ type: ROLE_NAMES[rt] ?? String(rt) });
+      }
+      opts.roles = roles;
+    } else {
+      opts.roles = [];
+    }
+  } else {
+    opts.warning = `unsupported gameMode ${gm}; cannot parse option fields`;
+    opts.roles = [];
+  }
   return opts;
+}
+
+function readPacked(b, i) {
+  let val = 0;
+  let shift = 0;
+  while (true) {
+    const x = b[i++];
+    val |= (x & 0x7f) << shift;
+    if (!(x & 0x80)) break;
+    shift += 7;
+  }
+  return { value: val, index: i };
 }
 
 function decodeRoles(b, i) {
   const roles = [];
-  let count = 0;
-  let shift = 0;
-  while (true) {
-    const x = b[i++];
-    count |= (x & 0x7f) << shift;
-    if (!(x & 0x80)) break;
-    shift += 7;
-  }
+  const { value: count, index } = readPacked(b, i);
+  i = index;
   for (let n = 0; n < count; n++) {
     const rtype = b.readUInt16LE(i); i += 2;
     const maxCount = b[i++];
@@ -286,6 +334,8 @@ async function checkRateLimit(cfg) {
   } catch { return { count: 0, limited: false }; }
 }
 
+export { decodeOptions };
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -363,7 +413,7 @@ export default async function handler(req, res) {
       const errState = errs.length > 0 ? normalizeReason(errs[0].Reason ?? 17) : null;
 
       // The matchmaker may return Errors (GameStarted/GameFull/...) together with
-      // a valid Game object — same as lookup.py: still return the room.
+      // a valid Game object â€” same as lookup.py: still return the room.
       if (!g) {
         regionResults.push({
           region,
