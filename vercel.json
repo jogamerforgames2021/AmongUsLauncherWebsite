@@ -4,6 +4,7 @@
   "rewrites": [
     { "source": "/post/:slug", "destination": "/post" },
     { "source": "/users/:id", "destination": "/users" },
+    { "source": "/lobby/:code/copy", "destination": "/lobby-copy.html?code=:code" },
     { "source": "/lobby/:code", "destination": "/lobby" }
   ],
   "headers": [

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Copy lobby code</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#090909;
+  --red:#c8151b;
+  --text:#f0f0f2;
+  --green:#3fae5a;
+  --amber:#f5b83d;
+  --f:'Share Tech Mono',monospace;
+}
+
+html,body{height:100%;}
+body{
+  font-family:var(--f);
+  background:var(--bg);
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  cursor:default;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9;
+}
+
+#box{text-align:center;position:relative;z-index:1;padding:0 1.6rem;}
+
+.line{
+  display:flex;align-items:center;gap:.7rem;
+  font-size:.56rem;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(240,240,242,.32);
+  margin-bottom:1.6rem;
+}
+.line::before,.line::after{content:'';flex:1;height:1px;background:rgba(240,240,242,.09);}
+.line b{color:var(--red);font-weight:bold;}
+
+#state{
+  font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:1.1rem;
+  min-height:1.2em;
+}
+#state.copying{color:var(--muted);animation:blink 1s steps(1) infinite;}
+#state.ok{color:var(--green);}
+#state.no{color:var(--amber);}
+
+#code{
+  font-size:clamp(3rem,12vw,6rem);
+  font-weight:bold;letter-spacing:.16em;line-height:1;
+  color:var(--text);
+  outline:none;
+  user-select:all;
+  animation:flash-in .38s steps(1) both;
+}
+@keyframes flash-in{
+  0%{opacity:0;transform:translate(0);}
+  25%{opacity:.6;transform:translate(-2px,1px);}
+  50%{opacity:1;transform:translate(2px,-1px);}
+  75%{opacity:1;transform:translate(-1px,0);}
+  100%{opacity:1;transform:translate(0);}
+}
+
+#sub{
+  font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(240,240,242,.28);
+  margin-top:1.8rem;
+}
+#sub b{color:rgba(240,240,242,.55);font-weight:bold;}
+
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+</style>
+</head>
+<body>
+<div id="box">
+  <div class="line"><b>AU LAUNCHER</b> LOBBY CODE</div>
+  <div id="state" class="copying">// copying</div>
+  <div id="code" tabindex="-1">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</div>
+  <div id="sub">sending you to <b>/lobby/</b></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CODE_RE = /^[QWXRTYLPESDFGHUJKZOCVBINMA]{6}$/;
+  var code = String(new URLSearchParams(location.search).get('code') || '').trim().toUpperCase();
+
+  var stateEl = document.getElementById('state');
+  var codeEl = document.getElementById('code');
+  var subEl = document.getElementById('sub');
+
+  function redirect(ms) {
+    setTimeout(function () { location.replace('/lobby/' + code); }, ms);
+  }
+
+  if (!CODE_RE.test(code)) {
+    location.replace('/lobby');
+    return;
+  }
+
+  codeEl.textContent = code;
+  document.title = code + ' \u2014 copied';
+
+  function fallbackCopy() {
+    var ta = document.createElement('textarea');
+    ta.value = code;
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:2px;height:2px;opacity:0;pointer-events:none;';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function showOk() {
+    stateEl.className = 'ok';
+    stateEl.textContent = 'COPIED \u2014 sent to clipboard';
+    subEl.innerHTML = 'sending you to <b>/lobby/' + code + '</b>';
+    redirect(1300);
+  }
+
+  function showManual() {
+    stateEl.className = 'no';
+    stateEl.textContent = 'PRESS CTRL+C \u2014 or tap anywhere to copy';
+    subEl.innerHTML = 'code selected below &middot; going to <b>/lobby/' + code + '</b>';
+    codeEl.focus();
+    var range = document.createRange();
+    range.selectNodeContents(codeEl);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.addEventListener('click', function retry() {
+      if (fallbackCopy()) { document.removeEventListener('click', retry); showOk(); }
+    }, { once: false });
+    redirect(3400);
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(showOk, function () {
+      if (fallbackCopy()) showOk(); else showManual();
+    });
+  } else {
+    if (fallbackCopy()) showOk(); else showManual();
+  }
+})();
+</script>
+</body>
+</html>
