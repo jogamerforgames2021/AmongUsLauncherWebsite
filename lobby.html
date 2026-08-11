@@ -346,6 +346,49 @@ main{
 }
 .demo-banner.visible{display:block;}
 
+/* standalone copy view (/lobby/CODE/copy) */
+#copy-view{
+  display:none;
+  position:fixed;inset:0;z-index:5;
+  flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:0 1.6rem;
+}
+body.copy-mode #topnav,body.copy-mode main{display:none;}
+#copy-view .cv-code{
+  font-size:clamp(3.2rem,15vw,7rem);
+  font-weight:bold;letter-spacing:.14em;line-height:1;
+  color:var(--text);
+  cursor:pointer;
+  user-select:all;
+  outline:none;
+  transition:color .12s;
+}
+#copy-view .cv-code:hover{color:var(--red);}
+#copy-view .cv-hint{
+  font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(240,240,242,.25);
+  margin-top:1.1rem;
+}
+#copy-view .cv-actions{margin-top:2rem;}
+#copy-view .cv-status{
+  font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  margin-top:1.2rem;min-height:1.4em;
+}
+#copy-view .cv-status.ok{color:var(--green);}
+#copy-view .cv-status.no{color:var(--amber);}
+#copy-view .cv-status.wait{color:var(--muted);animation:cv-blink 1s steps(1) infinite;}
+#copy-view .cv-back{
+  display:inline-block;
+  margin-top:1.6rem;
+  font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(240,240,242,.28);
+  text-decoration:none;
+  transition:color .12s;
+}
+#copy-view .cv-back:hover{color:var(--red);}
+@keyframes cv-blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
 /* region list (not found) */
 .region-grid{
   display:grid;grid-template-columns:1fr;gap:1px;
@@ -508,6 +551,16 @@ main{
     <a href="/privacy">Privacy</a>
   </div>
 </main>
+
+<div id="copy-view">
+  <div class="cv-code" id="cv-code" tabindex="-1">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</div>
+  <div class="cv-hint">tap the code or use the button</div>
+  <div class="cv-actions">
+    <button class="raw-btn solid" id="cv-btn">[ COPY CODE ]</button>
+  </div>
+  <div class="cv-status" id="cv-status">// waiting</div>
+  <a class="cv-back" id="cv-back" href="/lobby">view lobby &rarr;</a>
+</div>
 
 <script>
 (function () {
@@ -954,9 +1007,43 @@ main{
     setTimeout(function () { btn.textContent = orig; btn.disabled = false; }, ok ? 1600 : 2400);
   }
 
+  function renderCopyView(code) {
+    document.body.classList.add('copy-mode');
+    var v = $('copy-view');
+    v.style.display = 'flex';
+    $('cv-code').textContent = code;
+    var back = $('cv-back');
+    back.href = '/lobby/' + code;
+    back.textContent = 'view lobby /lobby/' + code + ' \u2192';
+    document.title = code + ' \u2014 lobby code';
+
+    var statusEl = $('cv-status');
+    function doCopy() {
+      statusEl.className = 'cv-status wait';
+      statusEl.textContent = '// copying';
+      copyText(code).then(function (ok) {
+        statusEl.className = ok ? 'cv-status ok' : 'cv-status no';
+        statusEl.textContent = ok ? 'COPIED \u2014 ' + code : 'BLOCKED \u2014 press Ctrl+C (code is selected)';
+      });
+    }
+    $('cv-btn').addEventListener('click', doCopy);
+    $('cv-code').addEventListener('click', doCopy);
+
+    var range = document.createRange();
+    range.selectNodeContents($('cv-code'));
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    $('cv-code').focus();
+  }
+
   function init() {
     var input = $('code-input');
     var code = currentCode();
+    var isCopy = location.pathname.replace(/\/+$/, '').endsWith('/copy');
+    if (isCopy) {
+      if (code) { renderCopyView(code); return; }
+    }
     if (code) input.value = code;
 
     var qs = new URLSearchParams(location.search);
