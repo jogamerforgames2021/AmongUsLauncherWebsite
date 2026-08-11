@@ -36,6 +36,6 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: 'Rate limit exceeded', retry_after_seconds: 60 });
   }
 
-  const clone = { ...req, query: { ...req.query, key } };
-  return roomHandler(clone, res);
+  req.query = { ...(req.query || {}), key };
+  return roomHandler(req, res);
 }
