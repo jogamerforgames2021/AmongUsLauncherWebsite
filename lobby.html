@@ -168,8 +168,15 @@ main{
   font-size:clamp(2.4rem,7vw,3.4rem);
   font-weight:bold;letter-spacing:.18em;
   line-height:1;
+  cursor:pointer;
+  transition:color .12s;
+  user-select:all;
 }
+.lc-code:hover{color:var(--red);}
+.lc-code.copied{color:var(--green);}
 .lc-code small{color:rgba(240,240,242,.25);font-weight:normal;letter-spacing:.05em;}
+.lc-code-label{display:flex;align-items:center;gap:.5rem;}
+.lc-code-label .tap-hint{color:rgba(240,240,242,.22);}
 .lc-actions{
   margin-left:auto;
   display:flex;gap:.6rem;align-items:center;
@@ -196,6 +203,26 @@ main{
   color:rgba(240,240,242,.35);
 }
 .lc-meta b{color:var(--text);font-weight:bold;}
+
+/* live status line */
+.l-status-line{
+  margin-top:1.1rem;
+  padding:.6rem .85rem;
+  border:1px solid var(--dim);
+  background:var(--bg);
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  transition:border-color .12s,color .12s;
+}
+.l-status-line .ls-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;animation:ls-pulse 1.6s ease-in-out infinite;}
+.l-status-line .ls-msg{font-weight:bold;}
+.l-status-line .ls-sub{color:rgba(240,240,242,.45);font-weight:normal;margin-left:auto;text-align:right;}
+.l-status-line.live{color:var(--green);border-color:rgba(63,174,90,.4);}
+.l-status-line.started{color:var(--amber);border-color:rgba(245,184,61,.4);}
+.l-status-line.full{color:var(--red);border-color:rgba(200,21,27,.5);}
+.l-status-line.stale{color:var(--muted);border-color:var(--dim);}
+.l-status-line.error{color:var(--red);border-color:rgba(200,21,27,.35);}
+@keyframes ls-pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
 /* players */
 .players-block{margin-top:1rem;}
@@ -429,7 +456,7 @@ main{
     <div class="lobby-card">
       <div class="lc-top">
         <div>
-          <div class="lc-code-label">Lobby code</div>
+          <div class="lc-code-label">Lobby code <span class="tap-hint">&middot; tap to copy</span></div>
           <div class="lc-code" id="l-code">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</div>
         </div>
         <div class="lc-actions">
@@ -437,6 +464,11 @@ main{
           <span class="pill" id="l-status"></span>
           <button class="raw-btn" id="copy-btn">[ COPY CODE ]</button>
         </div>
+      </div>
+      <div class="l-status-line" id="l-status-line">
+        <span class="ls-dot"></span>
+        <span class="ls-msg" id="l-status-msg">&hellip;</span>
+        <span class="ls-sub" id="l-status-sub"></span>
       </div>
       <div class="lc-meta" id="l-meta"></div>
     </div>
@@ -664,6 +696,15 @@ main{
     return html;
   }
 
+  function statusInfo(st, g) {
+    if (st === 'GameStarted') return { text: 'IN GAME', cls: 'started', sub: 'This game has already started.' };
+    if (st === 'GameFull') return { text: 'FULL', cls: 'full', sub: 'Lobby is full right now.' };
+    if (st === 'GameNotFound') return { text: 'STALE', cls: 'stale', sub: 'No longer reachable.' };
+    var full = g.player_count != null && g.max_players != null && g.player_count >= g.max_players;
+    if (full) return { text: 'FULL', cls: 'full', sub: 'Lobby is full right now.' };
+    return { text: 'IN LOBBY', cls: 'live', sub: 'Open to join \u2014 enter the code in Among Us.' };
+  }
+
   function renderLobby(p) {
     var g = p.game || {};
     var code = p.code;
@@ -677,12 +718,15 @@ main{
     $('l-mode').className = 'pill mode';
 
     var st = p.state || '';
+    var info = statusInfo(st, g);
     var statusEl = $('l-status');
-    if (st === 'GameStarted') { statusEl.textContent = 'In game'; statusEl.className = 'pill started'; }
-    else if (st === 'GameFull') { statusEl.textContent = 'Full'; statusEl.className = 'pill full'; }
-    else if (st === 'GameNotFound') { statusEl.textContent = 'Stale'; statusEl.className = 'pill'; }
-    else { statusEl.textContent = 'In lobby'; statusEl.className = 'pill live'; }
+    statusEl.textContent = info.text;
+    statusEl.className = 'pill ' + info.cls;
     statusEl.innerHTML = '<span class="dot"></span>' + esc(statusEl.textContent);
+    var lineEl = $('l-status-line');
+    lineEl.className = 'l-status-line ' + info.cls;
+    $('l-status-msg').textContent = info.text;
+    $('l-status-sub').textContent = info.sub;
 
     var keywords = (g.options && g.options.keywords) || '';
     $('l-meta').innerHTML = [
@@ -884,6 +928,32 @@ main{
     }
   };
 
+  function copyText(txt) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(txt).then(function () { return true; }, function () { return fallbackCopy(txt); });
+    }
+    return Promise.resolve(fallbackCopy(txt));
+  }
+
+  function fallbackCopy(txt) {
+    var ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:2px;height:2px;opacity:0;pointer-events:none;';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function flashLabel(btn, ok) {
+    btn.textContent = ok ? '[ COPIED ]' : '[ TRY CTRL+C ]';
+    var orig = '[ COPY CODE ]';
+    setTimeout(function () { btn.textContent = orig; btn.disabled = false; }, ok ? 1600 : 2400);
+  }
+
   function init() {
     var input = $('code-input');
     var code = currentCode();
@@ -899,20 +969,20 @@ main{
     $('refresh-btn').addEventListener('click', function () {
       if (code) load(code);
     });
-    $('copy-btn').addEventListener('click', function () {
-      var label = this.firstChild;
-      var t = this.textContent;
-      var done = function () {
-        this.textContent = '[ COPIED ]';
-        var btn = this;
-        setTimeout(function () { btn.textContent = t; }, 1400);
-      }.bind(this);
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(done, done);
-      } else {
-        done();
-      }
-    });
+
+    var copyBtn = $('copy-btn');
+    var copyCode = function () {
+      if (!code) return;
+      copyBtn.disabled = true;
+      var lc = $('l-code');
+      copyText(code).then(function (ok) {
+        flashLabel(copyBtn, ok);
+        lc.className = 'lc-code' + (ok ? ' copied' : '');
+        if (ok) setTimeout(function () { lc.className = 'lc-code'; }, 1600);
+      });
+    };
+    copyBtn.addEventListener('click', copyCode);
+    $('l-code').addEventListener('click', copyCode);
 
     if (!code) { show('st-noid'); return; }
     load(code);
