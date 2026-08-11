@@ -231,6 +231,30 @@ async function lookupGame(gameId, mtmToken, host) {
   return { status: res.status, data, txt };
 }
 
+function buildGame(g) {
+  const game = {
+    game_id: g.GameId ?? null,
+    host: g.TrueHostName || g.HostName || null,
+    platform: g.HostPlatformName ?? null,
+    platform_id: g.Platform ?? null,
+    player_count: g.PlayerCount ?? 0,
+    max_players: g.MaxPlayers ?? 0,
+    impostors: g.NumImpostors ?? 0,
+    map: { id: g.MapId ?? null, name: MAP_NAMES[g.MapId] ?? null },
+    language: g.Language ?? null,
+    quick_chat: g.QuickChat ?? null,
+    age_ms: g.Age ?? null,
+    options: g.Options ? decodeOptions(g.Options) : null,
+  };
+  if (Array.isArray(g.Players)) {
+    game.players = g.Players.map((p) => ({
+      name: p.Name ?? p.TrueName ?? null,
+      platform: p.Platform ?? null,
+    }));
+  }
+  return game;
+}
+
 // ---- Supabase key config + rate limiting (same as itch-build.js) ----
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -302,9 +326,12 @@ export default async function handler(req, res) {
 
   // Validate inputs
   const code = (req.query.code || '').toString();
-  const region = (req.query.region || 'eu').toString().toLowerCase();
+  const regionParam = (req.query.region || '').toString().toLowerCase();
   if (!code) return res.status(400).json({ error: 'code is required (?code=XXXXXX)' });
-  if (!(region in REGIONS)) return res.status(400).json({ error: `bad region ${JSON.stringify(region)}; use eu/na/as` });
+  if (regionParam && !(regionParam in REGIONS)) {
+    return res.status(400).json({ error: `bad region ${JSON.stringify(regionParam)}; use eu/na/as or omit for all` });
+  }
+  const regionsToCheck = regionParam ? [regionParam] : Object.keys(REGIONS);
 
   let gameId;
   try {
@@ -319,57 +346,56 @@ export default async function handler(req, res) {
     }
 
     const idToken = await getIdToken();
-    const host = REGIONS[region];
-    const mtmToken = await getMatchmakerToken(idToken, host);
-    const { data, txt } = await lookupGame(gameId, mtmToken, host);
+    const regionResults = [];
 
-    if (!data) return res.status(502).json({ error: 'Matchmaker returned non-JSON', raw: txt.slice(0, 200) });
+    for (const region of regionsToCheck) {
+      const host = REGIONS[region];
+      const mtmToken = await getMatchmakerToken(idToken, host);
+      const { data, txt } = await lookupGame(gameId, mtmToken, host);
 
-    const g = data.Game;
-    const errs = Array.isArray(data.Errors) ? data.Errors : [];
-    const errState = errs.length > 0 ? normalizeReason(errs[0].Reason ?? 17) : null;
+      if (!data) {
+        regionResults.push({ region, state: 'MatchmakerError', raw: txt.slice(0, 200) });
+        continue;
+      }
 
-    // The matchmaker may return Errors (GameStarted/GameFull/...) together with
-    // a valid Game object — same as lookup.py: still return the room.
-    if (!g) {
-      return res.status(200).json({
-        ok: true,
-        found: false,
-        code,
-        region,
-        game_id: gameId,
-        state: errState ? errState.state : 'NoGame',
-        reason_code: errState ? errState.code : null,
-      });
+      const g = data.Game;
+      const errs = Array.isArray(data.Errors) ? data.Errors : [];
+      const errState = errs.length > 0 ? normalizeReason(errs[0].Reason ?? 17) : null;
+
+      // The matchmaker may return Errors (GameStarted/GameFull/...) together with
+      // a valid Game object — same as lookup.py: still return the room.
+      if (!g) {
+        regionResults.push({
+          region,
+          state: errState ? errState.state : 'NoGame',
+          reason_code: errState ? errState.code : null,
+        });
+        continue;
+      }
+
+      const payload = { ok: true, found: true, code, region, game_id: gameId, game: buildGame(g) };
+      if (errState) {
+        payload.state = errState.state;
+        payload.reason_code = errState.code;
+      }
+      return res.status(200).json(payload);
     }
 
-    const game = {
-      game_id: g.GameId ?? null,
-      host: g.TrueHostName || g.HostName || null,
-      platform: g.HostPlatformName ?? null,
-      platform_id: g.Platform ?? null,
-      player_count: g.PlayerCount ?? 0,
-      max_players: g.MaxPlayers ?? 0,
-      impostors: g.NumImpostors ?? 0,
-      map: { id: g.MapId ?? null, name: MAP_NAMES[g.MapId] ?? null },
-      language: g.Language ?? null,
-      quick_chat: g.QuickChat ?? null,
-      age_ms: g.Age ?? null,
-      options: g.Options ? decodeOptions(g.Options) : null,
-    };
-    if (Array.isArray(g.Players)) {
-      game.players = g.Players.map((p) => ({
-        name: p.Name ?? p.TrueName ?? null,
-        platform: p.Platform ?? null,
-      }));
-    }
+    // Not found in any checked region
+    const states = regionResults.map((r) => r.state);
+    const notFoundState =
+      states.every((s) => s === 'GameNotFound' || s === 'NoGame') ? 'GameNotFound'
+      : states[states.length - 1] || 'GameNotFound';
 
-    const payload = { ok: true, found: true, code, region, game_id: gameId, game };
-    if (errState) {
-      payload.state = errState.state;
-      payload.reason_code = errState.code;
-    }
-    return res.status(200).json(payload);
+    return res.status(200).json({
+      ok: true,
+      found: false,
+      code,
+      game_id: gameId,
+      region: regionParam || null,
+      state: notFoundState,
+      regions: regionResults,
+    });
   } catch (e) {
     return res.status(502).json({ error: e.message });
   }
