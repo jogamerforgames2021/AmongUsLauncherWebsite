@@ -430,7 +430,7 @@ main{
       <div class="lc-top">
         <div>
           <div class="lc-code-label">Lobby code</div>
-          <div class="lc-code" id="l-code">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash; <small id="l-code-tag"></small></div>
+          <div class="lc-code" id="l-code">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</div>
         </div>
         <div class="lc-actions">
           <span class="pill" id="l-mode"></span>
@@ -671,7 +671,6 @@ main{
     var region = (p.region || '').toUpperCase();
 
     $('l-code').innerHTML = esc(code) + ' <small>&middot; ' + esc(region || '??') + '</small>';
-    $('l-code-tag').textContent = '';
 
     var modeName = opts ? (opts.mode === 'classic' ? 'Classic' : 'Hide n Seek') : (g.map && g.map.name ? g.map.name : '\u2014');
     $('l-mode').textContent = modeName;
