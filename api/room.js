@@ -60,6 +60,7 @@ const KEYWORD_FLAGS = [
 const ROLE_NAMES = {
   0: 'Crewmate', 1: 'Impostor', 2: 'Scientist', 3: 'Engineer', 4: 'Guardian Angel',
   5: 'Shapeshifter', 8: 'Noisemaker', 9: 'Phantom', 10: 'Tracker', 12: 'Detective', 18: 'Viper',
+  19: 'Judge',
 };
 const ROLE_FIELDS = {
   2: ['Cooldown', 'BatteryCharge'],
@@ -71,6 +72,7 @@ const ROLE_FIELDS = {
   10: ['Cooldown', 'Duration', 'Delay'],
   12: ['DetectiveSuspectLimit'],
   18: ['ViperDissolveTime'],
+  19: ['TaskRequirementPercentage'],
 };
 
 const round2 = (x) => Math.round(x * 100) / 100;
@@ -79,7 +81,7 @@ const named = (n, table) => `${n} (${table[n] ?? '?'})`;
 function decodeOptions(b64) {
   const b = Buffer.from(b64, 'base64');
   if (b.length < 8) return { error: `blob too short (${b.length} bytes)` };
-  if (b[0] !== 10) return { error: `unexpected version byte 0x${b[0].toString(16).padStart(2, '0')} (expected 0x0a = 10)` };
+  if (b[0] !== 10 && b[0] !== 11) return { error: `unexpected version byte 0x${b[0].toString(16).padStart(2, '0')} (expected 0x0a = 10 or 0x0b = 11)` };
   let i = 0;
   const u8 = () => b[i++];
   const u32 = () => { const v = b.readUInt32LE(i); i += 4; return v; };
